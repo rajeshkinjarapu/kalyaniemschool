@@ -74,7 +74,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       { to: '/messages',      label: 'Messages',      icon: MessageSquare },
       { to: '/reports',       label: 'Reports',       icon: BarChart3     },
       { to: '/settings',      label: 'Settings',      icon: Settings      },
-      { to: '/roles',         label: 'Roles',         icon: Shield        },
     ];
     if (role === 'TEACHER') return [...base,
       { to: '/attendance',    label: 'Attendance',    icon: CalendarCheck },
