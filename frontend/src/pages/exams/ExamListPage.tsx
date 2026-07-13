@@ -21,7 +21,7 @@ export const ExamListPage: React.FC = () => {
   const tabParam = searchParams.get('tab');
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<'examination' | 'exam-plan' | 'question-group' | 'question-bank' | 'add-online-exam' | 'online-exams' | 'written-exam' | 'admit-card' | 'results' | 'progress-card' | 'settings'>('examination');
+  const [activeTab, setActiveTab] = useState<'examination' | 'exam-plan' | 'question-group' | 'question-bank' | 'add-online-exam' | 'online-exams' | 'written-exam' | 'admit-card' | 'results' | 'progress-card' | 'settings' | ''>('');
 
   useEffect(() => {
     if (tabParam) {
@@ -614,7 +614,7 @@ export const ExamListPage: React.FC = () => {
           <p className="text-xs text-gray-500 mt-1">Select a module below to manage exams, grading, and online tests.</p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          <button onClick={() => setActiveTab('examination')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'examination' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+          <button onClick={() => setShowExamModal(true)} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300`}>
             <Layers className="w-7 h-7" />
             <span className="text-[11px] font-extrabold uppercase tracking-wide">Create Exam</span>
           </button>
@@ -685,90 +685,49 @@ export const ExamListPage: React.FC = () => {
         )}
       </div>
 
-      {/* ══ TAB 1: EXAMINATION ══ */}
-      {activeTab === 'examination' && (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-150 dark:border-gray-800">
-            <span className="text-xs font-extrabold uppercase text-gray-450 tracking-wider">Conventional Exam Batches</span>
-            {isAdmin && (
-              <button onClick={() => setShowExamModal(true)} className="btn-primary flex items-center gap-2 text-xs font-bold">
-                <Plus className="w-4 h-4" /> Add Exam
-              </button>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {exams.map((exam) => (
-              <div key={exam.id} className="card p-6 space-y-4 hover:shadow-md transition-shadow border-t-4 border-red-500">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/20 text-red-500">
-                    <ClipboardList className="w-5.5 h-5.5" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-base text-gray-900 dark:text-white">{exam.name}</h4>
-                    <span className="text-xs text-gray-400">{exam.term} · Class {exam.class?.name}-{exam.class?.section}</span>
-                  </div>
-                </div>
-
-                <div className="text-xs space-y-1.5 text-gray-500 font-semibold">
-                  <p><strong>Max Marks:</strong> {exam.maxMarks}</p>
-                  <p><strong>Passing Marks:</strong> {exam.passingMarks}</p>
-                  <p><strong>Date:</strong> {new Date(exam.examDate).toLocaleDateString()}</p>
-                </div>
-
-                {isAdminOrTeacher && (
-                  <Link to={`/exams/${exam.id}/entry`} className="btn-secondary w-full flex items-center justify-center gap-2 text-xs font-bold">
-                    <Edit3 className="w-4 h-4" /> Enter / Edit Grades
-                  </Link>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {showExamModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
-              <div className="card w-full max-w-md p-6 space-y-5">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-bold">Configure Exam</h3>
-                  <button onClick={() => setShowExamModal(false)} className="text-gray-400 hover:text-black dark:hover:text-white"><X className="w-5 h-5" /></button>
-                </div>
-                <form onSubmit={handleCreateExam} className="space-y-4">
-                  <div>
-                    <label className="label">Exam Name / Title</label>
-                    <input type="text" required placeholder="e.g. Mid-Term 1" value={examName} onChange={e => setExamName(e.target.value)} className="input" />
-                  </div>
-                  <div>
-                    <label className="label">Class</label>
-                    <select required value={examClassId} onChange={e => setExamClassId(e.target.value)} className="input">
-                      {classes.map(c => <option key={c.id} value={c.id}>{c.name}-{c.section}</option>)}
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="label">Term</label>
-                      <select value={examTerm} onChange={e => setExamTerm(e.target.value)} className="input">
-                        <option value="Term 1">Term 1</option>
-                        <option value="Term 2">Term 2</option>
-                        <option value="Final">Final</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="label">Max Marks</label>
-                      <input type="number" value={examMaxMarks} onChange={e => setExamMaxMarks(Number(e.target.value))} className="input" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="label">Exam Date</label>
-                    <input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} className="input" />
-                  </div>
-                  <div className="flex gap-3 justify-end pt-2">
-                    <button type="button" onClick={() => setShowExamModal(false)} className="btn-secondary text-sm">Cancel</button>
-                    <button type="submit" className="btn-primary text-sm">Create Exam</button>
-                  </div>
-                </form>
-              </div>
+      {/* Create Exam Modal */}
+      {showExamModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
+          <div className="card w-full max-w-md p-6 space-y-5">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-bold">Configure Exam</h3>
+              <button onClick={() => setShowExamModal(false)} className="text-gray-400 hover:text-black dark:hover:text-white"><X className="w-5 h-5" /></button>
             </div>
-          )}
+            <form onSubmit={handleCreateExam} className="space-y-4">
+              <div>
+                <label className="label">Exam Name / Title</label>
+                <input type="text" required placeholder="e.g. Mid-Term 1" value={examName} onChange={e => setExamName(e.target.value)} className="input" />
+              </div>
+              <div>
+                <label className="label">Class</label>
+                <select required value={examClassId} onChange={e => setExamClassId(e.target.value)} className="input">
+                  {classes.map(c => <option key={c.id} value={c.id}>{c.name}-{c.section}</option>)}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Term</label>
+                  <select value={examTerm} onChange={e => setExamTerm(e.target.value)} className="input">
+                    <option value="Term 1">Term 1</option>
+                    <option value="Term 2">Term 2</option>
+                    <option value="Final">Final</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="label">Max Marks</label>
+                  <input type="number" value={examMaxMarks} onChange={e => setExamMaxMarks(Number(e.target.value))} className="input" />
+                </div>
+              </div>
+              <div>
+                <label className="label">Exam Date</label>
+                <input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} className="input" />
+              </div>
+              <div className="flex gap-3 justify-end pt-2">
+                <button type="button" onClick={() => setShowExamModal(false)} className="btn-secondary text-sm">Cancel</button>
+                <button type="submit" className="btn-primary text-sm">Create Exam</button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
