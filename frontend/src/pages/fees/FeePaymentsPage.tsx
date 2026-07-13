@@ -247,11 +247,17 @@ export const FeePaymentsPage: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="label">Select Student</label>
+                <label className="label">Student</label>
                 <select
-                  required
                   value={studentId}
-                  onChange={(e) => setStudentId(e.target.value)}
+                  onChange={(e) => {
+                    setStudentId(e.target.value);
+                    const selectedStructure = structures.find(s => s.id === feeStructureId);
+                    if (selectedStructure && feeStructureId) {
+                      const paidSoFar = payments.filter(p => p.studentId === e.target.value && p.feeStructureId === feeStructureId).reduce((sum, p) => sum + p.amountPaid, 0);
+                      setAmountPaid(Math.max(0, selectedStructure.amount - paidSoFar).toString());
+                    }
+                  }}
                   className="input text-xs"
                 >
                   <option value="">Select Student</option>
@@ -266,9 +272,15 @@ export const FeePaymentsPage: React.FC = () => {
               <div>
                 <label className="label">Select Fee Component</label>
                 <select
-                  required
                   value={feeStructureId}
-                  onChange={(e) => setFeeStructureId(e.target.value)}
+                  onChange={(e) => {
+                    setFeeStructureId(e.target.value);
+                    const selected = structures.find(s => s.id === e.target.value);
+                    if (selected && studentId) {
+                      const paidSoFar = payments.filter(p => p.studentId === studentId && p.feeStructureId === e.target.value).reduce((sum, p) => sum + p.amountPaid, 0);
+                      setAmountPaid(Math.max(0, selected.amount - paidSoFar).toString());
+                    }
+                  }}
                   className="input text-xs"
                 >
                   <option value="">Select Structure</option>
@@ -280,6 +292,11 @@ export const FeePaymentsPage: React.FC = () => {
                     </option>
                   ))}
                 </select>
+                {feeStructureId && studentId && (
+                  <p className="text-xs text-red-500 font-bold mt-1.5">
+                    Pending Amount: ₹{Math.max(0, (structures.find(s => s.id === feeStructureId)?.amount || 0) - payments.filter(p => p.studentId === studentId && p.feeStructureId === feeStructureId).reduce((sum, p) => sum + p.amountPaid, 0)).toLocaleString()}
+                  </p>
+                )}
               </div>
 
               <div>

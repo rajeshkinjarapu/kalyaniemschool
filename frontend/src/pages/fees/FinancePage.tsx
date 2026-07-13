@@ -723,9 +723,14 @@ export const FinancePage: React.FC = () => {
                           toast.error('Ensure students and structures exist');
                           return;
                         }
-                        setPayStudentId(students[0]?.id || '');
-                        setPayStructureId(structures[0]?.id || '');
-                        setPayAmount(structures[0]?.amount?.toString() || '');
+                        const firstStudentId = students[0]?.id || '';
+                        const firstStructureId = structures[0]?.id || '';
+                        setPayStudentId(firstStudentId);
+                        setPayStructureId(firstStructureId);
+                        
+                        const paidSoFar = payments.filter(p => p.studentId === firstStudentId && p.feeStructureId === firstStructureId).reduce((sum, p) => sum + p.amountPaid, 0);
+                        const initialAmount = Math.max(0, (structures[0]?.amount || 0) - paidSoFar);
+                        setPayAmount(initialAmount.toString());
                         setShowPaymentModal(true);
                       }}
                       className="btn-primary py-1.5 px-3.5 text-xs flex items-center gap-1 cursor-pointer"
@@ -810,7 +815,14 @@ export const FinancePage: React.FC = () => {
                       <form onSubmit={handleAddPayment} className="space-y-4">
                         <div className="space-y-1">
                           <label className="label">Student</label>
-                          <select className="input" value={payStudentId} onChange={e => setPayStudentId(e.target.value)} required>
+                          <select className="input" value={payStudentId} onChange={e => {
+                            setPayStudentId(e.target.value);
+                            const selectedStructure = structures.find(s => s.id === payStructureId);
+                            if (selectedStructure) {
+                              const paidSoFar = payments.filter(p => p.studentId === e.target.value && p.feeStructureId === payStructureId).reduce((sum, p) => sum + p.amountPaid, 0);
+                              setPayAmount(Math.max(0, selectedStructure.amount - paidSoFar).toString());
+                            }
+                          }} required>
                             {students.map(s => <option key={s.id} value={s.id}>{s.user?.name} ({s.rollNo})</option>)}
                           </select>
                         </div>
@@ -822,12 +834,20 @@ export const FinancePage: React.FC = () => {
                             onChange={e => {
                               setPayStructureId(e.target.value);
                               const selected = structures.find(s => s.id === e.target.value);
-                              if (selected) setPayAmount(selected.amount.toString());
+                              if (selected) {
+                                const paidSoFar = payments.filter(p => p.studentId === payStudentId && p.feeStructureId === e.target.value).reduce((sum, p) => sum + p.amountPaid, 0);
+                                setPayAmount(Math.max(0, selected.amount - paidSoFar).toString());
+                              }
                             }}
                             required
                           >
                             {structures.map(s => <option key={s.id} value={s.id}>{s.name} - ₹{s.amount}</option>)}
                           </select>
+                          {payStructureId && payStudentId && (
+                            <p className="text-xs text-red-500 font-bold mt-1">
+                              Pending Amount: ₹{Math.max(0, (structures.find(s => s.id === payStructureId)?.amount || 0) - payments.filter(p => p.studentId === payStudentId && p.feeStructureId === payStructureId).reduce((sum, p) => sum + p.amountPaid, 0))}
+                            </p>
+                          )}
                         </div>
                         <div className="space-y-1">
                           <label className="label">Amount Paid (₹)</label>
