@@ -62,9 +62,10 @@ model Student {
   aadharNo       String?
   penNumber      String?
 
-  attendance     Attendance[]
-  marks          Mark[]
-  feePayments    FeePayment[]
+  attendance            Attendance[]
+  marks                 Mark[]
+  feePayments           FeePayment[]
+  feeStructures         FeeStructure[]
   onlineExamSubmissions OnlineExamSubmission[]
 
   @@index([classId])
@@ -237,8 +238,10 @@ model TimetableConfig {
 
 model FeeStructure {
   id        String   @id @default(uuid())
-  classId   String
-  class     Class    @relation(fields: [classId], references: [id])
+  classId   String?
+  studentId String?
+  class     Class?   @relation(fields: [classId], references: [id])
+  student   Student? @relation(fields: [studentId], references: [id])
   term      String
   name      String
   amount    Float
@@ -248,6 +251,7 @@ model FeeStructure {
   payments  FeePayment[]
 
   @@index([classId])
+  @@index([studentId])
 }
 
 model FeePayment {

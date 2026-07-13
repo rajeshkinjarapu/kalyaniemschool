@@ -38,6 +38,8 @@ export const FeeStructurePage: React.FC = () => {
     fetchData();
   }, []);
 
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -59,6 +61,28 @@ export const FeeStructurePage: React.FC = () => {
     }
   };
 
+  const handleBulkImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const importToast = toast.loading('Uploading fees...');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res: any = await api.post('/api/fees/structures/bulk-import', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const data = res.data || res;
+      toast.success(`Import complete! Added ${data.success} fees.`, { id: importToast });
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || 'Bulk import failed. Please verify format rules.', { id: importToast });
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-150 dark:border-gray-800">
@@ -67,6 +91,16 @@ export const FeeStructurePage: React.FC = () => {
           <p className="text-xs text-gray-400">Manage term-wise and class-wise fee structures.</p>
         </div>
         <div className="flex gap-3">
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept=".xlsx, .xls"
+            onChange={handleBulkImport}
+          />
+          <button onClick={() => fileInputRef.current?.click()} className="btn-secondary text-sm">
+            Bulk Upload Fees
+          </button>
           <Link to="/fees" className="btn-secondary text-sm">
             Payment History
           </Link>

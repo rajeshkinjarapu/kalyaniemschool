@@ -272,9 +272,11 @@ export const FeePaymentsPage: React.FC = () => {
                   className="input text-xs"
                 >
                   <option value="">Select Structure</option>
-                  {structures.map((s) => (
+                  {structures
+                    .filter((s) => !studentId || s.studentId === studentId || s.classId === students.find((st) => st.id === studentId)?.classId)
+                    .map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.name} - ₹{s.amount.toLocaleString()} ({s.class?.name || 'All'})
+                      {s.name} - ₹{s.amount.toLocaleString()} ({s.studentId ? 'Personal Fee' : s.class?.name || 'All'})
                     </option>
                   ))}
                 </select>

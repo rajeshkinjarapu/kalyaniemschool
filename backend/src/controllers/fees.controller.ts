@@ -4,6 +4,51 @@ import { createError } from '../middlewares/errorHandler';
 import { prisma } from '../utils/prisma';
 import { successResponse, paginatedResponse } from '../utils/response';
 import PDFDocument from 'pdfkit';
+import * as XLSX from 'xlsx';
+
+export const bulkImportFees = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  if (!req.file) return next(createError('No file uploaded', 400));
+  try {
+    const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const results = XLSX.utils.sheet_to_json<any>(workbook.Sheets[sheetName]);
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const row of results) {
+      const studentId = row['Student ID'] || row.studentId;
+      const term = row.Term || row.term || 'Term 1';
+      const name = row.Name || row['Fee Name'] || row.name || 'General Fee';
+      const amount = parseFloat(row.Amount || row.amount);
+      const dueDate = row['Due Date'] || row.dueDate ? new Date(row['Due Date'] || row.dueDate) : new Date();
+
+      if (!amount || isNaN(amount)) {
+        errorCount++;
+        continue;
+      }
+
+      if (studentId) {
+        // Assign fee to a specific student
+        const student = await prisma.student.findUnique({ where: { rollNo: studentId.toString() } });
+        if (student) {
+          await prisma.feeStructure.create({
+            data: { studentId: student.id, term, name, amount, dueDate, classId: null },
+          });
+          successCount++;
+        } else {
+          errorCount++;
+        }
+      } else {
+        errorCount++; // We are skipping class-level bulk import for now to keep it simple, expecting Student ID
+      }
+    }
+
+    successResponse(res, { success: successCount, failed: errorCount }, 'Bulk import completed');
+  } catch (error) {
+    next(createError('Error processing excel file', 500));
+  }
+};
 
 export const getStructures = async (req: AuthRequest, res: Response): Promise<void> => {
   const classId = (req.query.classId as string) || '';
@@ -131,7 +176,12 @@ export const getStudentFeeStatus = async (req: AuthRequest, res: Response, next:
   if (!student) return next(createError('Student not found', 404));
 
   const structures = await prisma.feeStructure.findMany({
-    where: { classId: student.classId || '' },
+    where: { 
+      OR: [
+        { classId: student.classId || '' },
+        { studentId: student.id }
+      ]
+    },
     orderBy: { dueDate: 'asc' },
   });
 
@@ -171,7 +221,14 @@ export const getOverdue = async (_req: AuthRequest, res: Response): Promise<void
 
   const result = [];
   for (const structure of structures) {
-    const students = await prisma.student.findMany({ where: { classId: structure.classId } });
+    let students = [];
+    if (structure.studentId) {
+      const student = await prisma.student.findUnique({ where: { id: structure.studentId } });
+      if (student) students.push(student);
+    } else if (structure.classId) {
+      students = await prisma.student.findMany({ where: { classId: structure.classId } });
+    }
+
     for (const student of students) {
       const payments = await prisma.feePayment.aggregate({
         where: { studentId: student.id, feeStructureId: structure.id },
