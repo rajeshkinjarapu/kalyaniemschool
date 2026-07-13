@@ -207,10 +207,26 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
         const section = row.Section || row.section || row['Section Name'];
 
         if (!classId && className) {
-          const cls = await prisma.class.findFirst({
-            where: { name: String(className), section: section ? String(section) : undefined }
+          const clsName = String(className).trim();
+          const clsSec = section ? String(section).trim() : 'A';
+          let cls = await prisma.class.findFirst({
+            where: { 
+              name: clsName, 
+              section: clsSec 
+            }
           });
-          if (cls) classId = cls.id;
+          
+          if (!cls) {
+            cls = await prisma.class.create({
+              data: {
+                name: clsName,
+                section: clsSec,
+                academicYear: new Date().getFullYear() + '-' + (new Date().getFullYear() + 1),
+                capacity: 40
+              }
+            });
+          }
+          classId = cls.id;
         }
 
         const gender = row.Gender || row.gender || row['Gender'] || null;
