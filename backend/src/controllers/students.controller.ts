@@ -192,6 +192,9 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
 
     let success = 0;
     const failed: any[] = [];
+    
+    // Fetch initial count once to save DB roundtrips
+    let currentStudentCount = await prisma.student.count();
 
     for (const row of results) {
       try {
@@ -219,8 +222,7 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
         const aadharNo = row.AadharNo || row.aadharNo || row.Aadhar || row.aadhar || row['Aadhar No'] || row['Aadhar Number'] || null;
         const penNumber = row.PenNumber || row.penNumber || row.Pen || row.pen || row['PEN Number'] || null;
 
-        const count = await prisma.student.count();
-        const rollNo = row.StudentId || row.studentId || row.RollNo || row.rollNo || row['Roll No'] || row['Student ID'] || generateRollNo(count + 1);
+        const rollNo = row.StudentId || row.studentId || row.RollNo || row.rollNo || row['Roll No'] || row['Student ID'] || generateRollNo(currentStudentCount + 1);
         const email = row.Email || row.email || rollNo;
 
         if (!name) {
@@ -228,13 +230,14 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
           continue;
         }
 
-        const existing = await prisma.user.findUnique({ where: { email } });
+        const existing = await prisma.user.findUnique({ where: { email: String(email) } });
         if (existing) {
           failed.push({ row, reason: 'Email/RollNo already exists' });
           continue;
         }
 
-        const hashedPassword = await bcrypt.hash(String(password), 12);
+        // Use 10 rounds instead of 12 for much faster hashing on free tier servers
+        const hashedPassword = await bcrypt.hash(String(password), 10);
 
         const user = await prisma.user.create({
           data: {
@@ -261,6 +264,8 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
             penNumber: penNumber ? String(penNumber) : null,
           },
         });
+        
+        currentStudentCount++;
         success++;
       } catch (e: any) {
         failed.push({ row, reason: e.message });
