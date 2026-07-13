@@ -604,154 +604,85 @@ export const ExamListPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* ══ TOP NAVIGATION CARD ══ */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-150 dark:border-gray-800 shadow-sm">
-        <div className="space-y-1">
+      {/* ══ TOP NAVIGATION GRID ══ */}
+      <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-150 dark:border-gray-800 shadow-sm mb-6">
+        <div className="mb-4">
           <h3 className="text-xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
-            <ClipboardList className="w-5 h-5 text-red-500" />
+            <ClipboardList className="w-5 h-5 text-indigo-500" />
             <span>Examinations Suite</span>
           </h3>
-          <p className="text-xs text-gray-400">Manage exams, plan papers, stage question banks, configure online exams, and publish grades.</p>
+          <p className="text-xs text-gray-500 mt-1">Select a module below to manage exams, grading, and online tests.</p>
         </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <button onClick={() => setActiveTab('examination')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'examination' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+            <Layers className="w-7 h-7" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wide">Create Exam</span>
+          </button>
+          
+          <button onClick={() => setActiveTab('exam-plan')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'exam-plan' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+            <Calendar className="w-7 h-7" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wide">Exam Plan</span>
+          </button>
+          
+          <button onClick={() => setActiveTab('written-exam')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'written-exam' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+            <CheckSquare className="w-7 h-7" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wide">Marks Upload</span>
+          </button>
 
-        {/* Tab Controls */}
-        <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700 flex-wrap">
-          <button
-            onClick={() => setActiveTab('examination')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'examination'
-                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-900'
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            Create Exam
+          <button onClick={() => setActiveTab('admit-card')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'admit-card' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+            <FileText className="w-7 h-7" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wide">Admit Card</span>
           </button>
-          <button
-            onClick={() => setActiveTab('exam-plan')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'exam-plan'
-                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-900'
-            }`}
-          >
-            <Calendar className="w-4 h-4" />
-            Exam Plan
+
+          <button onClick={() => setActiveTab('results')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'results' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+            <Award className="w-7 h-7" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wide">Results</span>
           </button>
-          <button
-            onClick={() => setActiveTab('written-exam')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'written-exam'
-                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-900'
-            }`}
-          >
-            <CheckSquare className="w-4 h-4" />
-            Marks Upload
+
+          <button onClick={() => setActiveTab('progress-card')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'progress-card' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+            <Award className="w-7 h-7" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wide">Progress Card</span>
           </button>
-          <button
-            onClick={() => setActiveTab('admit-card')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'admit-card'
-                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-900'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            Admit Card
-          </button>
-          <button
-            onClick={() => setActiveTab('results')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'results'
-                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-900'
-            }`}
-          >
-            <Award className="w-4 h-4" />
-            Results
-          </button>
-          <button
-            onClick={() => setActiveTab('progress-card')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'progress-card'
-                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-900'
-            }`}
-          >
-            <Award className="w-4 h-4" />
-            Progress Card
-          </button>
+
           {isAdminOrTeacher && (
             <>
-              <button
-                onClick={() => setActiveTab('question-group')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-                  activeTab === 'question-group'
-                    ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                    : 'text-gray-400 hover:text-gray-900'
-                }`}
-              >
-                <BookOpen className="w-4 h-4" />
-                Question Group
+              <button onClick={() => setActiveTab('question-group')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'question-group' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+                <BookOpen className="w-7 h-7" />
+                <span className="text-[11px] font-extrabold uppercase tracking-wide text-center">Question Group</span>
               </button>
-              <button
-                onClick={() => setActiveTab('question-bank')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-                  activeTab === 'question-bank'
-                    ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                    : 'text-gray-400 hover:text-gray-900'
-                }`}
-              >
-                <BookOpen className="w-4 h-4" />
-                Question Papers
+              <button onClick={() => setActiveTab('question-bank')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'question-bank' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+                <BookOpen className="w-7 h-7" />
+                <span className="text-[11px] font-extrabold uppercase tracking-wide text-center">Question Papers</span>
               </button>
-              <button
-                onClick={() => setActiveTab('add-online-exam')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-                  activeTab === 'add-online-exam'
-                    ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                    : 'text-gray-400 hover:text-gray-900'
-                }`}
-              >
-                <Plus className="w-4 h-4" />
-                Add Online Exam
+              <button onClick={() => setActiveTab('add-online-exam')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'add-online-exam' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+                <Plus className="w-7 h-7" />
+                <span className="text-[11px] font-extrabold uppercase tracking-wide text-center">Add Online Exam</span>
               </button>
             </>
           )}
-          <button
-            onClick={() => setActiveTab('online-exams')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'online-exams'
-                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-900'
-            }`}
-          >
-            <Clock className="w-4 h-4" />
-            Slip Tests
+
+          <button onClick={() => setActiveTab('online-exams')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'online-exams' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+            <Clock className="w-7 h-7" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wide">Slip Tests</span>
           </button>
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'settings'
-                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-900'
-            }`}
-          >
-            <Settings className="w-4 h-4" />
-            Settings
+
+          <button onClick={() => setActiveTab('settings')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'settings' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
+            <Settings className="w-7 h-7" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wide">Settings</span>
           </button>
-          
-          {isAdminOrTeacher && (
+        </div>
+
+        {isAdminOrTeacher && (
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
             <Link
               to="/exams/paper-generator"
-              className="flex items-center gap-1.5 px-4 py-2 ml-auto rounded-lg text-xs font-extrabold transition-all text-white bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg"
+              className="flex items-center justify-center w-full gap-2 px-4 py-3 rounded-xl font-black transition-all text-white bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg uppercase tracking-widest text-xs"
             >
-              <Award className="w-4 h-4" />
+              <Award className="w-5 h-5" />
               JEE Mains Paper Generator
             </Link>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* ══ TAB 1: EXAMINATION ══ */}
