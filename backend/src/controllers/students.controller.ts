@@ -167,8 +167,8 @@ export const deleteStudent = async (req: AuthRequest, res: Response, next: NextF
       prisma.attendance.deleteMany({ where: { studentId: id } }),
       prisma.mark.deleteMany({ where: { studentId: id } }),
       prisma.feePayment.deleteMany({ where: { studentId: id } }),
-      prisma.student.delete({ where: { id } }),
-      prisma.user.delete({ where: { id: student.userId } }),
+      prisma.student.deleteMany({ where: { id } }),
+      prisma.user.deleteMany({ where: { id: student.userId } }),
     ]);
     successResponse(res, null, 'Student deleted');
   } catch (err) {
