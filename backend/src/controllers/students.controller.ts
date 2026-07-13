@@ -184,7 +184,11 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
     const workbook = XLSX.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
-    const results = XLSX.utils.sheet_to_json<any>(sheet);
+    const results = XLSX.utils.sheet_to_json<any>(sheet).filter(r => r.Name || r.name);
+
+    if (results.length > 500) {
+      return next(createError('Please upload maximum 500 students at a time', 400));
+    }
 
     let success = 0;
     const failed: any[] = [];
@@ -194,7 +198,18 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
         const name = row.Name || row.name;
         const password = row.Password || row.password || 'Student@123';
         const phone = row.Phone || row.phone || null;
-        const classId = row.ClassId || row.classId || null;
+        
+        let classId = row.ClassId || row.classId || null;
+        const className = row.ClassName || row.className || row.Class || row.class;
+        const section = row.Section || row.section;
+
+        if (!classId && className) {
+          const cls = await prisma.class.findFirst({
+            where: { name: String(className), section: section ? String(section) : undefined }
+          });
+          if (cls) classId = cls.id;
+        }
+
         const gender = row.Gender || row.gender || null;
         const address = row.Address || row.address || null;
         const bloodGroup = row.BloodGroup || row.bloodGroup || null;
