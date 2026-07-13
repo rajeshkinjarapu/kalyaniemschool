@@ -35,9 +35,6 @@ export const FinancePage: React.FC = () => {
   const [structAmount, setStructAmount] = useState('');
   const [structDueDate, setStructDueDate] = useState('');
   const [structGroup, setStructGroup] = useState('Monthly fees');
-  const [structFineType, setStructFineType] = useState('None');
-  const [structPercentage, setStructPercentage] = useState('0');
-  const [structFineAmount, setStructFineAmount] = useState('0.00');
   const [structStatus, setStructStatus] = useState('Active');
   // CRUD States for Payments (Admin only)
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -170,9 +167,6 @@ export const FinancePage: React.FC = () => {
         const meta = storedMeta ? JSON.parse(storedMeta) : {};
         meta[newStructure.id] = {
           group: structGroup,
-          fineType: structFineType,
-          percentage: Number(structPercentage) || 0,
-          fineAmount: Number(structFineAmount) || 0,
           status: structStatus
         };
         localStorage.setItem('fin_structure_metadata', JSON.stringify(meta));
@@ -185,9 +179,6 @@ export const FinancePage: React.FC = () => {
       setStructAmount('');
       setStructDueDate('');
       setStructGroup('Monthly fees');
-      setStructFineType('None');
-      setStructPercentage('0');
-      setStructFineAmount('0.00');
       setStructStatus('Active');
     } catch (err: any) {
       toast.error(err.message || 'Failed to add structure');
@@ -564,9 +555,6 @@ export const FinancePage: React.FC = () => {
                                   <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{fee.name}</p>
                                   <div className="flex items-center gap-2 mt-0.5">
                                     <span className="text-[10px] text-gray-500 font-medium">{sMeta.group}</span>
-                                    {sMeta.fineType && sMeta.fineType !== 'None' && (
-                                      <span className="text-[10px] text-amber-600 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-md font-semibold">Fine App.</span>
-                                    )}
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-3 shrink-0">
@@ -643,32 +631,12 @@ export const FinancePage: React.FC = () => {
                           <label className="label">Due Date</label>
                           <input type="date" className="input" value={structDueDate} onChange={e => setStructDueDate(e.target.value)} required />
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1">
-                            <label className="label">Fine Type</label>
-                            <select className="input" value={structFineType} onChange={e => setStructFineType(e.target.value)} required>
-                              <option value="None">None</option>
-                              <option value="Percentage">Percentage</option>
-                              <option value="Fixed">Fixed</option>
-                            </select>
-                          </div>
-                          <div className="space-y-1">
-                            <label className="label">Percentage</label>
-                            <input type="number" className="input" value={structPercentage} onChange={e => setStructPercentage(e.target.value)} />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1">
-                            <label className="label">Fine Amount</label>
-                            <input type="text" className="input" value={structFineAmount} onChange={e => setStructFineAmount(e.target.value)} />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="label">Status</label>
-                            <select className="input" value={structStatus} onChange={e => setStructStatus(e.target.value)} required>
-                              <option value="Active">Active</option>
-                              <option value="Inactive">Inactive</option>
-                            </select>
-                          </div>
+                        <div className="space-y-1">
+                          <label className="label">Status</label>
+                          <select className="input" value={structStatus} onChange={e => setStructStatus(e.target.value)} required>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                          </select>
                         </div>
                         <div className="flex justify-end gap-2 pt-2">
                           <button type="button" onClick={() => setShowStructureModal(false)} className="btn-secondary">Cancel</button>
