@@ -285,40 +285,54 @@ export const StudentProfilePage: React.FC = () => {
       {/* ============================================================
              ================= PRINT-ONLY DOSSIER VIEW =================
              ============================================================ */}
-      <div className="hidden print:block print:w-full print:h-[297mm] print:m-0 bg-white text-black font-sans relative" style={{ pageBreakAfter: 'always', margin: 0, padding: 0 }}>
-        {/* Decorative Border */}
-        <div className="absolute inset-6 border-[6px] border-double border-gray-800 pointer-events-none rounded-xl opacity-90" />
-        <div className="absolute inset-7 border border-gray-400 pointer-events-none rounded-lg" />
+      <style type="text/css" media="print">
+        {`
+          @page { size: A4 portrait; margin: 0; }
+          body { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white; }
+        `}
+      </style>
+      <div className="hidden print:flex print:w-[210mm] print:h-[297mm] bg-white text-black font-sans relative flex-col mx-auto box-border overflow-hidden" style={{ pageBreakAfter: 'always' }}>
         
-        <div className="p-14 h-full flex flex-col relative z-10">
+        {/* Background Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+          <div className="w-[150mm] h-[150mm] rounded-full border-[20px] border-gray-900 flex items-center justify-center">
+             <span className="text-9xl font-black tracking-tighter">JY</span>
+          </div>
+        </div>
+
+        {/* Decorative Border */}
+        <div className="absolute inset-[10mm] border-[4px] border-double border-gray-800 pointer-events-none opacity-90" />
+        <div className="absolute inset-[11.5mm] border border-gray-400 pointer-events-none" />
+        
+        <div className="p-[20mm] h-full flex flex-col relative z-10 w-full">
           
           {/* Header */}
-          <div className="text-center mb-10 border-b-2 border-gray-900 pb-8 relative">
-            <h1 className="text-4xl font-black tracking-[0.2em] uppercase text-gray-900 mb-3">
+          <div className="text-center mb-8 border-b-[3px] border-gray-900 pb-6 relative">
+            <h1 className="text-5xl font-black tracking-[0.2em] uppercase text-gray-900 mb-4" style={{ fontFamily: 'Georgia, serif' }}>
               JY SCHOOL
             </h1>
-            <p className="text-sm font-bold uppercase tracking-widest text-gray-600">
+            <p className="text-[13px] font-bold uppercase tracking-widest text-gray-700">
               Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta
             </p>
-            <div className="mt-6 inline-flex px-10 py-2 bg-gray-900 rounded-sm">
-              <span className="text-sm font-black uppercase tracking-[0.25em] text-white">
+            <div className="mt-6 inline-flex px-12 py-2.5 bg-gray-900 rounded-sm">
+              <span className="text-sm font-black uppercase tracking-[0.3em] text-white">
                 Official Student Record
               </span>
             </div>
           </div>
 
           {/* Student ID block */}
-          <div className="flex justify-between items-start mb-12">
+          <div className="flex justify-between items-center mb-10 bg-gray-50 p-6 rounded-xl border border-gray-200">
             <div>
               <h2 className="text-4xl font-black text-gray-900 leading-none mb-4">{student.user.name}</h2>
-              <div className="flex gap-6 text-sm font-bold text-gray-700 bg-gray-100 px-6 py-3 rounded-lg border border-gray-200 shadow-sm inline-flex">
-                <span>Roll No: <span className="text-black font-black">{student.rollNo}</span></span>
-                <span>•</span>
-                <span>Class: <span className="text-black font-black">{student.class ? `${student.class.name}-${student.class.section}` : 'N/A'}</span></span>
+              <div className="flex gap-6 text-sm font-bold text-gray-700 inline-flex">
+                <span className="uppercase tracking-wider">Roll No: <span className="text-black font-black text-lg">{student.rollNo}</span></span>
+                <span className="text-gray-400">•</span>
+                <span className="uppercase tracking-wider">Class: <span className="text-black font-black text-lg">{student.class ? `${student.class.name} - ${student.class.section}` : 'N/A'}</span></span>
               </div>
             </div>
             
-            <div className="w-36 h-48 border-4 border-gray-200 rounded-lg overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center relative shadow-sm">
+            <div className="w-36 h-44 border-4 border-white rounded-lg overflow-hidden flex-shrink-0 bg-white flex items-center justify-center shadow-md">
               <Avatar 
                 name={student.user.name} 
                 src={student.user.photoUrl} 
@@ -330,68 +344,68 @@ export const StudentProfilePage: React.FC = () => {
           </div>
 
           {/* Details Grid */}
-          <div className="grid grid-cols-2 gap-x-16 gap-y-8 flex-grow text-sm">
-            <div className="space-y-6">
-              <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6 border-b-2 border-gray-200 pb-2">Personal Details</h3>
+          <div className="grid grid-cols-2 gap-x-12 gap-y-10 flex-grow text-[13px]">
+            <div className="space-y-7">
+              <h3 className="text-sm font-black text-gray-500 uppercase tracking-widest mb-6 border-b-2 border-gray-200 pb-2">Personal Details</h3>
               
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Gender</span>
-                <span className="text-base font-bold text-black border-b border-dashed border-gray-300 pb-1">{student.gender || 'N/A'}</span>
+              <div className="grid grid-cols-3 items-end border-b border-dotted border-gray-300 pb-1.5">
+                <span className="col-span-1 text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Gender</span>
+                <span className="col-span-2 font-bold text-black text-right">{student.gender || 'N/A'}</span>
               </div>
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Date of Birth</span>
-                <span className="text-base font-bold text-black border-b border-dashed border-gray-300 pb-1">
+              <div className="grid grid-cols-3 items-end border-b border-dotted border-gray-300 pb-1.5">
+                <span className="col-span-1 text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Date of Birth</span>
+                <span className="col-span-2 font-bold text-black text-right">
                   {student.dob ? new Date(student.dob).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
                 </span>
               </div>
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Blood Group</span>
-                <span className="text-base font-bold text-black border-b border-dashed border-gray-300 pb-1">{student.bloodGroup || 'N/A'}</span>
+              <div className="grid grid-cols-3 items-end border-b border-dotted border-gray-300 pb-1.5">
+                <span className="col-span-1 text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Blood Group</span>
+                <span className="col-span-2 font-bold text-black text-right">{student.bloodGroup || 'N/A'}</span>
               </div>
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Admission Date</span>
-                <span className="text-base font-bold text-black border-b border-dashed border-gray-300 pb-1">
+              <div className="grid grid-cols-3 items-end border-b border-dotted border-gray-300 pb-1.5">
+                <span className="col-span-1 text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Admission</span>
+                <span className="col-span-2 font-bold text-black text-right">
                   {new Date(student.admissionDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </span>
               </div>
-              <div className="flex flex-col gap-1.5 mt-8">
-                <span className="text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Aadhar Number</span>
-                <span className="text-base font-bold text-black border-b border-dashed border-gray-300 pb-1">{student.aadharNo || 'N/A'}</span>
+              <div className="grid grid-cols-3 items-end border-b border-dotted border-gray-300 pb-1.5 mt-8">
+                <span className="col-span-1 text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Aadhar No</span>
+                <span className="col-span-2 font-bold text-black text-right">{student.aadharNo || 'N/A'}</span>
               </div>
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">PEN Number</span>
-                <span className="text-base font-bold text-black border-b border-dashed border-gray-300 pb-1">{student.penNumber || 'N/A'}</span>
+              <div className="grid grid-cols-3 items-end border-b border-dotted border-gray-300 pb-1.5">
+                <span className="col-span-1 text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">PEN No</span>
+                <span className="col-span-2 font-bold text-black text-right">{student.penNumber || 'N/A'}</span>
               </div>
             </div>
 
-            <div className="space-y-6">
-              <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6 border-b-2 border-gray-200 pb-2">Family & Contact Details</h3>
+            <div className="space-y-7">
+              <h3 className="text-sm font-black text-gray-500 uppercase tracking-widest mb-6 border-b-2 border-gray-200 pb-2">Family & Contact</h3>
               
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Father's Name</span>
-                <span className="text-base font-bold text-black border-b border-dashed border-gray-300 pb-1">{student.fatherName || 'N/A'}</span>
+              <div className="grid grid-cols-3 items-end border-b border-dotted border-gray-300 pb-1.5">
+                <span className="col-span-1 text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Father Name</span>
+                <span className="col-span-2 font-bold text-black text-right">{student.fatherName || 'N/A'}</span>
               </div>
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Mother's Name</span>
-                <span className="text-base font-bold text-black border-b border-dashed border-gray-300 pb-1">{student.motherName || 'N/A'}</span>
+              <div className="grid grid-cols-3 items-end border-b border-dotted border-gray-300 pb-1.5">
+                <span className="col-span-1 text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Mother Name</span>
+                <span className="col-span-2 font-bold text-black text-right">{student.motherName || 'N/A'}</span>
               </div>
               
               {student.parent && (
                 <>
-                  <div className="flex flex-col gap-1.5 mt-4">
-                    <span className="text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Guardian Name ({student.parent.relation || 'Guardian'})</span>
-                    <span className="text-base font-bold text-black border-b border-dashed border-gray-300 pb-1">{student.parent.user.name}</span>
+                  <div className="grid grid-cols-3 items-end border-b border-dotted border-gray-300 pb-1.5 mt-4">
+                    <span className="col-span-1 text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Guardian</span>
+                    <span className="col-span-2 font-bold text-black text-right">{student.parent.user.name}</span>
                   </div>
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Contact Number</span>
-                    <span className="text-base font-bold text-black border-b border-dashed border-gray-300 pb-1">{student.parent.user.phone || 'N/A'}</span>
+                  <div className="grid grid-cols-3 items-end border-b border-dotted border-gray-300 pb-1.5">
+                    <span className="col-span-1 text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Contact</span>
+                    <span className="col-span-2 font-bold text-black text-right">{student.parent.user.phone || 'N/A'}</span>
                   </div>
                 </>
               )}
               
-              <div className="flex flex-col gap-1.5 pt-4">
+              <div className="flex flex-col gap-1.5 pt-6">
                 <span className="text-[11px] text-gray-500 font-extrabold uppercase tracking-wider">Residential Address</span>
-                <span className="text-base font-bold text-black leading-relaxed border-b border-dashed border-gray-300 pb-1 min-h-[48px]">
+                <span className="text-sm font-bold text-black leading-relaxed p-4 bg-gray-50 rounded-lg border border-gray-200 min-h-[72px]">
                   {student.address || 'No address provided'}
                 </span>
               </div>
@@ -399,30 +413,30 @@ export const StudentProfilePage: React.FC = () => {
           </div>
 
           {/* Footer Signatures */}
-          <div className="mt-20 mb-8 flex justify-between items-end px-10">
-            <div className="text-center w-64">
-              <div className="h-0 border-b-2 border-gray-800 w-full mb-4"></div>
-              <span className="text-xs font-black text-gray-600 uppercase tracking-widest">
-                Class Teacher Signature
+          <div className="mt-auto mb-6 flex justify-between items-end px-6">
+            <div className="text-center w-56">
+              <div className="h-0 border-b-2 border-gray-800 w-full mb-3"></div>
+              <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">
+                Class Teacher
               </span>
             </div>
             
-            <div className="w-36 h-36 rounded-full border-[3px] border-gray-200 flex items-center justify-center bg-gray-50/50 -my-6">
-               <span className="text-gray-300 font-bold uppercase tracking-[0.2em] text-[10px] rotate-[-25deg]">School Seal / Stamp</span>
+            <div className="w-32 h-32 rounded-full border-[3px] border-double border-gray-300 flex items-center justify-center bg-gray-50 -my-4 relative z-0">
+               <span className="text-gray-400 font-bold uppercase tracking-[0.1em] text-[9px] rotate-[-20deg] text-center leading-tight">School<br/>Seal</span>
             </div>
 
-            <div className="text-center w-64">
-              <div className="h-0 border-b-2 border-gray-800 w-full mb-4"></div>
-              <span className="text-xs font-black text-gray-600 uppercase tracking-widest">
+            <div className="text-center w-56">
+              <div className="h-0 border-b-2 border-gray-800 w-full mb-3"></div>
+              <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">
                 Principal / Registrar
               </span>
             </div>
           </div>
 
           {/* System generated stamp */}
-          <div className="text-center mt-auto pt-6 border-t border-gray-200">
+          <div className="text-center pt-4 border-t border-gray-300">
              <span className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em]">
-                System Generated Document • Date: {new Date().toLocaleDateString('en-IN')} • JY SCHOOL Database
+                System Generated • Date: {new Date().toLocaleDateString('en-IN')} • JY SCHOOL Student Database
              </span>
           </div>
 
