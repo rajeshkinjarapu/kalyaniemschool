@@ -305,7 +305,6 @@ export const downloadInvoice = async (req: AuthRequest, res: Response, next: Nex
   doc.rect(50, tableY, 500, 24).fill('#f1f5f9');
   doc.fontSize(9).font('Helvetica-Bold').fillColor('#475569');
   doc.text('FEE DESCRIPTION', 65, tableY + 8);
-  doc.text('TERM', 260, tableY + 8);
   doc.text('AMOUNT DUE', 370, tableY + 8, { align: 'right', width: 80 });
   doc.text('AMOUNT PAID', 460, tableY + 8, { align: 'right', width: 80 });
 
@@ -313,7 +312,6 @@ export const downloadInvoice = async (req: AuthRequest, res: Response, next: Nex
   const rowY = tableY + 32;
   doc.fontSize(10).font('Helvetica').fillColor('#1e293b');
   doc.text(payment.feeStructure.name, 65, rowY);
-  doc.text(payment.feeStructure.term, 260, rowY);
   doc.text(`Rs. ${payment.feeStructure.amount.toLocaleString()}`, 370, rowY, { align: 'right', width: 80 });
   doc.font('Helvetica-Bold').text(`Rs. ${payment.amountPaid.toLocaleString()}`, 460, rowY, { align: 'right', width: 80 });
 

@@ -30,11 +30,10 @@ export const FinancePage: React.FC = () => {
   // CRUD States for Structures (Admin only)
   const [showStructureModal, setShowStructureModal] = useState(false);
   const [structClassId, setStructClassId] = useState('');
-  const [structTerm, setStructTerm] = useState('Term 1');
+  const [structGroup, setStructGroup] = useState('Tuition fee');
   const [structName, setStructName] = useState('');
   const [structAmount, setStructAmount] = useState('');
   const [structDueDate, setStructDueDate] = useState('');
-  const [structGroup, setStructGroup] = useState('Monthly fees');
   const [structStatus, setStructStatus] = useState('Active');
   // CRUD States for Payments (Admin only)
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -113,11 +112,10 @@ export const FinancePage: React.FC = () => {
     ]));
 
     setFeeHeads(initMock('fin_fee_heads', [
-      { id: '1', name: 'Tuition Fee', groupId: '1', description: 'Quarterly academic tuition' },
-      { id: '2', name: 'Admission Fee', groupId: '1', description: 'One-time admission charge' },
-      { id: '3', name: 'School Bus Fee', groupId: '2', description: 'Monthly transportation cost' },
-      { id: '4', name: 'Mess & Dining Charge', groupId: '3', description: 'Dining hall food supply' },
-      { id: '5', name: 'Annual Sports Kit', groupId: '4', description: 'Yearly sports kit charge' },
+      { id: '1', name: 'Tuition fee', groupId: '1', description: 'Academic tuition' },
+      { id: '2', name: 'Admission fee', groupId: '1', description: 'One-time admission charge' },
+      { id: '3', name: 'Books Fee', groupId: '2', description: 'Cost of books and materials' },
+      { id: '4', name: 'Other Fee', groupId: '3', description: 'Other miscellaneous fees' },
     ]));
 
     setFeeConcessions(initMock('fin_fee_concessions', [
@@ -154,11 +152,12 @@ export const FinancePage: React.FC = () => {
   /* ── CRUD Functions ── */
   const handleAddStructure = async (e: React.FormEvent) => {
     e.preventDefault();
+    const finalName = structGroup === 'Other Fee' ? structName : structGroup;
     try {
       const res: any = await api.post('/api/fees/structures', {
         classId: structClassId,
-        term: structTerm,
-        name: structName,
+        term: 'General',
+        name: finalName,
         amount: Number(structAmount),
         dueDate: new Date(structDueDate).toISOString(),
       });
@@ -181,7 +180,7 @@ export const FinancePage: React.FC = () => {
       setStructName('');
       setStructAmount('');
       setStructDueDate('');
-      setStructGroup('Monthly fees');
+      setStructGroup('Tuition fee');
       setStructStatus('Active');
     } catch (err: any) {
       toast.error(err.message || 'Failed to add structure');
@@ -545,7 +544,7 @@ export const FinancePage: React.FC = () => {
                         onClick={() => {
                           const link = document.createElement('a');
                           link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,'; // Optional: add an empty excel base64 string or link to a real template. We'll generate a CSV for simplicity
-                          const csvContent = "data:text/csv;charset=utf-8,Student ID,Fee Name,Term,Amount,Due Date\nJY24-001,Library Fee,Term 1,500,2024-10-10";
+                          const csvContent = "data:text/csv;charset=utf-8,Student ID,Fee Name,Amount,Due Date\nJY24-001,Tuition fee,500,2024-10-10";
                           const encodedUri = encodeURI(csvContent);
                           const tempLink = document.createElement("a");
                           tempLink.setAttribute("href", encodedUri);
@@ -667,19 +666,20 @@ export const FinancePage: React.FC = () => {
                           </select>
                         </div>
                         <div className="space-y-1">
-                          <label className="label">Fee Group</label>
+                          <label className="label">Fee Category</label>
                           <select className="input" value={structGroup} onChange={e => setStructGroup(e.target.value)} required>
-                            <option value="Annual Fees">Annual Fees</option>
-                            <option value="Term Fees">Term Fees</option>
-                            <option value="Exam Fees">Exam Fees</option>
-                            <option value="Transport Fees">Transport Fees</option>
-                            <option value="Other Fees">Other Fees</option>
+                            <option value="Tuition fee">Tuition fee</option>
+                            <option value="Admission fee">Admission fee</option>
+                            <option value="Books Fee">Books Fee</option>
+                            <option value="Other Fee">Other Fee...</option>
                           </select>
                         </div>
-                        <div className="space-y-1">
-                          <label className="label">Structure Title (Type)</label>
-                          <input type="text" className="input" value={structName} onChange={e => setStructName(e.target.value)} placeholder="e.g. january months fee" required />
-                        </div>
+                        {structGroup === 'Other Fee' && (
+                          <div className="space-y-1">
+                            <label className="label">Custom Fee Name</label>
+                            <input type="text" className="input" value={structName} onChange={e => setStructName(e.target.value)} placeholder="e.g. Sports Fee" required />
+                          </div>
+                        )}
                         <div className="space-y-1">
                           <label className="label">Amount (USD / INR)</label>
                           <input type="number" className="input" value={structAmount} onChange={e => setStructAmount(e.target.value)} placeholder="1000.00" required />
