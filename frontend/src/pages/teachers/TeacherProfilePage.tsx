@@ -161,7 +161,7 @@ export const TeacherProfilePage: React.FC = () => {
           ))}
         </div>
         <div className="w-32 flex-shrink-0">
-          <img src={teacher.user.photoUrl} alt="Teacher Photo" className="w-32 h-40 object-cover" />
+          <img src={teacher.user.photoUrl?.startsWith('/') ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${teacher.user.photoUrl}` : teacher.user.photoUrl} alt="Teacher Photo" className="w-32 h-40 object-cover" />
         </div>
       </div>
     </div>

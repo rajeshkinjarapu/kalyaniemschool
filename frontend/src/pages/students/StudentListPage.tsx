@@ -254,7 +254,7 @@ export const StudentListPage: React.FC = () => {
                       <td className="px-5 py-3">
                         {photoUrl ? (
                           <img
-                            src={photoUrl}
+                            src={photoUrl.startsWith('http') ? photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${photoUrl.startsWith('/') ? photoUrl : `/${photoUrl}`}`}
                             alt={name}
                             className="w-12 h-16 rounded-lg object-cover border-2 border-white dark:border-gray-800 shadow-md ring-1 ring-gray-200 dark:ring-gray-700"
                           />
