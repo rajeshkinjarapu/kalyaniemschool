@@ -58,7 +58,7 @@ export const StudentListPage: React.FC = () => {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const response: any = await api.get('/api/students', { params: { search, classId } });
+      const response: any = await api.get('/api/students', { params: { search, classId, limit: 5000 } });
       setStudents(response.data.data || response.data || []);
     } catch (error) {
       toast.error('Failed to load students list');
