@@ -15,7 +15,7 @@ router.post('/structures', authorize('SUPER_ADMIN', 'ADMIN'), createStructure);
 router.put('/structures/:id', authorize('SUPER_ADMIN', 'ADMIN'), updateStructure);
 router.delete('/structures/:id', authorize('SUPER_ADMIN', 'ADMIN'), deleteStructure);
 
-import { upload } from '../middlewares/upload';
+import { upload } from '../utils/upload';
 import { bulkImportFees } from '../controllers/fees.controller';
 router.post('/structures/bulk-import', authorize('SUPER_ADMIN', 'ADMIN'), upload.single('file'), bulkImportFees);
 
