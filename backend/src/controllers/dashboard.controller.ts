@@ -4,8 +4,17 @@ import { prisma } from '../utils/prisma';
 import { successResponse } from '../utils/response';
 import { Role, Gender, AttendanceStatus } from '../types/enums';
 
+// Simple in-memory cache to speed up the dashboard
+const cache: { [key: string]: { data: any; expiry: number } } = {};
+
 export const getAdminDashboard = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const cacheKey = 'admin_dashboard';
+    const nowMs = Date.now();
+    if (cache[cacheKey] && cache[cacheKey].expiry > nowMs) {
+      return successResponse(res, cache[cacheKey].data, 'Admin dashboard data fetched from cache');
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -116,7 +125,7 @@ export const getAdminDashboard = async (req: AuthRequest, res: Response, next: N
       });
     }
 
-    successResponse(res, {
+    const responseData = {
       totalStudents,
       totalTeachers,
       totalClasses,
@@ -128,7 +137,15 @@ export const getAdminDashboard = async (req: AuthRequest, res: Response, next: N
       recentPayments,
       recentAnnouncements,
       attendanceTrend
-    }, 'Admin dashboard data fetched successfully');
+    };
+
+    // Cache for 3 minutes (180000 ms) to make dashboard lightning fast
+    cache[cacheKey] = {
+      data: responseData,
+      expiry: Date.now() + 180000
+    };
+
+    successResponse(res, responseData, 'Admin dashboard data fetched successfully');
   } catch (error) {
     next(error);
   }
