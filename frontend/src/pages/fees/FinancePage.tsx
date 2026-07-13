@@ -544,7 +544,7 @@ export const FinancePage: React.FC = () => {
                         onClick={() => {
                           const link = document.createElement('a');
                           link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,'; // Optional: add an empty excel base64 string or link to a real template. We'll generate a CSV for simplicity
-                          const csvContent = "data:text/csv;charset=utf-8,Student ID,Fee Name,Amount,Due Date\nJY24-001,Tuition fee,500,2024-10-10";
+                          const csvContent = "data:text/csv;charset=utf-8,Student ID,Fee Name,Amount\nJY24-001,Tuition fee,500";
                           const encodedUri = encodeURI(csvContent);
                           const tempLink = document.createElement("a");
                           tempLink.setAttribute("href", encodedUri);
