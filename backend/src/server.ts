@@ -45,7 +45,10 @@ initSocket(httpServer);
 // Core Middleware
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Allow all origins
+    callback(null, true);
+  },
   credentials: true,
 }));
 app.use(morgan('dev'));
