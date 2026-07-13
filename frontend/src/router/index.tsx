@@ -29,6 +29,7 @@ import SubjectPage from '../pages/subjects/SubjectPage';
 // Attendance
 import AttendanceMarkingPage from '../pages/attendance/AttendanceMarkingPage';
 import AttendanceReportPage from '../pages/attendance/AttendanceReportPage';
+import AttendanceDailyReportPage from '../pages/attendance/AttendanceDailyReportPage';
 
 // Exams
 import ExamListPage from '../pages/exams/ExamListPage';
@@ -176,6 +177,10 @@ export const router = createBrowserRouter([
       {
         path: 'attendance/report',
         element: <AttendanceReportPage />,
+      },
+      {
+        path: 'attendance/daily-report',
+        element: <AttendanceDailyReportPage />,
       },
       {
         path: 'exams',

@@ -59,6 +59,9 @@ export const FinancePage: React.FC = () => {
   // Receipt Modal State
   const [selectedReceipt, setSelectedReceipt] = useState<any>(null);
 
+  // Bulk Upload Ref
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   // Load backend and configurations
   const fetchData = async () => {
     setLoading(true);
@@ -182,6 +185,28 @@ export const FinancePage: React.FC = () => {
       setStructStatus('Active');
     } catch (err: any) {
       toast.error(err.message || 'Failed to add structure');
+    }
+  };
+
+  const handleBulkImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const importToast = toast.loading('Uploading fees...');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res: any = await api.post('/api/fees/structures/bulk-import', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const data = res.data || res;
+      toast.success(`Import complete! Added ${data.success} fees.`, { id: importToast });
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || 'Bulk import failed. Please verify format rules.', { id: importToast });
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -508,19 +533,51 @@ export const FinancePage: React.FC = () => {
                     <p className="text-xs text-indigo-500 font-semibold mt-0.5">Home / Fees Master</p>
                   </div>
                   {isAdmin && (
-                    <button
-                      onClick={() => {
-                        if (classes.length === 0) {
-                          toast.error('Please configure classes first');
-                          return;
-                        }
-                        setStructClassId(classes[0]?.id || '');
-                        setShowStructureModal(true);
-                      }}
-                      className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-indigo-500/30 flex items-center gap-2 transition-all cursor-pointer"
-                    >
-                      <Plus className="w-4 h-4" /> Add Fee Component
-                    </button>
+                    <div className="flex gap-3">
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept=".xlsx, .xls"
+                        onChange={handleBulkImport}
+                      />
+                      <button
+                        onClick={() => {
+                          const link = document.createElement('a');
+                          link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,'; // Optional: add an empty excel base64 string or link to a real template. We'll generate a CSV for simplicity
+                          const csvContent = "data:text/csv;charset=utf-8,Student ID,Fee Name,Term,Amount,Due Date\nJY24-001,Library Fee,Term 1,500,2024-10-10";
+                          const encodedUri = encodeURI(csvContent);
+                          const tempLink = document.createElement("a");
+                          tempLink.setAttribute("href", encodedUri);
+                          tempLink.setAttribute("download", "fees_import_template.csv");
+                          document.body.appendChild(tempLink);
+                          tempLink.click();
+                          document.body.removeChild(tempLink);
+                        }}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 flex items-center gap-2 transition-all cursor-pointer"
+                      >
+                        <FileDown className="w-4 h-4" /> Get Template
+                      </button>
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 flex items-center gap-2 transition-all cursor-pointer"
+                      >
+                        <ArrowRight className="w-4 h-4" /> Import Fees
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (classes.length === 0) {
+                            toast.error('Please configure classes first');
+                            return;
+                          }
+                          setStructClassId(classes[0]?.id || '');
+                          setShowStructureModal(true);
+                        }}
+                        className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-indigo-500/30 flex items-center gap-2 transition-all cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" /> Add Fee Component
+                      </button>
+                    </div>
                   )}
                 </div>
 

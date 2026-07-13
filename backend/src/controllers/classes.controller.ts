@@ -3,6 +3,7 @@ import { AuthRequest } from '../middlewares/auth';
 import { createError } from '../middlewares/errorHandler';
 import { prisma } from '../utils/prisma';
 import { successResponse, paginatedResponse } from '../utils/response';
+import * as XLSX from 'xlsx';
 
 export const getAll = async (req: AuthRequest, res: Response): Promise<void> => {
   const page = parseInt(req.query.page as string) || 1;
@@ -184,4 +185,56 @@ export const getSubjects = async (req: AuthRequest, res: Response, next: NextFun
     },
   });
   successResponse(res, subjects, 'Class subjects fetched');
+};
+
+export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  if (!req.file) return next(createError('Excel or CSV file required', 400));
+
+  try {
+    const filePath = req.file.path;
+    const workbook = XLSX.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const results = XLSX.utils.sheet_to_json<any>(sheet);
+
+    let success = 0;
+    const failed: any[] = [];
+
+    for (const row of results) {
+      try {
+        const name = row.Name || row.name || String(row.Class || row.class);
+        const section = row.Section || row.section || '';
+        const academicYear = row['Academic Year'] || row.academicYear || '2024-2025';
+        const capacity = parseInt(row.Capacity || row.capacity) || 40;
+
+        if (!name) {
+          failed.push({ row, reason: 'Class Name is required' });
+          continue;
+        }
+
+        const existing = await prisma.class.findFirst({ where: { name, section, academicYear } });
+        if (existing) {
+          failed.push({ row, reason: 'Class already exists' });
+          continue;
+        }
+
+        await prisma.class.create({
+          data: { name, section, academicYear, capacity },
+        });
+        success++;
+      } catch (e: any) {
+        failed.push({ row, reason: e.message });
+      }
+    }
+
+    try {
+      require('fs').unlinkSync(filePath);
+    } catch (e) {
+      console.error('Failed to delete uploaded file', e);
+    }
+
+    successResponse(res, { success, failed, total: results.length }, 'Bulk import completed');
+  } catch (error) {
+    next(createError('Failed to process file', 500));
+  }
 };

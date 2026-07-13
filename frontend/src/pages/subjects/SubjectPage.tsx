@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { Badge } from '../../components/UI/Badge';
-import { Plus, Edit, Trash2, School } from 'lucide-react';
+import { Plus, Edit, Trash2, School, Upload, FileDown } from 'lucide-react';
 import { Avatar } from '../../components/UI/Avatar';
 import toast from 'react-hot-toast';
 
@@ -13,6 +13,8 @@ export const SubjectPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingSubject, setEditingSubject] = useState<any>(null);
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Form states
   const [name, setName] = useState('');
@@ -105,6 +107,32 @@ export const SubjectPage: React.FC = () => {
     }
   };
 
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const importToast = toast.loading('Uploading and importing subjects...');
+    try {
+      const res: any = await api.post('/api/subjects/bulk-import', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const data = res.data;
+      toast.success(`Import complete! Successfully added ${data.success} subjects.`, {
+        id: importToast,
+      });
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || 'Bulk import failed. Please verify format rules.', {
+        id: importToast,
+      });
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-150 dark:border-gray-800">
@@ -112,20 +140,52 @@ export const SubjectPage: React.FC = () => {
           <h3 className="font-bold text-gray-900 dark:text-white">Curriculum & Subjects</h3>
           <p className="text-xs text-gray-400">Map course subjects, codes, classes, and teachers.</p>
         </div>
-        <button
-          onClick={() => {
-            setEditingSubject(null);
-            setName('');
-            setCode('');
-            setClassId('');
-            setTeacherId('');
-            setShowModal(true);
-          }}
-          className="btn-primary flex items-center gap-2"
-        >
-          <Plus className="w-4.5 h-4.5" />
-          <span>New Subject</span>
-        </button>
+        <div className="flex gap-3">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleImport}
+            className="hidden"
+            accept=".xlsx,.csv"
+          />
+          <button
+            onClick={() => {
+              const csvContent = "data:text/csv;charset=utf-8,Name,Code,Class,Section\nMathematics,MATH101,Class 1,A";
+              const encodedUri = encodeURI(csvContent);
+              const tempLink = document.createElement("a");
+              tempLink.setAttribute("href", encodedUri);
+              tempLink.setAttribute("download", "subjects_import_template.csv");
+              document.body.appendChild(tempLink);
+              tempLink.click();
+              document.body.removeChild(tempLink);
+            }}
+            className="btn-secondary flex items-center gap-2"
+          >
+            <FileDown className="w-4.5 h-4.5" />
+            <span className="hidden sm:inline">Get Template</span>
+          </button>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="btn-secondary flex items-center gap-2"
+          >
+            <Upload className="w-4.5 h-4.5" />
+            <span className="hidden sm:inline">Import Subjects</span>
+          </button>
+          <button
+            onClick={() => {
+              setEditingSubject(null);
+              setName('');
+              setCode('');
+              setClassId('');
+              setTeacherId('');
+              setShowModal(true);
+            }}
+            className="btn-primary flex items-center gap-2"
+          >
+            <Plus className="w-4.5 h-4.5" />
+            <span>New Subject</span>
+          </button>
+        </div>
       </div>
 
       {loading ? (

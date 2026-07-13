@@ -116,6 +116,23 @@ export const TeacherListPage: React.FC = () => {
             <FileDown className="w-4.5 h-4.5" />
             <span className="hidden sm:inline">Export</span>
           </button>
+          <button
+            onClick={() => {
+              const csvContent = "data:text/csv;charset=utf-8,Name,Email,Password,Phone,Qualification,Specialization\nTeacher 1,teacher1@example.com,Teacher@123,9876543210,M.Sc,Physics";
+              const encodedUri = encodeURI(csvContent);
+              const tempLink = document.createElement("a");
+              tempLink.setAttribute("href", encodedUri);
+              tempLink.setAttribute("download", "teachers_import_template.csv");
+              document.body.appendChild(tempLink);
+              tempLink.click();
+              document.body.removeChild(tempLink);
+            }}
+            className="btn-secondary flex items-center gap-2"
+            title="Get Template"
+          >
+            <FileDown className="w-4.5 h-4.5" />
+            <span className="hidden sm:inline">Get Template</span>
+          </button>
           <input
             type="file"
             ref={fileInputRef}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { Badge } from '../../components/UI/Badge';
-import { School, User, Users, Plus, Trash2, Edit3 } from 'lucide-react';
+import { School, User, Users, Plus, Trash2, Edit3, Upload, FileDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 
@@ -12,6 +12,8 @@ export const ClassManagementPage: React.FC = () => {
   const [teachers, setTeachers] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editingClassId, setEditingClassId] = useState<string | null>(null);
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Form states
   const [name, setName] = useState('');
@@ -98,6 +100,32 @@ export const ClassManagementPage: React.FC = () => {
     }
   };
 
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const importToast = toast.loading('Uploading and importing classes...');
+    try {
+      const res: any = await api.post('/api/classes/bulk-import', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const data = res.data;
+      toast.success(`Import complete! Successfully added ${data.success} classes.`, {
+        id: importToast,
+      });
+      fetchClasses();
+    } catch (err: any) {
+      toast.error(err.message || 'Bulk import failed. Please verify format rules.', {
+        id: importToast,
+      });
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this class? This will delete all course metadata.')) return;
     try {
@@ -116,10 +144,42 @@ export const ClassManagementPage: React.FC = () => {
           <h3 className="font-bold text-gray-900 dark:text-white">Classes Directory</h3>
           <p className="text-xs text-gray-400">Manage all grades, sections, and class teacher assignments.</p>
         </div>
-        <button onClick={openCreateModal} className="btn-primary flex items-center gap-2">
-          <Plus className="w-4.5 h-4.5" />
-          <span>New Class</span>
-        </button>
+        <div className="flex gap-3">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleImport}
+            className="hidden"
+            accept=".xlsx,.csv"
+          />
+          <button
+            onClick={() => {
+              const csvContent = "data:text/csv;charset=utf-8,Name,Section,Academic Year,Capacity\nClass 1,A,2024-2025,40";
+              const encodedUri = encodeURI(csvContent);
+              const tempLink = document.createElement("a");
+              tempLink.setAttribute("href", encodedUri);
+              tempLink.setAttribute("download", "classes_import_template.csv");
+              document.body.appendChild(tempLink);
+              tempLink.click();
+              document.body.removeChild(tempLink);
+            }}
+            className="btn-secondary flex items-center gap-2"
+          >
+            <FileDown className="w-4.5 h-4.5" />
+            <span className="hidden sm:inline">Get Template</span>
+          </button>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="btn-secondary flex items-center gap-2"
+          >
+            <Upload className="w-4.5 h-4.5" />
+            <span className="hidden sm:inline">Import Classes</span>
+          </button>
+          <button onClick={openCreateModal} className="btn-primary flex items-center gap-2">
+            <Plus className="w-4.5 h-4.5" />
+            <span>New Class</span>
+          </button>
+        </div>
       </div>
 
       {loading ? (

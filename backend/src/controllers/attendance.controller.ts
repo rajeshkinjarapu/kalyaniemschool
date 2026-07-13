@@ -157,3 +157,59 @@ export const getSummary = async (req: AuthRequest, res: Response, next: NextFunc
 
   successResponse(res, Array.from(dayMap.values()), 'Summary fetched');
 };
+
+export const getDailySummary = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  const { date } = req.query as { date: string };
+  if (!date) return next(createError('date is required', 400));
+
+  const targetDate = new Date(date);
+  targetDate.setUTCHours(0,0,0,0);
+  const nextDate = new Date(targetDate);
+  nextDate.setDate(nextDate.getDate() + 1);
+
+  const records = await prisma.attendance.findMany({
+    where: { date: { gte: targetDate, lt: nextDate } },
+    include: {
+      class: { select: { id: true, name: true, section: true } },
+    },
+  });
+
+  const classMap = new Map<string, { classId: string; className: string; total: number; present: number; absent: number; late: number; excused: number }>();
+  
+  // Initialize with all classes to show 0 if no records
+  const allClasses = await prisma.class.findMany({ select: { id: true, name: true, section: true, _count: { select: { students: true } } }});
+  
+  for (const cls of allClasses) {
+    classMap.set(cls.id, {
+      classId: cls.id,
+      className: `${cls.name}-${cls.section}`,
+      total: cls._count.students, // Using total students enrolled as base
+      present: 0,
+      absent: 0,
+      late: 0,
+      excused: 0
+    });
+  }
+
+  for (const r of records) {
+    if (r.classId) {
+      const entry = classMap.get(r.classId);
+      if (entry) {
+        if (r.status === 'PRESENT') entry.present++;
+        else if (r.status === 'ABSENT') entry.absent++;
+        else if (r.status === 'LATE') entry.late++;
+        else if (r.status === 'EXCUSED') entry.excused++;
+      }
+    }
+  }
+
+  // Adjust absent counts for students who weren't marked
+  for (const entry of Array.from(classMap.values())) {
+    const totalMarked = entry.present + entry.absent + entry.late + entry.excused;
+    if (totalMarked < entry.total) {
+      entry.absent += (entry.total - totalMarked);
+    }
+  }
+
+  successResponse(res, Array.from(classMap.values()), 'Daily summary fetched');
+};

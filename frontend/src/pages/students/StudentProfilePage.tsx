@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import { 
   ArrowLeft, Mail, Phone, Printer, User2, Calendar, 
   Droplet, ClipboardCheck, Users, Fingerprint, 
-  Hash, MapPin, Sparkles, GraduationCap, Camera 
+  Hash, MapPin, Sparkles, GraduationCap, Camera, CreditCard 
 } from 'lucide-react';
 
 export const StudentProfilePage: React.FC = () => {
@@ -86,13 +86,22 @@ export const StudentProfilePage: React.FC = () => {
           >
             <ArrowLeft className="w-4 h-4" /> Back to Students
           </Link>
-          <button
-            onClick={() => window.print()}
-            className="btn-primary flex items-center gap-2 text-xs font-bold shadow-md hover:scale-102 transition-all"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Print Profile</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <Link
+              to={`/fee-payment?studentId=${student.id}`}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 hover:scale-102 transition-all"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Pay Fee</span>
+            </Link>
+            <button
+              onClick={() => window.print()}
+              className="btn-primary flex items-center gap-2 text-xs font-bold shadow-md hover:scale-102 transition-all"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Print Profile</span>
+            </button>
+          </div>
         </div>
 
         {/* Profile ID Card Details */}

@@ -21,7 +21,7 @@ export const ExamListPage: React.FC = () => {
   const tabParam = searchParams.get('tab');
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<'examination' | 'exam-plan' | 'question-group' | 'question-bank' | 'add-online-exam' | 'online-exams' | 'written-exam' | 'settings'>('examination');
+  const [activeTab, setActiveTab] = useState<'examination' | 'exam-plan' | 'question-group' | 'question-bank' | 'add-online-exam' | 'online-exams' | 'written-exam' | 'admit-card' | 'results' | 'progress-card' | 'settings'>('examination');
 
   useEffect(() => {
     if (tabParam) {
@@ -625,7 +625,7 @@ export const ExamListPage: React.FC = () => {
             }`}
           >
             <Layers className="w-4 h-4" />
-            Examination
+            Create Exam
           </button>
           <button
             onClick={() => setActiveTab('exam-plan')}
@@ -637,6 +637,50 @@ export const ExamListPage: React.FC = () => {
           >
             <Calendar className="w-4 h-4" />
             Exam Plan
+          </button>
+          <button
+            onClick={() => setActiveTab('written-exam')}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+              activeTab === 'written-exam'
+                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
+                : 'text-gray-400 hover:text-gray-900'
+            }`}
+          >
+            <CheckSquare className="w-4 h-4" />
+            Marks Upload
+          </button>
+          <button
+            onClick={() => setActiveTab('admit-card')}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+              activeTab === 'admit-card'
+                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
+                : 'text-gray-400 hover:text-gray-900'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            Admit Card
+          </button>
+          <button
+            onClick={() => setActiveTab('results')}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+              activeTab === 'results'
+                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
+                : 'text-gray-400 hover:text-gray-900'
+            }`}
+          >
+            <Award className="w-4 h-4" />
+            Results
+          </button>
+          <button
+            onClick={() => setActiveTab('progress-card')}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+              activeTab === 'progress-card'
+                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
+                : 'text-gray-400 hover:text-gray-900'
+            }`}
+          >
+            <Award className="w-4 h-4" />
+            Progress Card
           </button>
           {isAdminOrTeacher && (
             <>
@@ -659,8 +703,8 @@ export const ExamListPage: React.FC = () => {
                     : 'text-gray-400 hover:text-gray-900'
                 }`}
               >
-                <HelpCircle className="w-4 h-4" />
-                Question Bank
+                <BookOpen className="w-4 h-4" />
+                Question Papers
               </button>
               <button
                 onClick={() => setActiveTab('add-online-exam')}
@@ -684,18 +728,7 @@ export const ExamListPage: React.FC = () => {
             }`}
           >
             <Clock className="w-4 h-4" />
-            Online Exam
-          </button>
-          <button
-            onClick={() => setActiveTab('written-exam')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'written-exam'
-                ? 'bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-900'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            Written Exam
+            Slip Tests
           </button>
           <button
             onClick={() => setActiveTab('settings')}
@@ -1316,6 +1349,31 @@ export const ExamListPage: React.FC = () => {
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ══ NEW TABS (PLACEHOLDERS) ══ */}
+      {activeTab === 'admit-card' && (
+        <div className="bg-white dark:bg-gray-900 p-12 text-center rounded-xl border border-gray-150 dark:border-gray-800 space-y-4">
+          <FileText className="w-12 h-12 text-gray-300 mx-auto" />
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Admit Card Generation</h3>
+          <p className="text-sm text-gray-500">Design and generate student admit cards (Coming Soon).</p>
+        </div>
+      )}
+      
+      {activeTab === 'results' && (
+        <div className="bg-white dark:bg-gray-900 p-12 text-center rounded-xl border border-gray-150 dark:border-gray-800 space-y-4">
+          <Award className="w-12 h-12 text-gray-300 mx-auto" />
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Results Publishing</h3>
+          <p className="text-sm text-gray-500">Publish verified results and rank lists (Coming Soon).</p>
+        </div>
+      )}
+
+      {activeTab === 'progress-card' && (
+        <div className="bg-white dark:bg-gray-900 p-12 text-center rounded-xl border border-gray-150 dark:border-gray-800 space-y-4">
+          <Award className="w-12 h-12 text-gray-300 mx-auto" />
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Progress Cards</h3>
+          <p className="text-sm text-gray-500">Generate and print terminal progress report cards (Coming Soon).</p>
         </div>
       )}
     </div>
