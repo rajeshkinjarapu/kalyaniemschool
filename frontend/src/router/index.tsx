@@ -36,10 +36,10 @@ import MarksEntryPage from '../pages/exams/MarksEntryPage';
 import ReportCardPage from '../pages/exams/ReportCardPage';
 
 // Paper Generator
-import PaperGeneratorDashboard from '../pages/paper-generator/Dashboard';
-import QuestionBankPage from '../pages/paper-generator/QuestionBank';
-import PaperBuilderPage from '../pages/paper-generator/PaperBuilder';
-import PaperDetailPage from '../pages/paper-generator/PaperDetail';
+import { Dashboard as PaperGeneratorDashboard } from '../pages/paper-generator/Dashboard';
+import { QuestionBank as QuestionBankPage } from '../pages/paper-generator/QuestionBank';
+import { PaperBuilder as PaperBuilderPage } from '../pages/paper-generator/PaperBuilder';
+import { PaperDetail as PaperDetailPage } from '../pages/paper-generator/PaperDetail';
 
 // Timetable
 import TimetablePage from '../pages/timetable/TimetablePage';
