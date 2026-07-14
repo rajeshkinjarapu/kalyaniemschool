@@ -110,7 +110,7 @@ export const deleteClass = async (req: AuthRequest, res: Response, next: NextFun
         where: { classId: id },
       });
 
-      // 5. Delete all Exam marks and Exams for this class
+      // 5. Delete all Exam marks, ExamPlans and Exams for this class
       const exams = await tx.exam.findMany({
         where: { classId: id },
         select: { id: true },
@@ -118,6 +118,9 @@ export const deleteClass = async (req: AuthRequest, res: Response, next: NextFun
       const examIds = exams.map(e => e.id);
       if (examIds.length > 0) {
         await tx.mark.deleteMany({
+          where: { examId: { in: examIds } },
+        });
+        await tx.examPlan.deleteMany({
           where: { examId: { in: examIds } },
         });
       }
@@ -140,15 +143,36 @@ export const deleteClass = async (req: AuthRequest, res: Response, next: NextFun
         where: { classId: id },
       });
 
-      // 7. Delete all Subjects for this class
+      // 7. Delete OnlineExams
+      const onlineExams = await tx.onlineExam.findMany({
+        where: { classId: id },
+        select: { id: true }
+      });
+      const onlineExamIds = onlineExams.map(o => o.id);
+      if (onlineExamIds.length > 0) {
+        await tx.onlineExamQuestion.deleteMany({
+          where: { onlineExamId: { in: onlineExamIds } }
+        });
+        await tx.onlineExamSubmission.deleteMany({
+          where: { onlineExamId: { in: onlineExamIds } }
+        });
+        await tx.onlineExam.deleteMany({
+          where: { classId: id }
+        });
+      }
+
+      // 8. Delete all Subjects for this class
       await tx.subject.deleteMany({
         where: { classId: id },
       });
 
-      // 8. Finally delete the Class itself
+      // 9. Finally delete the Class itself
       await tx.class.delete({
         where: { id },
       });
+    }, {
+      maxWait: 5000,
+      timeout: 10000,
     });
 
     successResponse(res, null, 'Class deleted successfully');
