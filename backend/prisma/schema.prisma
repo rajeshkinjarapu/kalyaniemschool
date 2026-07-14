@@ -64,6 +64,7 @@ model Student {
 
   attendance            Attendance[]
   marks                 Mark[]
+  slipTestMarks         SlipTestMark[]
   feePayments           FeePayment[]
   feeStructures         FeeStructure[]
   feeDiscounts          FeeDiscount[]
@@ -112,9 +113,12 @@ model Class {
   classSubjectTeachers ClassSubjectTeacher[]
   attendance       Attendance[]
   exams            Exam[]
-  timetable        Timetable[]
+  timetables       Timetable[]
   feeStructures    FeeStructure[]
+  announcements    Announcement[]
   onlineExams      OnlineExam[]
+  questionPapers   QuestionPaper[]
+  slipTests        SlipTest[]
 
   @@unique([name, section, academicYear])
 }
@@ -131,6 +135,8 @@ model Subject {
   marks                Mark[]
   onlineExams          OnlineExam[]
   examPlans            ExamPlan[]
+  questionPapers       QuestionPaper[]
+  slipTests            SlipTest[]
 
   @@unique([code, classId])
   @@index([classId])
@@ -433,6 +439,43 @@ model OnlineExamSubmission {
   submittedAt  DateTime   @default(now())
 
   @@unique([onlineExamId, studentId])
+}
+
+model QuestionPaper {
+  id          String   @id @default(uuid())
+  title       String
+  classId     String
+  class       Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  fileUrl     String
+  uploadedAt  DateTime @default(now())
+  uploadedBy  String
+}
+
+model SlipTest {
+  id          String   @id @default(uuid())
+  name        String
+  date        DateTime
+  maxMarks    Float    @default(25)
+  classId     String
+  class       Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  marks       SlipTestMark[]
+}
+
+model SlipTestMark {
+  id          String   @id @default(uuid())
+  slipTestId  String
+  slipTest    SlipTest @relation(fields: [slipTestId], references: [id], onDelete: Cascade)
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  marksObtained Float
+  createdAt   DateTime @default(now())
+
+  @@unique([slipTestId, studentId])
 }
 
 model CustomForm {

@@ -1,0 +1,3035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JEE Mains Result Card · Tabular</title>
+
+    <!-- CDN Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js">
+    </script>
+
+    <style>
+        /* ============================================================
+               RESET & BASE
+               ============================================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            background: #eef2f7;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-wrapper {
+            max-width: 1800px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.08);
+            padding: 32px 40px 44px;
+        }
+
+        /* ---- HEADER ---- */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 6px;
+        }
+
+        .main-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .main-header .brand .icon {
+            font-size: 38px;
+            line-height: 1;
+        }
+
+        .main-header .brand h1 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #0b1a33;
+            letter-spacing: -0.5px;
+        }
+
+        .main-header .brand h1 small {
+            font-size: 16px;
+            font-weight: 400;
+            color: #4a6f8f;
+            letter-spacing: 0.3px;
+            margin-left: 8px;
+        }
+
+        .badge-count {
+            background: #0b1a33;
+            color: #fff;
+            padding: 4px 20px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .sub-head {
+            color: #3a5a7a;
+            font-size: 14px;
+            border-bottom: 2px solid #eef2f7;
+            padding-bottom: 14px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .sub-head .hint {
+            color: #6a8aaa;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ---- CONTROLS ---- */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 30px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 1100px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+        }
+
+        .upload-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 22px 26px 26px;
+            border: 1px solid #e6edf4;
+        }
+
+        .upload-section h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0b1a33;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-section h3 .badge-soft {
+            font-size: 11px;
+            font-weight: 600;
+            background: #e6edf4;
+            color: #2a4a6a;
+            padding: 1px 12px;
+            border-radius: 30px;
+        }
+
+        .file-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .file-row label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1a3a5a;
+            min-width: 110px;
+            white-space: nowrap;
+        }
+
+        .file-row input[type="file"] {
+            flex: 1;
+            font-size: 13px;
+            padding: 6px 0;
+            min-width: 140px;
+        }
+
+        .file-row .preview-img {
+            width: 52px;
+            height: 52px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: #fff;
+            border: 1.5px solid #dce4ed;
+            padding: 4px;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .divider-light {
+            border: none;
+            border-top: 1px solid #e6edf4;
+            margin: 14px 0;
+        }
+
+        .zip-status {
+            font-size: 13px;
+            color: #4a6a8a;
+            margin-top: 4px;
+            padding: 4px 0;
+        }
+        .zip-status .success {
+            color: #1a7a4a;
+            font-weight: 500;
+        }
+        .zip-status .error {
+            color: #b13a3a;
+            font-weight: 500;
+        }
+
+        /* ---- BUTTONS ---- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 22px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            font-family: inherit;
+            line-height: 1.4;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-primary {
+            background: #c0392b;
+            color: #fff;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: #a93226;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(192, 57, 43, 0.30);
+        }
+
+        .btn-success {
+            background: #1a7a4a;
+            color: #fff;
+        }
+        .btn-success:hover:not(:disabled) {
+            background: #0f5f3a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 122, 74, 0.30);
+        }
+
+        .btn-info {
+            background: #1a5a8a;
+            color: #fff;
+        }
+        .btn-info:hover:not(:disabled) {
+            background: #0f3f6a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 90, 138, 0.30);
+        }
+
+        .btn-gold {
+            background: #d4a017;
+            color: #fff;
+        }
+        .btn-gold:hover:not(:disabled) {
+            background: #b8890f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 160, 23, 0.30);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #c0392b;
+            color: #c0392b;
+        }
+        .btn-outline:hover:not(:disabled) {
+            background: #fef3f1;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-dark {
+            background: transparent;
+            border: 1.5px solid #1a3a5a;
+            color: #1a3a5a;
+        }
+        .btn-outline-dark:hover:not(:disabled) {
+            background: #f0f4f8;
+            transform: translateY(-2px);
+        }
+
+        .btn-purple {
+            background: #6c3483;
+            color: #fff;
+        }
+        .btn-purple:hover:not(:disabled) {
+            background: #512e5f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(108, 52, 131, 0.30);
+        }
+
+        .btn-teal {
+            background: #0e6655;
+            color: #fff;
+        }
+        .btn-teal:hover:not(:disabled) {
+            background: #0a4a3e;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(14, 102, 85, 0.30);
+        }
+
+        .btn-sm {
+            padding: 5px 16px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #e6edf4;
+        }
+
+        .text-muted {
+            color: #6a8aaa;
+            font-size: 13px;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-12 {
+            margin-top: 12px;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        .jee-badge {
+            display: inline-block;
+            background: #0b1a33;
+            color: #fff;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* ---- STUDENT NAV ---- */
+        .student-nav {
+            display: none;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            padding: 10px 22px;
+            border-radius: 14px;
+            border: 1px solid #e6edf4;
+            margin-bottom: 22px;
+        }
+
+        .student-nav.active {
+            display: flex;
+        }
+
+        .student-nav .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #1a3a5a;
+            white-space: nowrap;
+        }
+
+        .student-nav .nav-item .label {
+            font-weight: 400;
+            color: #6a8aaa;
+        }
+
+        .student-nav .nav-item .value {
+            font-weight: 600;
+            color: #0b1a33;
+        }
+
+        .student-nav .badge-class {
+            background: #0b1a33;
+            color: #fff;
+            padding: 2px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .student-nav .nav-divider {
+            color: #c8d6e4;
+            font-weight: 300;
+        }
+
+        .student-nav .nav-progress {
+            margin-left: auto;
+            font-size: 14px;
+            color: #4a6a8a;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* ---- CARD CONTAINER ---- */
+        .card-container {
+            display: flex;
+            justify-content: center;
+            background: #eef2f7;
+            padding: 34px 24px;
+            border-radius: 18px;
+            margin: 6px 0 22px;
+            overflow: auto;
+        }
+
+        /* ---- RESULT CARD — A4 (794×1123px) ---- */
+        #resultCard {
+            width: 794px;
+            min-height: 1123px;
+            background: #ffffff;
+            padding: 0;
+            border-radius: 12px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.10);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        /* ============================================================
+               JEE CARD — Premium Design · NO TEXT WRAP
+               ============================================================ */
+        .jee-card {
+            background: #ffffff;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Top bar */
+        .jee-card .top-bar {
+            height: 8px;
+            background: linear-gradient(90deg, #0b1a33 0%, #1a4a7a 40%, #d4a017 80%, #f39c12 100%);
+            flex-shrink: 0;
+        }
+
+        /* Header */
+        .jee-card .card-header {
+            display: flex;
+            align-items: center;
+            padding: 18px 32px 12px 32px;
+            gap: 16px;
+            flex-shrink: 0;
+            border-bottom: 3px solid #f39c12;
+        }
+
+        .jee-card .card-header .logo-wrap {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .jee-card .card-header .logo-wrap img {
+            max-width: 100%;
+            max-height: 100px;
+            object-fit: contain;
+        }
+
+        .jee-card .card-header .title-wrap {
+            text-align: center;
+            flex: 1;
+            padding: 0 8px;
+        }
+
+        /* ---- SCHOOL NAME BOLD, REST NORMAL ---- */
+        .jee-card .card-header .title-wrap .school-name {
+            font-size: 28px;
+            font-weight: 900;
+            /* BOLD */
+            color: #0b1a33;
+            letter-spacing: 1.5px;
+            font-family: 'Times New Roman', 'Georgia', serif;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .jee-card .card-header .title-wrap .school-sub {
+            font-size: 16px;
+            font-weight: 400;
+            /* NORMAL */
+            color: #1a4a7a;
+            letter-spacing: 0.8px;
+            margin: 2px 0;
+            white-space: nowrap;
+        }
+
+        .jee-card .card-header .title-wrap .school-address {
+            font-size: 13px;
+            font-weight: 400;
+            /* NORMAL */
+            color: #5a7a8a;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+
+        .jee-card .card-header .title-wrap .exam-title {
+            font-size: 22px;
+            font-weight: 400;
+            /* NORMAL */
+            color: #0b1a33;
+            letter-spacing: 2px;
+            margin: 6px 0 0;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .jee-card .card-header .title-wrap .result-card-label {
+            font-size: 18px;
+            font-weight: 400;
+            /* NORMAL */
+            color: #d4a017;
+            letter-spacing: 4px;
+            margin-top: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .jee-card .card-header .spacer {
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        /* Decorative line */
+        .jee-card .deco-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 6px 32px 10px 32px;
+            flex-shrink: 0;
+        }
+
+        .jee-card .deco-line .ornament {
+            font-size: 18px;
+            color: #d4a017;
+            flex-shrink: 0;
+        }
+
+        .jee-card .deco-line .line {
+            flex: 1;
+            max-width: 140px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #d4a017, transparent);
+        }
+
+        /* ---- Student Info ---- */
+        .jee-card .student-info {
+            margin: 6px 28px 14px 28px;
+            border: 2px solid #d4a017;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 4px 16px rgba(212, 160, 23, 0.12);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            flex-shrink: 0;
+        }
+
+        .jee-card .student-info .info-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .jee-card .student-info .info-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            border-bottom: 1px solid #f5ede4;
+        }
+
+        .jee-card .student-info .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .jee-card .student-info .info-row .label {
+            background: #fdf9f4;
+            padding: 7px 18px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #6a3a1a;
+            border-right: 1px solid #f5ede4;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .jee-card .student-info .info-row .value {
+            padding: 7px 18px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #0b1a33;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .jee-card .student-info .info-row:nth-child(even) .value {
+            background: #fefcf9;
+        }
+
+        /* Photo column — 5:6 ratio */
+        .jee-card .student-info .photo-col {
+            padding: 14px 20px 14px 12px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            border-left: 2px solid #f5ede4;
+            background: #fefcf9;
+            min-width: 130px;
+        }
+
+        .jee-card .student-info .photo-col img {
+            width: 95px;
+            height: 114px;
+            object-fit: cover;
+            border: 3px solid #d4a017;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border-radius: 6px;
+            background: #fff;
+            flex-shrink: 0;
+        }
+
+        .jee-card .student-info .photo-col .placeholder-photo {
+            width: 95px;
+            height: 114px;
+            background: #ede8e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8a7a6a;
+            font-size: 44px;
+            border: 3px dashed #c8b8a8;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        /* ============================================================
+               PERFORMANCE TABLE — TABULAR FORM · NO WRAP
+               ============================================================ */
+        .jee-card .perf-table-wrap {
+            margin: 4px 28px 12px 28px;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        .jee-card .perf-table-wrap .perf-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0b1a33;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+        }
+
+        .jee-card .perf-table-wrap .perf-title .icon {
+            font-size: 22px;
+        }
+        .jee-card .perf-table-wrap .perf-title .max-hint {
+            margin-left: auto;
+            font-size: 13px;
+            font-weight: 400;
+            color: #6a8aaa;
+            white-space: nowrap;
+        }
+
+        /* ---- The Table ---- */
+        .perf-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            font-size: 14px;
+        }
+
+        .perf-table thead tr {
+            background: linear-gradient(135deg, #0b1a33, #1a3a5a);
+        }
+
+        .perf-table thead th {
+            color: #ffffff;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 16px;
+            text-align: center;
+            white-space: nowrap;
+            font-size: 13px;
+            border: 1px solid #1a3a5a;
+        }
+
+        .perf-table tbody td {
+            padding: 9px 16px;
+            text-align: center;
+            white-space: nowrap;
+            border: 1px solid #e8e0d8;
+            background: #fff;
+            font-weight: 500;
+            color: #0b1a33;
+        }
+
+        .perf-table tbody tr:nth-child(even) td {
+            background: #fdfcf9;
+        }
+
+        .perf-table tbody .subject-label {
+            font-weight: 600;
+            text-align: left;
+            padding-left: 20px;
+            color: #1a3a5a;
+        }
+
+        .perf-table tbody .subject-label .sub-icon {
+            margin-right: 8px;
+        }
+
+        .perf-table tbody .marks-cell {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .perf-table tbody .max-cell {
+            color: #6a8aaa;
+            font-weight: 400;
+        }
+
+        .perf-table tbody .pct-cell {
+            font-weight: 600;
+        }
+
+        /* Total row */
+        .perf-table tbody .total-row td {
+            background: #fdf9f4 !important;
+            font-weight: 700;
+            font-size: 15px;
+            border-top: 2.5px solid #d4a017;
+            border-bottom: 2.5px solid #d4a017;
+        }
+
+        .perf-table tbody .total-row .total-label {
+            text-align: left;
+            padding-left: 20px;
+            color: #0b1a33;
+            font-weight: 800;
+        }
+
+        .perf-table tbody .total-row .marks-cell {
+            font-size: 18px;
+            color: #0b1a33;
+        }
+
+        .perf-table tbody .total-row .pct-cell {
+            font-size: 17px;
+            color: #1a7a4a;
+        }
+
+        /* ---- Score Bar (below table) ---- */
+        .jee-card .score-bar-wrap {
+            margin: 6px 28px 2px 28px;
+            padding: 2px 0;
+            flex-shrink: 0;
+        }
+
+        .jee-card .score-bar-wrap .score-bar {
+            height: 12px;
+            background: #e8e0d8;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .jee-card .score-bar-wrap .score-bar .fill {
+            height: 100%;
+            border-radius: 30px;
+            background: linear-gradient(90deg, #d4a017, #0b1a33);
+            transition: width 0.8s ease;
+            width: 0%;
+        }
+
+        .jee-card .score-bar-wrap .score-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #6a5a4a;
+            margin-top: 4px;
+            padding: 0 2px;
+            white-space: nowrap;
+        }
+
+        /* ---- Result Footer ---- */
+        .jee-card .result-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin: 8px 28px 6px 28px;
+            padding-top: 12px;
+            border-top: 3px solid #d4a017;
+            flex-shrink: 0;
+        }
+
+        .jee-card .result-footer .left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .jee-card .result-footer .left .total-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0b1a33;
+            white-space: nowrap;
+        }
+
+        .jee-card .result-footer .left .percentage {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1a7a4a;
+            white-space: nowrap;
+        }
+
+        .jee-card .result-footer .signatures {
+            display: flex;
+            gap: 40px;
+            align-items: flex-end;
+        }
+
+        .jee-card .result-footer .signatures .sig-block {
+            text-align: center;
+            min-width: 110px;
+        }
+
+        .jee-card .result-footer .signatures .sig-block img {
+            max-width: 140px;
+            max-height: 60px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 4px;
+        }
+
+        .jee-card .result-footer .signatures .sig-block .sig-label {
+            font-size: 13px;
+            color: #3a5a7a;
+            font-weight: 500;
+            border-top: 1.5px solid #d0c8c0;
+            padding-top: 5px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .jee-card .result-footer .signatures .sig-block .sig-placeholder {
+            height: 44px;
+            border-bottom: 1.5px dashed #d0c8c0;
+            width: 130px;
+            margin: 0 auto 4px;
+        }
+
+        /* ---- Footer Note ---- */
+        .jee-card .card-footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #8a7a6a;
+            margin: 6px 28px 14px 28px;
+            padding-top: 8px;
+            border-top: 1px solid #eee8e0;
+            letter-spacing: 0.4px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        /* ============================================================
+               PROGRESS OVERLAY
+               ============================================================ */
+        .progress-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .progress-overlay.active {
+            display: flex;
+        }
+
+        .progress-box {
+            background: #fff;
+            padding: 36px 48px 40px;
+            border-radius: 20px;
+            min-width: 360px;
+            max-width: 520px;
+            text-align: center;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.30);
+            animation: fadeSlideUp 0.3s ease;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-box h3 {
+            font-size: 20px;
+            color: #0b1a33;
+            margin-bottom: 8px;
+        }
+        .progress-box p {
+            color: #4a6a8a;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            background: #e8edf3;
+            border-radius: 30px;
+            overflow: hidden;
+            margin: 12px 0 14px;
+        }
+
+        .progress-track .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #0b1a33, #d4a017);
+            border-radius: 30px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-box .progress-text {
+            font-weight: 700;
+            color: #0b1a33;
+            font-size: 18px;
+        }
+
+        /* ============================================================
+               CLASS WISE REPORT — NEW SECTION
+               ============================================================ */
+        .report-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 22px 26px 26px;
+            border: 1px solid #e6edf4;
+            margin-bottom: 28px;
+        }
+
+        .report-section h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0b1a33;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-section h3 .badge-soft {
+            font-size: 11px;
+            font-weight: 600;
+            background: #e6edf4;
+            color: #2a4a6a;
+            padding: 1px 12px;
+            border-radius: 30px;
+        }
+
+        .report-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px 24px;
+        }
+
+        .report-controls .field-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-controls .field-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1a3a5a;
+            white-space: nowrap;
+        }
+
+        .report-controls .field-group select {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1.5px solid #dce4ed;
+            background: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            color: #0b1a33;
+            cursor: pointer;
+            min-width: 160px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .report-controls .field-group select:focus {
+            border-color: #1a4a7a;
+            box-shadow: 0 0 0 3px rgba(26, 74, 122, 0.12);
+        }
+
+        .report-controls .field-group select option {
+            padding: 4px 8px;
+        }
+
+        .report-status {
+            font-size: 13px;
+            color: #4a6a8a;
+            margin-top: 10px;
+            padding: 4px 0;
+        }
+        .report-status .success {
+            color: #1a7a4a;
+            font-weight: 500;
+        }
+        .report-status .error {
+            color: #b13a3a;
+            font-weight: 500;
+        }
+
+        .report-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px 32px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid #e6edf4;
+        }
+
+        .report-stats .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #1a3a5a;
+        }
+        .report-stats .stat-item .num {
+            font-weight: 700;
+            font-size: 16px;
+            color: #0b1a33;
+        }
+        .report-stats .stat-item .label {
+            color: #6a8aaa;
+        }
+
+        /* ---- RANK LIST BUTTONS (new) ---- */
+        .rank-list-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px 18px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid #e6edf4;
+        }
+        .rank-list-actions .label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1a3a5a;
+            white-space: nowrap;
+        }
+
+        /* ============================================================
+               RESPONSIVE
+               ============================================================ */
+        @media (max-width: 1100px) {
+            .app-wrapper {
+                padding: 20px 18px 28px;
+                border-radius: 20px;
+            }
+            .main-header .brand h1 {
+                font-size: 24px;
+            }
+            .main-header .brand h1 small {
+                font-size: 14px;
+                display: block;
+                margin-left: 0;
+            }
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            .report-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .report-controls .field-group {
+                flex-wrap: wrap;
+            }
+            .report-controls .field-group select {
+                min-width: 120px;
+                flex: 1;
+            }
+            .rank-list-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .rank-list-actions .label {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 840px) {
+            .app-wrapper {
+                padding: 16px 12px 20px;
+                border-radius: 16px;
+            }
+            #resultCard {
+                width: 100%;
+                min-height: auto;
+            }
+            .jee-card .card-header {
+                padding: 14px 16px 10px 16px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .jee-card .card-header .logo-wrap {
+                width: 70px;
+                height: 70px;
+            }
+            .jee-card .card-header .logo-wrap img {
+                max-height: 70px;
+            }
+            .jee-card .card-header .title-wrap .school-name {
+                font-size: 20px;
+                white-space: normal;
+            }
+            .jee-card .card-header .title-wrap .school-sub {
+                font-size: 14px;
+                white-space: normal;
+            }
+            .jee-card .card-header .title-wrap .school-address {
+                font-size: 12px;
+                white-space: normal;
+            }
+            .jee-card .card-header .title-wrap .exam-title {
+                font-size: 17px;
+                white-space: normal;
+            }
+            .jee-card .card-header .title-wrap .result-card-label {
+                font-size: 15px;
+                white-space: normal;
+            }
+            .jee-card .card-header .spacer {
+                width: 0;
+            }
+
+            .jee-card .student-info {
+                margin: 6px 12px 12px 12px;
+                grid-template-columns: 1fr;
+            }
+            .jee-card .student-info .photo-col {
+                border-left: none;
+                border-top: 2px solid #f5ede4;
+                padding: 12px 0;
+                min-width: unset;
+            }
+            .jee-card .student-info .info-row {
+                grid-template-columns: 1fr;
+            }
+            .jee-card .student-info .info-row .label {
+                border-right: none;
+                border-bottom: 1px solid #f5ede4;
+                padding: 5px 14px;
+                white-space: normal;
+            }
+            .jee-card .student-info .info-row .value {
+                padding: 5px 14px;
+                white-space: normal;
+            }
+
+            .jee-card .perf-table-wrap {
+                margin: 4px 12px 10px 12px;
+                overflow-x: auto;
+            }
+            .perf-table {
+                font-size: 12px;
+                min-width: 360px;
+            }
+            .perf-table thead th {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+            .perf-table tbody td {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            .perf-table tbody .marks-cell {
+                font-size: 14px;
+            }
+            .perf-table tbody .total-row .marks-cell {
+                font-size: 15px;
+            }
+
+            .jee-card .score-bar-wrap {
+                margin: 4px 12px 2px 12px;
+            }
+            .jee-card .result-footer {
+                margin: 6px 12px 4px 12px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .jee-card .result-footer .signatures {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            .jee-card .card-footer-note {
+                margin: 4px 12px 10px 12px;
+                white-space: normal;
+            }
+
+            .student-nav {
+                padding: 8px 14px;
+                gap: 10px;
+            }
+            .student-nav .nav-item {
+                font-size: 13px;
+            }
+            .student-nav .nav-progress {
+                margin-left: 0;
+                width: 100%;
+                text-align: center;
+            }
+
+            .card-container {
+                padding: 16px 8px;
+            }
+            .controls-grid {
+                gap: 16px;
+            }
+            .upload-section {
+                padding: 16px 16px 20px;
+            }
+            .file-row {
+                gap: 8px;
+            }
+            .file-row label {
+                min-width: 80px;
+                font-size: 12px;
+                white-space: normal;
+            }
+            .main-header .brand .icon {
+                font-size: 28px;
+            }
+            .report-section {
+                padding: 16px 16px 20px;
+            }
+            .report-stats {
+                gap: 12px 20px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .perf-table {
+                font-size: 11px;
+                min-width: 300px;
+            }
+            .perf-table thead th {
+                padding: 4px 6px;
+                font-size: 10px;
+            }
+            .perf-table tbody td {
+                padding: 4px 6px;
+                font-size: 11px;
+            }
+            .perf-table tbody .subject-label {
+                padding-left: 10px;
+            }
+            .perf-table tbody .marks-cell {
+                font-size: 12px;
+            }
+            .perf-table tbody .total-row .marks-cell {
+                font-size: 13px;
+            }
+            .jee-card .student-info .photo-col img {
+                width: 70px;
+                height: 84px;
+            }
+            .jee-card .student-info .photo-col .placeholder-photo {
+                width: 70px;
+                height: 84px;
+                font-size: 32px;
+            }
+            .btn {
+                font-size: 13px;
+                padding: 7px 16px;
+            }
+            .btn-group {
+                gap: 6px;
+            }
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .action-bar .btn-group {
+                justify-content: center;
+            }
+            .progress-box {
+                min-width: unset;
+                width: 90%;
+                padding: 28px 20px 32px;
+            }
+            .report-controls .field-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .report-controls .field-group select {
+                min-width: unset;
+            }
+            .rank-list-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .rank-list-actions .btn {
+                justify-content: center;
+            }
+        }
+
+        /* ---- PRINT ---- */
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+                margin: 0;
+            }
+            .app-wrapper {
+                max-width: 100%;
+                padding: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .controls-grid,
+            .student-nav,
+            .action-bar,
+            .sub-head .btn,
+            .main-header .badge-group,
+            .sub-head .hint,
+            .report-section {
+                display: none !important;
+            }
+            .main-header .brand h1 small {
+                display: inline-block;
+            }
+            .card-container {
+                background: #fff;
+                padding: 0;
+                border-radius: 0;
+                margin: 0;
+                overflow: visible;
+            }
+            #resultCard {
+                width: 100%;
+                min-height: auto;
+                box-shadow: none;
+                border: none;
+                border-radius: 0;
+                page-break-after: always;
+            }
+            .jee-card {
+                page-break-inside: avoid;
+            }
+            .jee-card .score-bar-wrap .score-bar .fill {
+                background: #0b1a33 !important;
+            }
+        }
+
+        /* ---- UTILITIES ---- */
+        .hidden {
+            display: none !important;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .mt-4 {
+            margin-top: 4px;
+        }
+        .mt-12 {
+            margin-top: 12px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .gap-6 {
+            gap: 6px;
+        }
+        .text-ellipsis {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+
+        <!-- ========== HEADER ========== -->
+        <div class="main-header">
+            <div class="brand">
+                <span class="icon">🏫</span>
+                <h1>
+                    Result Card Generator
+                    <small>JEE Mains · Tabular</small>
+                </h1>
+            </div>
+            <div class="badge-group">
+                <span class="badge-count" id="studentCountBadge">0 students</span>
+            </div>
+        </div>
+
+        <div class="sub-head">
+            <span>📋 Generate result cards · 100 marks per subject · Total 300</span>
+            <span class="hint">🔹 A4 ready · Table view</span>
+        </div>
+
+        <!-- ========== CONTROLS ========== -->
+        <div class="controls-grid">
+
+            <!-- LEFT: Uploads -->
+            <div class="upload-section">
+                <h3>🖼️ Upload Assets</h3>
+
+                <div class="file-row">
+                    <label>Logo</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="logoUpload" accept="image/*" />
+                        <img id="logoPreview" class="preview-img" src="" alt="Logo" style="display:none;" />
+                    </div>
+                </div>
+
+                <div class="file-row">
+                    <label>Teacher Sig.</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="teacherSigUpload" accept="image/*" />
+                        <img id="teacherSigPreview" class="preview-img" src="" alt="Teacher Sig" style="display:none;" />
+                    </div>
+                </div>
+
+                <div class="file-row">
+                    <label>Principal Sig.</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="principalSigUpload" accept="image/*" />
+                        <img id="principalSigPreview" class="preview-img" src="" alt="Principal Sig" style="display:none;" />
+                    </div>
+                </div>
+
+                <hr class="divider-light" />
+
+                <!-- Student Photos ZIP -->
+                <div>
+                    <div class="file-row">
+                        <label>📸 Student Photos</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="photoZipUpload" accept=".zip" />
+                            <button class="btn btn-sm btn-outline-dark" id="clearPhotosBtn" style="display:none;">✕ Clear</button>
+                        </div>
+                    </div>
+                    <div id="zipStatus" class="zip-status">No ZIP uploaded. File names must match Student ID.</div>
+                </div>
+
+                <hr class="divider-light" />
+
+                <!-- Exam Name (Manual typing) -->
+                <div style="margin-top:12px;">
+                    <h3 style="margin-bottom:8px;">📝 Examination Name</h3>
+                    <div class="file-row">
+                        <label style="min-width:80px;">Name</label>
+                        <div class="file-input-wrapper">
+                            <input type="text" id="examNameInput" value="JEE MAINS MODEL EXAMINATION – 2" style="flex:1; padding:8px 12px; border:1.5px solid #dce4ed; border-radius:8px; font-size:14px; font-weight:400; color:#0b1a33; background:#fff; min-width:120px;" />
+                        </div>
+                    </div>
+                    <div style="font-size:12px; color:#6a8aaa; margin-top:4px;">Type any examination title (appears on the card)</div>
+                </div>
+
+                <hr class="divider-light" />
+
+                <!-- Excel Upload -->
+                <div>
+                    <h3 style="margin-bottom:10px;">📊 Student Data <span class="badge-soft">Excel</span></h3>
+                    <div class="file-row">
+                        <label style="min-width:70px;">Upload</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="excelUpload" accept=".xlsx,.xls" />
+                            <button class="btn btn-sm btn-outline-dark" id="sampleExcelBtn">📥 Sample</button>
+                        </div>
+                    </div>
+                    <div id="excelStatus" class="text-muted mt-8" style="font-size:13px;">No file uploaded</div>
+                    <div style="margin-top:8px; font-size:12px; color:#6a8aaa; display:flex; flex-wrap:wrap; gap:6px 14px;">
+                        <span><span class="jee-badge">📌</span> Mathematics · Physics · Chemistry</span>
+                        <span><span class="jee-badge">🎯</span> Max: 100 each · Total: 300</span>
+                        <span><span class="jee-badge">🆔</span> Column "Student ID"</span>
+                        <span><span class="jee-badge">📅</span> Fixed: 2026 – 2027</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Actions -->
+            <div class="upload-section" style="display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <h3>⚙️ Actions</h3>
+                    <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:12px;">
+                        <button class="btn btn-primary" id="generateBtn">🔄 Generate Cards</button>
+                        <div class="btn-group">
+                            <button class="btn btn-success" id="downloadPdfBtn">📄 PDF (All)</button>
+                            <button class="btn btn-info" id="downloadIndividualBtn">📄 PDF (This)</button>
+                            <button class="btn btn-gold" id="downloadAllIndividualBtn">📦 All PDFs (ZIP)</button>
+                        </div>
+                        <button class="btn btn-outline" id="resetBtn">⟲ Reset</button>
+                    </div>
+                    <div class="text-muted mt-8" style="font-size:13px;">
+                        ✅ Total: 300 marks &bull; Individual PDFs named by student
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div style="margin-top:18px; padding-top:16px; border-top:1px solid #e6edf4; display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+                    <span style="font-weight:600; color:#0b1a33; font-size:14px;">Preview:</span>
+                    <button class="btn btn-sm btn-outline-dark" id="prevStudentBtn">◀ Prev</button>
+                    <span id="studentNavIndex" style="font-weight:700; min-width:70px; text-align:center; font-size:15px; color:#0b1a33;">0 / 0</span>
+                    <button class="btn btn-sm btn-outline-dark" id="nextStudentBtn">Next ▶</button>
+                    <span style="margin-left:auto; font-size:13px; color:#6a8aaa;" id="navProgress">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== CLASS WISE REPORT ========== -->
+        <div class="report-section" id="reportSection">
+            <h3>📊 Class‑Wise Report <span class="badge-soft">NEW</span></h3>
+            <div class="report-controls">
+                <div class="field-group">
+                    <label for="classSelect">🎯 Select Class:</label>
+                    <select id="classSelect">
+                        <option value="__ALL__">All Classes</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="generateReportBtn">📄 Generate Report PDF</button>
+                <button class="btn btn-outline-dark btn-sm" id="refreshReportBtn">⟳ Refresh</button>
+            </div>
+            <div id="reportStatus" class="report-status">Load student data to see class-wise report options.</div>
+            <div class="report-stats" id="reportStats">
+                <span class="stat-item"><span class="label">📚 Total Students:</span> <span class="num" id="reportTotalStudents">0</span></span>
+                <span class="stat-item"><span class="label">📖 Classes:</span> <span class="num" id="reportTotalClasses">0</span></span>
+                <span class="stat-item"><span class="label">🏅 Top Rank (All):</span> <span class="num" id="reportTopRank">—</span></span>
+            </div>
+
+            <!-- ===== NEW: Rank List Actions ===== -->
+            <div class="rank-list-actions">
+                <span class="label">🏆 Rank List (All Students):</span>
+                <button class="btn btn-purple" id="rankListPdfBtn">📄 PDF (Rank List)</button>
+                <button class="btn btn-teal" id="rankListExcelBtn">📊 Excel (Rank List)</button>
+                <span style="font-size:12px; color:#6a8aaa; margin-left:4px;">Overall rank based on Total marks</span>
+            </div>
+        </div>
+
+        <!-- ========== STUDENT NAV ========== -->
+        <div class="student-nav" id="studentNav">
+            <span class="nav-item"><span class="label">👤</span> <span class="value" id="currentStudentName">—</span></span>
+            <span class="nav-divider">|</span>
+            <span class="nav-item"><span class="label">🆔</span> <span class="value" id="currentStudentID">—</span></span>
+            <span class="nav-divider">|</span>
+            <span class="badge-class" id="currentStudentClass">—</span>
+            <span class="nav-divider">|</span>
+            <span class="nav-item"><span class="label">📞</span> <span class="value" id="currentStudentMobile">—</span></span>
+            <span class="nav-divider">|</span>
+            <span class="nav-item"><span class="label">📍</span> <span class="value" id="currentStudentLocation">Narasannapeta</span></span>
+            <span class="nav-progress" id="navProgressInline">1 of 1</span>
+        </div>
+
+        <!-- ========== CARD PREVIEW ========== -->
+        <div class="card-container" id="cardContainer">
+            <div id="resultCard">
+                <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px;">
+                    <span style="font-size:48px;">📄</span>
+                    <span>Upload Excel &amp; click <strong>"Generate Cards"</strong></span>
+                    <span style="font-size:14px; color:#aabaca;">A4 Result Card with Tabular Performance</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== PROGRESS OVERLAY ========== -->
+        <div class="progress-overlay" id="progressOverlay">
+            <div class="progress-box">
+                <h3>📦 Generating Individual PDFs</h3>
+                <p id="progressStatus">Preparing...</p>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+        </div>
+
+        <!-- ========== FOOTER ========== -->
+        <div style="margin-top:16px; text-align:center; font-size:13px; color:#8a9aaa; border-top:1px solid #e6edf4; padding-top:18px;">
+            JEE Mains Result Card Generator &bull; Tabular Performance &bull; A4 Ready
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  STATE
+        // ============================================================
+        const state = {
+            students: [],
+            currentIndex: 0,
+            logoDataURL: null,
+            teacherSigDataURL: null,
+            principalSigDataURL: null,
+            imageMap: {},
+            examName: 'JEE MAINS MODEL EXAMINATION – 2',
+            reportData: [],
+        };
+
+        const SUBJECTS = ['Mathematics', 'Physics', 'Chemistry'];
+        const MAX_MARKS_PER_SUBJECT = 100;
+        const TOTAL_MAX_MARKS = 300;
+        const PASS_THRESHOLD = 40;
+        const FIXED_ACADEMIC_YEAR = '2026 – 2027';
+        const FIXED_LOCATION = 'Narasannapeta';
+
+        // DOM refs
+        const $ = id => document.getElementById(id);
+        const cardEl = $('resultCard');
+        const logoUpload = $('logoUpload');
+        const teacherSigUpload = $('teacherSigUpload');
+        const principalSigUpload = $('principalSigUpload');
+        const logoPreview = $('logoPreview');
+        const teacherSigPreview = $('teacherSigPreview');
+        const principalSigPreview = $('principalSigPreview');
+        const excelUpload = $('excelUpload');
+        const excelStatus = $('excelStatus');
+        const photoZipUpload = $('photoZipUpload');
+        const zipStatus = $('zipStatus');
+        const clearPhotosBtn = $('clearPhotosBtn');
+        const generateBtn = $('generateBtn');
+        const downloadPdfBtn = $('downloadPdfBtn');
+        const downloadIndividualBtn = $('downloadIndividualBtn');
+        const downloadAllIndividualBtn = $('downloadAllIndividualBtn');
+        const resetBtn = $('resetBtn');
+        const prevStudentBtn = $('prevStudentBtn');
+        const nextStudentBtn = $('nextStudentBtn');
+        const studentNav = $('studentNav');
+        const currentStudentName = $('currentStudentName');
+        const currentStudentID = $('currentStudentID');
+        const currentStudentClass = $('currentStudentClass');
+        const currentStudentMobile = $('currentStudentMobile');
+        const currentStudentLocation = $('currentStudentLocation');
+        const studentNavIndex = $('studentNavIndex');
+        const navProgress = $('navProgress');
+        const navProgressInline = $('navProgressInline');
+        const studentCountBadge = $('studentCountBadge');
+        const sampleExcelBtn = $('sampleExcelBtn');
+        const progressOverlay = $('progressOverlay');
+        const progressFill = $('progressFill');
+        const progressText = $('progressText');
+        const progressStatus = $('progressStatus');
+
+        // Report DOM
+        const classSelect = $('classSelect');
+        const generateReportBtn = $('generateReportBtn');
+        const refreshReportBtn = $('refreshReportBtn');
+        const reportStatus = $('reportStatus');
+        const reportTotalStudents = $('reportTotalStudents');
+        const reportTotalClasses = $('reportTotalClasses');
+        const reportTopRank = $('reportTopRank');
+
+        // Rank List buttons
+        const rankListPdfBtn = $('rankListPdfBtn');
+        const rankListExcelBtn = $('rankListExcelBtn');
+
+        // Exam name input
+        const examNameInput = $('examNameInput');
+        examNameInput.addEventListener('input', function() {
+            state.examName = this.value.trim() || 'JEE MAINS MODEL EXAMINATION – 2';
+            if (state.students.length > 0) renderCard();
+        });
+
+        // ============================================================
+        //  SAMPLE EXCEL
+        // ============================================================
+        function generateSampleExcel() {
+            const data = [
+                ['Student ID', 'Student Name', 'Class', 'Section', 'Mobile Number', 'Mathematics', 'Physics',
+                    'Chemistry'
+                ],
+                ['S1001', 'T. SHAMYUU', 'VIII', 'A', '145698', 85, 78, 92],
+                ['S1002', 'A. RAHUL', 'IX', 'B', '987654', 72, 68, 75],
+                ['S1003', 'S. PRIYA', 'X', 'A', '456123', 95, 88, 90],
+                ['S1004', 'M. KIRAN', 'VIII', 'C', '321654', 45, 52, 48],
+                ['S1005', 'R. ANJALI', 'IX', 'A', '789456', 65, 70, 60],
+                ['S1006', 'V. SAI', 'X', 'B', '112233', 88, 92, 85],
+                ['S1007', 'K. DEEPAK', 'VIII', 'A', '445566', 78, 82, 80],
+                ['S1008', 'N. LAKSHMI', 'IX', 'C', '778899', 58, 62, 55],
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Students');
+            XLSX.writeFile(wb, 'JEE_Mains_Students_Sample.xlsx');
+        }
+        sampleExcelBtn.addEventListener('click', generateSampleExcel);
+
+        // ============================================================
+        //  IMAGE UPLOADS
+        // ============================================================
+        function handleImageUpload(input, previewEl, setDataURL) {
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const dataUrl = ev.target.result;
+                    previewEl.src = dataUrl;
+                    previewEl.style.display = 'block';
+                    setDataURL(dataUrl);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        handleImageUpload(logoUpload, logoPreview, (url) => { state.logoDataURL = url; });
+        handleImageUpload(teacherSigUpload, teacherSigPreview, (url) => { state.teacherSigDataURL = url; });
+        handleImageUpload(principalSigUpload, principalSigPreview, (url) => { state.principalSigDataURL = url; });
+
+        // ============================================================
+        //  BULK PHOTO UPLOAD (ZIP)
+        // ============================================================
+        photoZipUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                zipStatus.textContent = 'No ZIP uploaded. File names must match Student ID.';
+                zipStatus.className = 'zip-status';
+                clearPhotosBtn.style.display = 'none';
+                return;
+            }
+
+            zipStatus.textContent = '⏳ Reading ZIP...';
+            zipStatus.className = 'zip-status';
+
+            const zip = new JSZip();
+            zip.loadAsync(file)
+                .then(function(zipData) {
+                    const imageMap = {};
+                    const promises = [];
+
+                    zipData.forEach(function(relativePath, zipEntry) {
+                        if (!zipEntry.dir) {
+                            const fileName = zipEntry.name;
+                            const ext = fileName.split('.').pop().toLowerCase();
+                            if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext)) {
+                                const baseName = fileName.substring(0, fileName.lastIndexOf('.')).trim()
+                                    .toUpperCase();
+                                const promise = zipEntry.async('base64').then(function(data) {
+                                    const mimeType = 'image/' + (ext === 'jpg' ? 'jpeg' : ext);
+                                    imageMap[baseName] = `data:${mimeType};base64,${data}`;
+                                });
+                                promises.push(promise);
+                            }
+                        }
+                    });
+
+                    return Promise.all(promises).then(function() {
+                        state.imageMap = imageMap;
+                        const count = Object.keys(imageMap).length;
+                        zipStatus.textContent = `✅ Loaded ${count} images.`;
+                        zipStatus.className = 'zip-status success';
+                        clearPhotosBtn.style.display = 'inline-flex';
+                        if (state.students.length > 0) renderCard();
+                    });
+                })
+                .catch(function(err) {
+                    console.error(err);
+                    zipStatus.textContent = '❌ Invalid ZIP file. Please check and try again.';
+                    zipStatus.className = 'zip-status error';
+                    state.imageMap = {};
+                    clearPhotosBtn.style.display = 'none';
+                });
+        });
+
+        clearPhotosBtn.addEventListener('click', function() {
+            state.imageMap = {};
+            photoZipUpload.value = '';
+            zipStatus.textContent = 'No ZIP uploaded. File names must match Student ID.';
+            zipStatus.className = 'zip-status';
+            clearPhotosBtn.style.display = 'none';
+            if (state.students.length > 0) renderCard();
+        });
+
+        // ============================================================
+        //  EXCEL UPLOAD
+        // ============================================================
+        let excelData = null;
+
+        excelUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) { excelStatus.textContent = 'No file selected'; return; }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const data = new Uint8Array(ev.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(firstSheet);
+                    if (!json || json.length === 0) {
+                        excelStatus.textContent = '⚠️ Excel is empty.';
+                        return;
+                    }
+                    excelData = json;
+                    excelStatus.textContent = `✅ Loaded ${json.length} student(s) from "${file.name}"`;
+                    parseStudentsFromExcel(json);
+                } catch (err) {
+                    excelStatus.textContent = '❌ Error: ' + err.message;
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // ============================================================
+        //  PARSE STUDENTS
+        // ============================================================
+        function parseStudentsFromExcel(json) {
+            const students = [];
+            const cols = Object.keys(json[0] || {});
+            const mapKey = (key) => {
+                const k = String(key).trim().toLowerCase();
+                if (k.includes('student id') || k.includes('id') || k.includes('roll') || k.includes('registration'))
+                    return 'studentId';
+                if (k.includes('name')) return 'name';
+                if (k.includes('class')) return 'class';
+                if (k.includes('section')) return 'section';
+                if (k.includes('mobile') || k.includes('phone')) return 'mobile';
+                if (k.includes('math') || k.includes('mathematics')) return 'mathematics';
+                if (k.includes('phys') || k.includes('physics')) return 'physics';
+                if (k.includes('chem') || k.includes('chemistry')) return 'chemistry';
+                return null;
+            };
+
+            const colMap = {};
+            cols.forEach(c => {
+                const mapped = mapKey(c);
+                if (mapped) colMap[mapped] = c;
+            });
+
+            if (!colMap.name) {
+                excelStatus.textContent = '⚠️ Column "Student Name" not found. Found: ' + cols.join(', ');
+                return;
+            }
+
+            const hasSubject = colMap.mathematics || colMap.physics || colMap.chemistry;
+            if (!hasSubject) {
+                excelStatus.textContent = '⚠️ No subject columns found. Include: Mathematics, Physics, Chemistry.';
+                return;
+            }
+
+            json.forEach(row => {
+                const name = String(row[colMap.name] || '').trim();
+                if (!name) return;
+
+                let studentId = '';
+                if (colMap.studentId) studentId = String(row[colMap.studentId] || '').trim();
+
+                const mathMarks = parseFloat(row[colMap.mathematics] !== undefined ? row[colMap.mathematics] : 0);
+                const physMarks = parseFloat(row[colMap.physics] !== undefined ? row[colMap.physics] : 0);
+                const chemMarks = parseFloat(row[colMap.chemistry] !== undefined ? row[colMap.chemistry] : 0);
+
+                const math = Math.min(Math.max(isNaN(mathMarks) ? 0 : mathMarks, 0), MAX_MARKS_PER_SUBJECT);
+                const phys = Math.min(Math.max(isNaN(physMarks) ? 0 : physMarks, 0), MAX_MARKS_PER_SUBJECT);
+                const chem = Math.min(Math.max(isNaN(chemMarks) ? 0 : chemMarks, 0), MAX_MARKS_PER_SUBJECT);
+
+                const total = math + phys + chem;
+                const percentage = (total / TOTAL_MAX_MARKS) * 100;
+                const pass = percentage >= PASS_THRESHOLD;
+
+                const cls = String(row[colMap.class] || '').trim() || '—';
+                const section = String(row[colMap.section] || '').trim() || '—';
+
+                students.push({
+                    studentId: studentId || '—',
+                    name: name,
+                    class: cls,
+                    section: section,
+                    mobile: String(row[colMap.mobile] || '').trim() || '—',
+                    academicYear: FIXED_ACADEMIC_YEAR,
+                    location: FIXED_LOCATION,
+                    mathematics: math,
+                    physics: phys,
+                    chemistry: chem,
+                    total: total,
+                    maxMarks: TOTAL_MAX_MARKS,
+                    percentage: percentage,
+                    pass: pass,
+                    generatedId: '',
+                    rank: 0,
+                    overallRank: 0,
+                });
+            });
+
+            if (students.length === 0) {
+                excelStatus.textContent = '⚠️ No valid student records found.';
+                return;
+            }
+
+            state.students = students;
+            state.currentIndex = 0;
+            updateUI();
+            renderCard();
+            updateReportData();
+            populateClassDropdown();
+            updateReportStats();
+            excelStatus.textContent = `✅ Loaded ${students.length} student(s). Click "Generate Cards" to refresh.`;
+        }
+
+        // ============================================================
+        //  REPORT DATA — Generate IDs & Ranks (class-wise)
+        // ============================================================
+        function updateReportData() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                state.reportData = [];
+                return;
+            }
+
+            // Group by class
+            const classGroups = {};
+            students.forEach(s => {
+                const key = s.class || '—';
+                if (!classGroups[key]) classGroups[key] = [];
+                classGroups[key].push({ ...s });
+            });
+
+            // For each class: assign generated ID and rank
+            const result = [];
+            Object.keys(classGroups).forEach(cls => {
+                const group = classGroups[cls];
+                const sorted = [...group].sort((a, b) => b.total - a.total);
+
+                let rank = 1;
+                let prevTotal = null;
+                let rankCounter = 0;
+                sorted.forEach((s, idx) => {
+                    rankCounter++;
+                    if (prevTotal !== null && s.total < prevTotal) {
+                        rank = rankCounter;
+                    }
+                    s.rank = rank;
+                    prevTotal = s.total;
+                });
+
+                const ranked = sorted.map((s, idx) => {
+                    const serial = String(idx + 1).padStart(4, '0');
+                    const generatedId = `JY26-${serial}`;
+                    return { ...s, generatedId };
+                });
+
+                result.push(...ranked);
+            });
+
+            state.reportData = result;
+
+            // Update original students with generatedId and rank
+            const idMap = {};
+            result.forEach(r => {
+                const key = r.studentId + '|' + r.name;
+                idMap[key] = { generatedId: r.generatedId, rank: r.rank };
+            });
+            state.students.forEach(s => {
+                const key = s.studentId + '|' + s.name;
+                if (idMap[key]) {
+                    s.generatedId = idMap[key].generatedId;
+                    s.rank = idMap[key].rank;
+                }
+            });
+        }
+
+        // ============================================================
+        //  OVERALL RANK LIST (across all students)
+        // ============================================================
+        function getOverallRankList() {
+            const students = state.students;
+            if (!students || students.length === 0) return [];
+
+            // Copy and sort by total marks descending
+            const sorted = [...students].map(s => ({ ...s }));
+            sorted.sort((a, b) => b.total - a.total);
+
+            // Assign overall ranks with tie handling
+            let rank = 1;
+            let prevTotal = null;
+            let rankCounter = 0;
+            sorted.forEach((s, idx) => {
+                rankCounter++;
+                if (prevTotal !== null && s.total < prevTotal) {
+                    rank = rankCounter;
+                }
+                s.overallRank = rank;
+                prevTotal = s.total;
+            });
+
+            return sorted;
+        }
+
+        // ============================================================
+        //  POPULATE CLASS DROPDOWN
+        // ============================================================
+        function populateClassDropdown() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                classSelect.innerHTML = `<option value="__ALL__">All Classes</option>`;
+                return;
+            }
+            const classes = new Set();
+            students.forEach(s => {
+                if (s.class && s.class !== '—') classes.add(s.class);
+            });
+            const sorted = Array.from(classes).sort();
+            let html = `<option value="__ALL__">📚 All Classes (${students.length})</option>`;
+            sorted.forEach(cls => {
+                const count = students.filter(s => s.class === cls).length;
+                html += `<option value="${cls}">${cls} (${count})</option>`;
+            });
+            classSelect.innerHTML = html;
+        }
+
+        // ============================================================
+        //  UPDATE REPORT STATS
+        // ============================================================
+        function updateReportStats() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                reportTotalStudents.textContent = '0';
+                reportTotalClasses.textContent = '0';
+                reportTopRank.textContent = '—';
+                reportStatus.textContent = 'Load student data to see class-wise report options.';
+                reportStatus.className = 'report-status';
+                return;
+            }
+
+            const classes = new Set();
+            students.forEach(s => {
+                if (s.class && s.class !== '—') classes.add(s.class);
+            });
+
+            reportTotalStudents.textContent = students.length;
+            reportTotalClasses.textContent = classes.size;
+
+            let topPct = 0;
+            let topName = '—';
+            students.forEach(s => {
+                if (s.percentage > topPct) {
+                    topPct = s.percentage;
+                    topName = s.name;
+                }
+            });
+            reportTopRank.textContent = topName + ' (' + Math.round(topPct) + '%)';
+            reportStatus.textContent = `✅ ${students.length} students across ${classes.size} class(es). Select a class and click "Generate Report PDF".`;
+            reportStatus.className = 'report-status success';
+        }
+
+        // ============================================================
+        //  UI UPDATE
+        // ============================================================
+        function updateUI() {
+            const count = state.students.length;
+            studentCountBadge.textContent = count + ' student' + (count !== 1 ? 's' : '');
+            if (count === 0) {
+                studentNav.classList.remove('active');
+                return;
+            }
+            studentNav.classList.add('active');
+            const idx = state.currentIndex;
+            const s = state.students[idx];
+            if (s) {
+                currentStudentName.textContent = s.name;
+                currentStudentID.textContent = s.studentId;
+                currentStudentClass.textContent = s.class + (s.section ? ' - ' + s.section : '');
+                currentStudentMobile.textContent = s.mobile;
+                currentStudentLocation.textContent = FIXED_LOCATION;
+                studentNavIndex.textContent = (idx + 1) + ' / ' + count;
+                navProgress.textContent = (idx + 1) + ' of ' + count;
+                navProgressInline.textContent = (idx + 1) + ' of ' + count;
+            }
+        }
+
+        // ============================================================
+        //  RENDER CARD
+        // ============================================================
+        function renderCard() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                cardEl.innerHTML = `
+                        <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px;">
+                            <span style="font-size:48px;">📄</span>
+                            <span>Upload Excel &amp; click <strong>"Generate Cards"</strong></span>
+                            <span style="font-size:14px; color:#aabaca;">A4 Result Card with Tabular Performance</span>
+                        </div>
+                    `;
+                return;
+            }
+
+            const idx = Math.min(state.currentIndex, students.length - 1);
+            const s = students[idx];
+            if (!s) return;
+
+            const logoHtml = state.logoDataURL ?
+                `<img src="${state.logoDataURL}" alt="Logo" style="max-width:100px; max-height:100px; object-fit:contain;" />` :
+                '';
+
+            const teacherSigHtml = state.teacherSigDataURL ?
+                `<img src="${state.teacherSigDataURL}" alt="Teacher Signature" style="max-width:140px; max-height:60px; object-fit:contain;" />` :
+                '<div class="sig-placeholder"></div>';
+
+            const principalSigHtml = state.principalSigDataURL ?
+                `<img src="${state.principalSigDataURL}" alt="Principal Signature" style="max-width:140px; max-height:60px; object-fit:contain;" />` :
+                '<div class="sig-placeholder"></div>';
+
+            const pct = Math.round(s.percentage);
+            const barWidth = Math.min(s.percentage, 100);
+
+            const imageKey = s.studentId.trim().toUpperCase();
+            const imageData = state.imageMap ? state.imageMap[imageKey] : null;
+            const photoHtml = imageData ?
+                `<img src="${imageData}" alt="Student Photo" />` :
+                `<div class="placeholder-photo">📷</div>`;
+
+            const subjectData = [
+                { name: 'Mathematics', marks: s.mathematics, max: MAX_MARKS_PER_SUBJECT },
+                { name: 'Physics', marks: s.physics, max: MAX_MARKS_PER_SUBJECT },
+                { name: 'Chemistry', marks: s.chemistry, max: MAX_MARKS_PER_SUBJECT },
+            ];
+
+            let tableRows = '';
+            subjectData.forEach(sub => {
+                const subPct = sub.max > 0 ? ((sub.marks / sub.max) * 100).toFixed(1) : '0.0';
+                tableRows += `
+                        <tr>
+                            <td class="subject-label"><span class="sub-icon">📘</span> ${sub.name}</td>
+                            <td class="marks-cell">${sub.marks}</td>
+                            <td class="max-cell">${sub.max}</td>
+                            <td class="pct-cell">${subPct}%</td>
+                        </tr>
+                    `;
+            });
+
+            const totalPct = s.percentage.toFixed(1);
+            const displayId = s.studentId;
+            const examTitle = state.examName;
+
+            cardEl.innerHTML = `
+                <div class="jee-card">
+                    <div class="top-bar"></div>
+
+                    <div class="card-header">
+                        <div class="logo-wrap">${logoHtml}</div>
+                        <div class="title-wrap">
+                            <div class="school-name">SRI VENKATESWARA JY SCHOOL</div>
+                            <div class="school-sub">(IIT-JEE / NEET Foundation · Olympiads)</div>
+                            <div class="school-address">Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta</div>
+                            <div class="exam-title">${examTitle}</div>
+                            <div class="result-card-label">✦ RESULT CARD ✦</div>
+                        </div>
+                        <div class="spacer"></div>
+                    </div>
+
+                    <div class="deco-line">
+                        <span class="ornament">✦</span>
+                        <div class="line"></div>
+                        <span class="ornament" style="color:#d4a017;">★</span>
+                        <div class="line"></div>
+                        <span class="ornament">✦</span>
+                    </div>
+
+                    <div class="student-info">
+                        <div class="info-details">
+                            <div class="info-row">
+                                <div class="label">👤 Student Name</div>
+                                <div class="value">${s.name}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">🆔 Student ID</div>
+                                <div class="value">${displayId}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">📚 Class</div>
+                                <div class="value">${s.class}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">📖 Section</div>
+                                <div class="value">${s.section}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">📞 Mobile</div>
+                                <div class="value">${s.mobile}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">📅 Academic Year</div>
+                                <div class="value">${s.academicYear}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">📍 Location</div>
+                                <div class="value">${s.location}</div>
+                            </div>
+                            ${s.rank ? `<div class="info-row"><div class="label">🏅 Class Rank</div><div class="value">#${s.rank}</div></div>` : ''}
+                        </div>
+                        <div class="photo-col">
+                            ${photoHtml}
+                        </div>
+                    </div>
+
+                    <div class="perf-table-wrap">
+                        <div class="perf-title">
+                            <span class="icon">📊</span>
+                            <span>Performance Summary</span>
+                            <span class="max-hint">Max Marks: ${TOTAL_MAX_MARKS}</span>
+                        </div>
+
+                        <table class="perf-table">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left; padding-left:20px;">Subject</th>
+                                    <th>Marks</th>
+                                    <th>Max Marks</th>
+                                    <th>%</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRows}
+                                <tr class="total-row">
+                                    <td class="total-label">📌 TOTAL</td>
+                                    <td class="marks-cell">${s.total}</td>
+                                    <td class="max-cell">${s.maxMarks}</td>
+                                    <td class="pct-cell">${totalPct}%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="score-bar-wrap">
+                        <div class="score-bar">
+                            <div class="fill" style="width:${barWidth}%;"></div>
+                        </div>
+                        <div class="score-labels">
+                            <span>0</span>
+                            <span>Threshold: ${PASS_THRESHOLD}%</span>
+                            <span>${TOTAL_MAX_MARKS}</span>
+                        </div>
+                    </div>
+
+                    <div class="result-footer">
+                        <div class="left">
+                            <div class="total-label">📋 Total Marks: ${s.total} / ${s.maxMarks}</div>
+                            <div class="percentage">${totalPct}%</div>
+                        </div>
+                        <div class="signatures">
+                            <div class="sig-block">
+                                ${teacherSigHtml}
+                                <div class="sig-label">✍ Teacher Signature</div>
+                            </div>
+                            <div class="sig-block">
+                                ${principalSigHtml}
+                                <div class="sig-label">✍ Principal Signature</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer-note">
+                        ★ This is a system-generated result card for ${examTitle} ★
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================================
+        //  NAVIGATION
+        // ============================================================
+        function goToStudent(index) {
+            if (!state.students.length) return;
+            state.currentIndex = Math.max(0, Math.min(index, state.students.length - 1));
+            updateUI();
+            renderCard();
+        }
+
+        prevStudentBtn.addEventListener('click', () => goToStudent(state.currentIndex - 1));
+        nextStudentBtn.addEventListener('click', () => goToStudent(state.currentIndex + 1));
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevStudentBtn.click();
+            if (e.key === 'ArrowRight') nextStudentBtn.click();
+        });
+
+        // ============================================================
+        //  GENERATE
+        // ============================================================
+        generateBtn.addEventListener('click', function() {
+            if (!state.students.length) {
+                if (excelData && excelData.length) {
+                    parseStudentsFromExcel(excelData);
+                } else {
+                    alert('Please upload an Excel file with student data first.');
+                }
+                return;
+            }
+            updateReportData();
+            renderCard();
+            updateUI();
+            populateClassDropdown();
+            updateReportStats();
+        });
+
+        // ============================================================
+        //  CAPTURE & PDF HELPERS
+        // ============================================================
+        async function captureCardAsImage() {
+            await new Promise(resolve => setTimeout(resolve, 200));
+            const canvas = await html2canvas(cardEl, {
+                scale: 2.5,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: '#ffffff',
+                logging: false,
+                width: 794,
+                height: 1123,
+            });
+            return canvas.toDataURL('image/jpeg', 0.95);
+        }
+
+        function imageToPDF(imgData) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 210;
+            const imgHeight = (1123 / 794) * imgWidth;
+            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+            return pdf.output('arraybuffer');
+        }
+
+        function sanitizeFileName(name) {
+            return name.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 60);
+        }
+
+        // ============================================================
+        //  CLASS WISE REPORT — GENERATE PDF
+        // ============================================================
+        generateReportBtn.addEventListener('click', function() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                alert('No student data. Please upload an Excel file first.');
+                return;
+            }
+
+            const selectedClass = classSelect.value;
+            let filtered = [];
+            if (selectedClass === '__ALL__') {
+                filtered = [...state.reportData];
+            } else {
+                filtered = state.reportData.filter(s => s.class === selectedClass);
+            }
+
+            if (filtered.length === 0) {
+                alert('No students found for the selected class.');
+                return;
+            }
+
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Generating...';
+            btn.disabled = true;
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('l', 'mm', 'a4');
+                const pageWidth = 297;
+                const pageHeight = 210;
+                const margin = 14;
+                const usableWidth = pageWidth - 2 * margin;
+
+                const title = selectedClass === '__ALL__' ?
+                    'JEE MAINS — CLASS WISE REPORT (All Classes)' :
+                    `JEE MAINS — CLASS WISE REPORT (${selectedClass})`;
+                const schoolName = 'SRI VENKATESWARA JY SCHOOL';
+                const subTitle = 'JEE Mains Model Examination – 2 · Result Summary';
+
+                const headers = ['S.No', 'Student ID', 'Student Name', 'Class', 'Section', 'Mobile', 'Mat', 'Phy', 'Che',
+                    'Total', 'Rank'
+                ];
+
+                const sorted = [...filtered].sort((a, b) => {
+                    if (a.class !== b.class) return a.class.localeCompare(b.class);
+                    return a.rank - b.rank;
+                });
+
+                const rows = [];
+                let serial = 1;
+                let currentClass = '';
+                sorted.forEach((s, idx) => {
+                    if (s.class !== currentClass) {
+                        serial = 1;
+                        currentClass = s.class;
+                    }
+                    rows.push([
+                        String(serial),
+                        s.generatedId || s.studentId,
+                        s.name,
+                        s.class,
+                        s.section,
+                        s.mobile,
+                        String(s.mathematics),
+                        String(s.physics),
+                        String(s.chemistry),
+                        String(s.total),
+                        '#' + s.rank,
+                    ]);
+                    serial++;
+                });
+
+                const doc = pdf;
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.text(schoolName, pageWidth / 2, 16, { align: 'center' });
+
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'normal');
+                doc.text(title, pageWidth / 2, 24, { align: 'center' });
+
+                doc.setFontSize(11);
+                doc.text(subTitle, pageWidth / 2, 30, { align: 'center' });
+
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                doc.setFontSize(9);
+                doc.text(`Generated: ${dateStr}`, pageWidth - margin, 36, { align: 'right' });
+
+                const colWidths = [12, 28, 44, 20, 18, 24, 16, 16, 16, 20, 18];
+                const totalColWidth = colWidths.reduce((a, b) => a + b, 0);
+                const scale = usableWidth / totalColWidth;
+                const scaledWidths = colWidths.map(w => w * scale);
+
+                let y = 42;
+                const rowHeight = 7;
+                const headerHeight = 9;
+
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'bold');
+                let x = margin;
+                headers.forEach((h, i) => {
+                    doc.rect(x, y, scaledWidths[i], headerHeight, 'S');
+                    doc.text(h, x + scaledWidths[i] / 2, y + headerHeight / 2 + 1.5, { align: 'center' });
+                    x += scaledWidths[i];
+                });
+                y += headerHeight;
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(7.5);
+                rows.forEach((row) => {
+                    if (y + rowHeight > pageHeight - margin) {
+                        doc.addPage();
+                        y = margin + 4;
+                        doc.setFontSize(8);
+                        doc.setFont('helvetica', 'bold');
+                        x = margin;
+                        headers.forEach((h, i) => {
+                            doc.rect(x, y, scaledWidths[i], headerHeight, 'S');
+                            doc.text(h, x + scaledWidths[i] / 2, y + headerHeight / 2 + 1.5, { align: 'center' });
+                            x += scaledWidths[i];
+                        });
+                        y += headerHeight;
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(7.5);
+                    }
+
+                    x = margin;
+                    row.forEach((cell, i) => {
+                        doc.rect(x, y, scaledWidths[i], rowHeight, 'S');
+                        const align = (i === 0 || i === 1 || i === 5 || i === 9 || i === 10) ? 'center' :
+                        'left';
+                        doc.text(cell, x + (align === 'center' ? scaledWidths[i] / 2 : 2), y + rowHeight / 2 +
+                            1.5, {
+                                align: align === 'center' ? 'center' : 'left'
+                            });
+                        x += scaledWidths[i];
+                    });
+                    y += rowHeight;
+                });
+
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'italic');
+                const footerText = '★ This is a system-generated class-wise report for JEE Mains Model Examination – 2 ★';
+                doc.text(footerText, pageWidth / 2, pageHeight - 6, { align: 'center' });
+
+                doc.save('JEE_Mains_Class_Wise_Report.pdf');
+                btn.textContent = '✅ Downloaded!';
+                setTimeout(() => { btn.textContent = origText;
+                    btn.disabled = false; }, 2000);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error generating report: ' + err.message);
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        //  REFRESH REPORT
+        // ============================================================
+        refreshReportBtn.addEventListener('click', function() {
+            if (state.students.length === 0) {
+                alert('No student data loaded. Please upload an Excel file.');
+                return;
+            }
+            updateReportData();
+            populateClassDropdown();
+            updateReportStats();
+            reportStatus.textContent = '✅ Refreshed. Data is up to date.';
+            reportStatus.className = 'report-status success';
+            setTimeout(() => {
+                reportStatus.textContent =
+                    `✅ ${state.students.length} students across ${new Set(state.students.map(s => s.class)).size} class(es). Select a class and click "Generate Report PDF".`;
+            }, 1500);
+        });
+
+        // ============================================================
+        //  RANK LIST — PDF
+        // ============================================================
+        rankListPdfBtn.addEventListener('click', function() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                alert('No student data. Please upload an Excel file first.');
+                return;
+            }
+
+            const ranked = getOverallRankList();
+            if (ranked.length === 0) {
+                alert('No student data available.');
+                return;
+            }
+
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Generating...';
+            btn.disabled = true;
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('l', 'mm', 'a4');
+                const pageWidth = 297;
+                const pageHeight = 210;
+                const margin = 14;
+                const usableWidth = pageWidth - 2 * margin;
+
+                const schoolName = 'SRI VENKATESWARA JY SCHOOL';
+                const title = 'JEE MAINS — OVERALL RANK LIST (All Students)';
+                const subTitle = `JEE Mains Model Examination – 2 · Rank Wise Summary (Total: ${ranked.length} students)`;
+
+                // Headers
+                const headers = ['Rank', 'Student Name', 'Class', 'Section', 'Student ID', 'Mobile No', 'Mat', 'Phy',
+                    'Che', 'Total'
+                ];
+
+                // Build rows
+                const rows = ranked.map(s => [
+                    '#' + s.overallRank,
+                    s.name,
+                    s.class,
+                    s.section,
+                    s.studentId,
+                    s.mobile,
+                    String(s.mathematics),
+                    String(s.physics),
+                    String(s.chemistry),
+                    String(s.total),
+                ]);
+
+                const doc = pdf;
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.text(schoolName, pageWidth / 2, 16, { align: 'center' });
+
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'normal');
+                doc.text(title, pageWidth / 2, 24, { align: 'center' });
+
+                doc.setFontSize(11);
+                doc.text(subTitle, pageWidth / 2, 30, { align: 'center' });
+
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                doc.setFontSize(9);
+                doc.text(`Generated: ${dateStr}`, pageWidth - margin, 36, { align: 'right' });
+
+                // Column widths: Rank(14), Name(50), Class(20), Section(18), ID(30), Mobile(26), Mat(14), Phy(14), Che(14), Total(18)
+                const colWidths = [14, 50, 20, 18, 30, 26, 14, 14, 14, 18];
+                const totalColWidth = colWidths.reduce((a, b) => a + b, 0);
+                const scale = usableWidth / totalColWidth;
+                const scaledWidths = colWidths.map(w => w * scale);
+
+                let y = 42;
+                const rowHeight = 7;
+                const headerHeight = 9;
+
+                // Header
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'bold');
+                let x = margin;
+                headers.forEach((h, i) => {
+                    doc.rect(x, y, scaledWidths[i], headerHeight, 'S');
+                    doc.text(h, x + scaledWidths[i] / 2, y + headerHeight / 2 + 1.5, { align: 'center' });
+                    x += scaledWidths[i];
+                });
+                y += headerHeight;
+
+                // Rows
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(7.5);
+                rows.forEach((row) => {
+                    if (y + rowHeight > pageHeight - margin) {
+                        doc.addPage();
+                        y = margin + 4;
+                        doc.setFontSize(8);
+                        doc.setFont('helvetica', 'bold');
+                        x = margin;
+                        headers.forEach((h, i) => {
+                            doc.rect(x, y, scaledWidths[i], headerHeight, 'S');
+                            doc.text(h, x + scaledWidths[i] / 2, y + headerHeight / 2 + 1.5, { align: 'center' });
+                            x += scaledWidths[i];
+                        });
+                        y += headerHeight;
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(7.5);
+                    }
+
+                    x = margin;
+                    row.forEach((cell, i) => {
+                        doc.rect(x, y, scaledWidths[i], rowHeight, 'S');
+                        // Center align for rank, ID, mobile, marks, total; left align for name, class, section
+                        const align = (i === 0 || i === 4 || i === 5 || i === 6 || i === 7 || i === 8 || i ===
+                            9) ? 'center' : 'left';
+                        const pad = align === 'center' ? scaledWidths[i] / 2 : 2;
+                        doc.text(cell, x + (align === 'center' ? pad : 2), y + rowHeight / 2 + 1.5, {
+                            align: align === 'center' ? 'center' : 'left'
+                        });
+                        x += scaledWidths[i];
+                    });
+                    y += rowHeight;
+                });
+
+                // Footer
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'italic');
+                const footerText = '★ Overall rank based on Total marks (300 max) · Rank List for JEE Mains Model Examination – 2 ★';
+                doc.text(footerText, pageWidth / 2, pageHeight - 6, { align: 'center' });
+
+                doc.save('JEE_Mains_Overall_Rank_List.pdf');
+                btn.textContent = '✅ Downloaded!';
+                setTimeout(() => { btn.textContent = origText;
+                    btn.disabled = false; }, 2000);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error generating PDF: ' + err.message);
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        //  RANK LIST — EXCEL
+        // ============================================================
+        rankListExcelBtn.addEventListener('click', function() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                alert('No student data. Please upload an Excel file first.');
+                return;
+            }
+
+            const ranked = getOverallRankList();
+            if (ranked.length === 0) {
+                alert('No student data available.');
+                return;
+            }
+
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Generating...';
+            btn.disabled = true;
+
+            try {
+                // Build data array for Excel
+                const excelData = [
+                    ['Rank', 'Student Name', 'Class', 'Section', 'Student ID', 'Mobile No', 'Mathematics', 'Physics',
+                        'Chemistry', 'Total'
+                    ]
+                ];
+
+                ranked.forEach(s => {
+                    excelData.push([
+                        s.overallRank,
+                        s.name,
+                        s.class,
+                        s.section,
+                        s.studentId,
+                        s.mobile,
+                        s.mathematics,
+                        s.physics,
+                        s.chemistry,
+                        s.total,
+                    ]);
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+                // Set column widths
+                ws['!cols'] = [
+                    { wch: 8 }, // Rank
+                    { wch: 28 }, // Name
+                    { wch: 12 }, // Class
+                    { wch: 10 }, // Section
+                    { wch: 16 }, // Student ID
+                    { wch: 16 }, // Mobile
+                    { wch: 10 }, // Mat
+                    { wch: 10 }, // Phy
+                    { wch: 10 }, // Che
+                    { wch: 12 }, // Total
+                ];
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Rank List');
+                XLSX.writeFile(wb, 'JEE_Mains_Overall_Rank_List.xlsx');
+
+                btn.textContent = '✅ Downloaded!';
+                setTimeout(() => { btn.textContent = origText;
+                    btn.disabled = false; }, 2000);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error generating Excel: ' + err.message);
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        //  DOWNLOAD: ALL CARDS (SINGLE PDF)
+        // ============================================================
+        downloadPdfBtn.addEventListener('click', async function() {
+            if (!state.students.length) {
+                alert('No student data. Please upload an Excel file and generate cards.');
+                return;
+            }
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Generating...';
+            btn.disabled = true;
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = 210;
+
+                for (let i = 0; i < state.students.length; i++) {
+                    state.currentIndex = i;
+                    renderCard();
+                    updateUI();
+                    await new Promise(r => setTimeout(r, 250));
+                    const imgData = await captureCardAsImage();
+                    const imgHeight = (1123 / 794) * pageWidth;
+                    if (i > 0) pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, imgHeight);
+                }
+
+                state.currentIndex = 0;
+                renderCard();
+                updateUI();
+                pdf.save('JEE_Mains_Result_Cards_All.pdf');
+                btn.textContent = '✅ Downloaded!';
+                setTimeout(() => { btn.textContent = origText;
+                    btn.disabled = false; }, 2000);
+            } catch (err) {
+                console.error(err);
+                alert('Error: ' + err.message);
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        //  DOWNLOAD: INDIVIDUAL PDF (CURRENT)
+        // ============================================================
+        downloadIndividualBtn.addEventListener('click', async function() {
+            if (!state.students.length) {
+                alert('No student data.');
+                return;
+            }
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳...';
+            btn.disabled = true;
+
+            try {
+                const idx = state.currentIndex;
+                const student = state.students[idx];
+                renderCard();
+                await new Promise(r => setTimeout(r, 250));
+                const imgData = await captureCardAsImage();
+                const pdfBuffer = imageToPDF(imgData);
+                const safeName = sanitizeFileName(student.name);
+                const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${safeName}_JEE_Mains_Result.pdf`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+                btn.textContent = '✅ Done!';
+                setTimeout(() => { btn.textContent = origText;
+                    btn.disabled = false; }, 1800);
+            } catch (err) {
+                console.error(err);
+                alert('Error: ' + err.message);
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        //  DOWNLOAD: ALL INDIVIDUAL PDFs AS ZIP
+        // ============================================================
+        downloadAllIndividualBtn.addEventListener('click', async function() {
+            if (!state.students.length) {
+                alert('No student data.');
+                return;
+            }
+
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Preparing...';
+            btn.disabled = true;
+
+            progressOverlay.classList.add('active');
+            progressFill.style.width = '0%';
+            progressText.textContent = '0%';
+            progressStatus.textContent = 'Starting...';
+
+            try {
+                const zip = new JSZip();
+                const total = state.students.length;
+
+                for (let i = 0; i < total; i++) {
+                    state.currentIndex = i;
+                    renderCard();
+                    updateUI();
+
+                    progressStatus.textContent = `Processing ${i+1} of ${total}: ${state.students[i].name}`;
+                    const pct = Math.round(((i) / total) * 100);
+                    progressFill.style.width = pct + '%';
+                    progressText.textContent = pct + '%';
+
+                    await new Promise(r => setTimeout(r, 200));
+
+                    const imgData = await captureCardAsImage();
+                    const pdfBuffer = imageToPDF(imgData);
+                    const safeName = sanitizeFileName(state.students[i].name);
+                    zip.file(`${safeName}_JEE_Mains_Result.pdf`, pdfBuffer);
+                }
+
+                progressStatus.textContent = 'Creating ZIP file...';
+                progressFill.style.width = '95%';
+                progressText.textContent = '95%';
+
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+                progressFill.style.width = '100%';
+                progressText.textContent = '100%';
+                progressStatus.textContent = '✅ Done! Downloading...';
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(zipBlob);
+                link.download = 'All_JEE_Mains_Result_Cards.zip';
+                link.click();
+                URL.revokeObjectURL(link.href);
+
+                state.currentIndex = 0;
+                renderCard();
+                updateUI();
+
+                btn.textContent = '✅ Downloaded!';
+                setTimeout(() => {
+                    btn.textContent = origText;
+                    btn.disabled = false;
+                }, 2000);
+
+                setTimeout(() => {
+                    progressOverlay.classList.remove('active');
+                }, 800);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error: ' + err.message);
+                progressOverlay.classList.remove('active');
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        //  RESET
+        // ============================================================
+        resetBtn.addEventListener('click', function() {
+            state.students = [];
+            state.currentIndex = 0;
+            state.logoDataURL = null;
+            state.teacherSigDataURL = null;
+            state.principalSigDataURL = null;
+            state.imageMap = {};
+            state.reportData = [];
+            excelData = null;
+            state.examName = 'JEE MAINS MODEL EXAMINATION – 2';
+            examNameInput.value = state.examName;
+
+            logoUpload.value = '';
+            teacherSigUpload.value = '';
+            principalSigUpload.value = '';
+            excelUpload.value = '';
+            photoZipUpload.value = '';
+            logoPreview.style.display = 'none';
+            teacherSigPreview.style.display = 'none';
+            principalSigPreview.style.display = 'none';
+            logoPreview.src = '';
+            teacherSigPreview.src = '';
+            principalSigPreview.src = '';
+            excelStatus.textContent = 'No file uploaded';
+            zipStatus.textContent = 'No ZIP uploaded. File names must match Student ID.';
+            zipStatus.className = 'zip-status';
+            clearPhotosBtn.style.display = 'none';
+
+            classSelect.innerHTML = `<option value="__ALL__">All Classes</option>`;
+            reportTotalStudents.textContent = '0';
+            reportTotalClasses.textContent = '0';
+            reportTopRank.textContent = '—';
+            reportStatus.textContent = 'Load student data to see class-wise report options.';
+            reportStatus.className = 'report-status';
+
+            cardEl.innerHTML = `
+                    <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px;">
+                        <span style="font-size:48px;">📄</span>
+                        <span>Upload Excel &amp; click <strong>"Generate Cards"</strong></span>
+                        <span style="font-size:14px; color:#aabaca;">A4 Result Card with Tabular Performance</span>
+                    </div>
+                `;
+            studentNav.classList.remove('active');
+            studentCountBadge.textContent = '0 students';
+            progressOverlay.classList.remove('active');
+        });
+
+        // ============================================================
+        //  AUTO-REFRESH REPORT ON DATA CHANGE
+        // ============================================================
+        console.log('🏫 JEE Mains Result Card — Tabular Performance');
+        console.log('📐 Page width: 1800px · A4 ready (794×1123px)');
+        console.log('📊 Subjects: Mathematics, Physics, Chemistry (max 100 each)');
+        console.log('📈 Total: 300 · Pass threshold: 40%');
+        console.log('📸 Upload ZIP with images named by Student ID (e.g. S1001.jpg)');
+        console.log('📊 NEW: Class-Wise Report with auto-ranking & JY26-XXXX IDs');
+        console.log('📝 Examination name is now customisable via text input.');
+        console.log('🆔 Student ID now shows the exact Excel value on the result card and navigation.');
+        console.log('🏆 NEW: Overall Rank List PDF & Excel export (all students, rank-wise)');
+    </script>
+
+</body>
+</html>

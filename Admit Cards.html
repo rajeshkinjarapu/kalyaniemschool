@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admit Card · Half Yearly Examination</title>
+
+    <!-- CDN Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js">
+    </script>
+
+    <style>
+        /* ============================================================
+               RESET & BASE
+               ============================================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            background: #eef2f7;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-wrapper {
+            max-width: 1800px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.08);
+            padding: 32px 40px 44px;
+        }
+
+        /* ---- HEADER ---- */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 6px;
+        }
+
+        .main-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .main-header .brand .icon {
+            font-size: 38px;
+            line-height: 1;
+        }
+
+        .main-header .brand h1 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #0b1a33;
+            letter-spacing: -0.5px;
+        }
+
+        .main-header .brand h1 small {
+            font-size: 16px;
+            font-weight: 400;
+            color: #4a6f8f;
+            letter-spacing: 0.3px;
+            margin-left: 8px;
+        }
+
+        .badge-count {
+            background: #0b1a33;
+            color: #fff;
+            padding: 4px 20px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .sub-head {
+            color: #3a5a7a;
+            font-size: 14px;
+            border-bottom: 2px solid #eef2f7;
+            padding-bottom: 14px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .sub-head .hint {
+            color: #6a8aaa;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ---- CONTROLS ---- */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 30px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 1100px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+        }
+
+        .upload-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 22px 26px 26px;
+            border: 1px solid #e6edf4;
+        }
+
+        .upload-section h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0b1a33;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-section h3 .badge-soft {
+            font-size: 11px;
+            font-weight: 600;
+            background: #e6edf4;
+            color: #2a4a6a;
+            padding: 1px 12px;
+            border-radius: 30px;
+        }
+
+        .file-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .file-row label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1a3a5a;
+            min-width: 110px;
+            white-space: nowrap;
+        }
+
+        .file-row input[type="file"] {
+            flex: 1;
+            font-size: 13px;
+            padding: 6px 0;
+            min-width: 140px;
+        }
+
+        .file-row .preview-img {
+            width: 52px;
+            height: 52px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: #fff;
+            border: 1.5px solid #dce4ed;
+            padding: 4px;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .divider-light {
+            border: none;
+            border-top: 1px solid #e6edf4;
+            margin: 14px 0;
+        }
+
+        .zip-status {
+            font-size: 13px;
+            color: #4a6a8a;
+            margin-top: 4px;
+            padding: 4px 0;
+        }
+        .zip-status .success {
+            color: #1a7a4a;
+            font-weight: 500;
+        }
+        .zip-status .error {
+            color: #b13a3a;
+            font-weight: 500;
+        }
+
+        /* ---- MANUAL ENTRY SECTION ---- */
+        .manual-entry-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 22px 26px 26px;
+            border: 1px solid #e6edf4;
+            margin-top: 20px;
+        }
+
+        .manual-entry-section h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0b1a33;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .manual-entry-section h3 .badge-soft {
+            font-size: 11px;
+            font-weight: 600;
+            background: #e6edf4;
+            color: #2a4a6a;
+            padding: 1px 12px;
+            border-radius: 30px;
+        }
+
+        .exam-title-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .exam-title-row label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a3a5a;
+            min-width: 120px;
+        }
+
+        .exam-title-row input {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 14px;
+            border: 1.5px solid #dce4ed;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0b1a33;
+            background: #fff;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .exam-title-row input:focus {
+            border-color: #d4a017;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .subject-entry {
+            display: grid;
+            grid-template-columns: 160px 1fr 1fr 1.2fr;
+            gap: 10px;
+            align-items: center;
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #e6edf4;
+        }
+
+        .subject-entry .sub-name-input {
+            font-weight: 700;
+            color: #0b1a33;
+            font-size: 13px;
+            border: 1.5px solid #dce4ed;
+            border-radius: 5px;
+            padding: 5px 8px;
+            background: #fafcfd;
+            outline: none;
+            width: 100%;
+            transition: border 0.2s;
+            text-transform: uppercase;
+        }
+
+        .subject-entry .sub-name-input:focus {
+            border-color: #d4a017;
+        }
+
+        .subject-entry input[type="date"],
+        .subject-entry input[type="text"] {
+            padding: 5px 8px;
+            border: 1.5px solid #dce4ed;
+            border-radius: 5px;
+            font-size: 13px;
+            outline: none;
+            transition: border 0.2s;
+            background: #fafcfd;
+            width: 100%;
+        }
+
+        .subject-entry input:focus {
+            border-color: #d4a017;
+        }
+
+        .subject-entry .invigilator-input {
+            min-width: 100px;
+        }
+
+        @media (max-width: 860px) {
+            .subject-entry {
+                grid-template-columns: 1fr;
+                gap: 5px;
+                padding: 10px 12px;
+            }
+            .subject-entry .sub-name-input {
+                font-size: 14px;
+                padding-bottom: 2px;
+                border-bottom: 1px solid #eee8e0;
+                text-transform: uppercase;
+            }
+            .exam-title-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .exam-title-row label {
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .subject-entry input[type="date"],
+            .subject-entry input[type="text"] {
+                font-size: 12px;
+                padding: 4px 6px;
+            }
+        }
+
+        /* ---- BUTTONS ---- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 22px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            font-family: inherit;
+            line-height: 1.4;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-primary {
+            background: #c0392b;
+            color: #fff;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: #a93226;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(192, 57, 43, 0.30);
+        }
+
+        .btn-success {
+            background: #1a7a4a;
+            color: #fff;
+        }
+        .btn-success:hover:not(:disabled) {
+            background: #0f5f3a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 122, 74, 0.30);
+        }
+
+        .btn-info {
+            background: #1a5a8a;
+            color: #fff;
+        }
+        .btn-info:hover:not(:disabled) {
+            background: #0f3f6a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 90, 138, 0.30);
+        }
+
+        .btn-gold {
+            background: #d4a017;
+            color: #fff;
+        }
+        .btn-gold:hover:not(:disabled) {
+            background: #b8890f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 160, 23, 0.30);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #c0392b;
+            color: #c0392b;
+        }
+        .btn-outline:hover:not(:disabled) {
+            background: #fef3f1;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-dark {
+            background: transparent;
+            border: 1.5px solid #1a3a5a;
+            color: #1a3a5a;
+        }
+        .btn-outline-dark:hover:not(:disabled) {
+            background: #f0f4f8;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 5px 16px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #e6edf4;
+        }
+
+        .text-muted {
+            color: #6a8aaa;
+            font-size: 13px;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        .jee-badge {
+            display: inline-block;
+            background: #0b1a33;
+            color: #fff;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* ---- STUDENT NAV ---- */
+        .student-nav {
+            display: none;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            padding: 10px 22px;
+            border-radius: 14px;
+            border: 1px solid #e6edf4;
+            margin-bottom: 22px;
+        }
+
+        .student-nav.active {
+            display: flex;
+        }
+
+        .student-nav .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #1a3a5a;
+            white-space: nowrap;
+        }
+
+        .student-nav .nav-item .label {
+            font-weight: 400;
+            color: #6a8aaa;
+        }
+
+        .student-nav .nav-item .value {
+            font-weight: 600;
+            color: #0b1a33;
+        }
+
+        .student-nav .badge-class {
+            background: #0b1a33;
+            color: #fff;
+            padding: 2px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .student-nav .nav-divider {
+            color: #c8d6e4;
+            font-weight: 300;
+        }
+
+        .student-nav .nav-progress {
+            margin-left: auto;
+            font-size: 14px;
+            color: #4a6a8a;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* ---- CARD CONTAINER ---- */
+        .card-container {
+            display: flex;
+            justify-content: center;
+            background: #eef2f7;
+            padding: 34px 24px;
+            border-radius: 18px;
+            margin: 6px 0 22px;
+            overflow: auto;
+        }
+
+        /* ---- ADMIT CARD — A4 (794×1123px) ---- */
+        #admitCard {
+            width: 794px;
+            min-height: 1123px;
+            background: #ffffff;
+            padding: 0;
+            border-radius: 12px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.10);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        /* ============================================================
+               ADMIT CARD — Premium Design
+               ============================================================ */
+        .admit-card {
+            background: #ffffff;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Top bar */
+        .admit-card .top-bar {
+            height: 8px;
+            background: linear-gradient(90deg, #0b1a33 0%, #1a4a7a 40%, #d4a017 80%, #f39c12 100%);
+            flex-shrink: 0;
+        }
+
+        /* Header */
+        .admit-card .card-header {
+            display: flex;
+            align-items: center;
+            padding: 18px 32px 12px 32px;
+            gap: 16px;
+            flex-shrink: 0;
+            border-bottom: 3px solid #f39c12;
+        }
+
+        .admit-card .card-header .logo-wrap {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .admit-card .card-header .logo-wrap img {
+            max-width: 100%;
+            max-height: 100px;
+            object-fit: contain;
+        }
+
+        .admit-card .card-header .title-wrap {
+            text-align: center;
+            flex: 1;
+            padding: 0 8px;
+        }
+
+        .admit-card .card-header .title-wrap .school-name {
+            font-size: 28px;
+            font-weight: 900;
+            color: #0b1a33;
+            letter-spacing: 1.5px;
+            font-family: 'Times New Roman', 'Georgia', serif;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .admit-card .card-header .title-wrap .school-sub {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a4a7a;
+            letter-spacing: 0.8px;
+            margin: 2px 0;
+            white-space: nowrap;
+        }
+
+        .admit-card .card-header .title-wrap .school-address {
+            font-size: 13px;
+            font-weight: 400;
+            color: #5a7a8a;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+
+        .admit-card .card-header .title-wrap .exam-title {
+            font-size: 26px;
+            font-weight: 900;
+            color: #0b1a33;
+            letter-spacing: 2px;
+            margin: 6px 0 0;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .admit-card .card-header .title-wrap .exam-sub-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #d4a017;
+            letter-spacing: 3px;
+            margin-top: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .admit-card .card-header .spacer {
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        /* Decorative line */
+        .admit-card .deco-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 4px 32px 8px 32px;
+            flex-shrink: 0;
+        }
+
+        .admit-card .deco-line .ornament {
+            font-size: 16px;
+            color: #d4a017;
+            flex-shrink: 0;
+        }
+
+        .admit-card .deco-line .line {
+            flex: 1;
+            max-width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #d4a017, transparent);
+        }
+
+        /* ---- Student Info ---- */
+        .admit-card .student-info {
+            margin: 4px 28px 10px 28px;
+            border: 2px solid #d4a017;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 4px 16px rgba(212, 160, 23, 0.12);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            flex-shrink: 0;
+        }
+
+        .admit-card .student-info .info-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admit-card .student-info .info-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            border-bottom: 1px solid #f5ede4;
+        }
+
+        .admit-card .student-info .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .admit-card .student-info .info-row .label {
+            background: #fdf9f4;
+            padding: 5px 16px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #6a3a1a;
+            border-right: 1px solid #f5ede4;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .admit-card .student-info .info-row .value {
+            padding: 5px 16px;
+            font-weight: 500;
+            font-size: 13px;
+            color: #0b1a33;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .admit-card .student-info .info-row:nth-child(even) .value {
+            background: #fefcf9;
+        }
+
+        /* Photo column */
+        .admit-card .student-info .photo-col {
+            padding: 10px 18px 10px 10px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            border-left: 2px solid #f5ede4;
+            background: #fefcf9;
+            min-width: 120px;
+        }
+
+        .admit-card .student-info .photo-col img {
+            width: 85px;
+            height: 102px;
+            object-fit: cover;
+            border: 3px solid #d4a017;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border-radius: 6px;
+            background: #fff;
+            flex-shrink: 0;
+        }
+
+        .admit-card .student-info .photo-col .placeholder-photo {
+            width: 85px;
+            height: 102px;
+            background: #ede8e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8a7a6a;
+            font-size: 38px;
+            border: 3px dashed #c8b8a8;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        /* ============================================================
+               ADMIT CARD TABLE — Subjects Schedule (COMPACT + SLIGHTLY INCREASED ROW)
+               ============================================================ */
+        .admit-card .schedule-wrap {
+            margin: 2px 28px 8px 28px;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        .admit-card .schedule-wrap .schedule-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0b1a33;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .admit-card .schedule-wrap .schedule-title .icon {
+            font-size: 18px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            font-size: 13px;
+        }
+
+        .schedule-table thead tr {
+            background: linear-gradient(135deg, #0b1a33, #1a3a5a);
+        }
+
+        .schedule-table thead th {
+            color: #ffffff;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 7px 12px;
+            text-align: center;
+            white-space: nowrap;
+            font-size: 11px;
+            border: 1px solid #1a3a5a;
+        }
+
+        .schedule-table tbody td {
+            padding: 6px 10px; /* increased from 4px to 6px top/bottom */
+            text-align: center;
+            white-space: nowrap;
+            border: 1px solid #e8e0d8;
+            background: #fff;
+            font-weight: 500;
+            color: #0b1a33;
+            font-size: 12px;
+            height: 32px; /* increased from 28px to 32px */
+        }
+
+        .schedule-table tbody tr:nth-child(even) td {
+            background: #fdfcf9;
+        }
+
+        .schedule-table tbody .subj-label {
+            font-weight: 600;
+            text-align: left;
+            padding-left: 14px;
+            color: #1a3a5a;
+            font-size: 12px;
+        }
+
+        .schedule-table tbody .invigilator-box {
+            min-height: 22px; /* slightly increased */
+            border-bottom: 2px solid #4a5a6a;
+            width: 100%;
+            background: #fff;
+            margin: 0 auto;
+        }
+
+        .schedule-table tbody td:first-child {
+            font-weight: 600;
+            color: #0b1a33;
+            font-size: 12px;
+        }
+
+        /* ============================================================
+               INSTRUCTIONS & WISHES
+               ============================================================ */
+        .admit-card .instructions-wrap {
+            margin: 4px 28px 6px 28px;
+            padding: 8px 16px;
+            background: #fdf9f4;
+            border-radius: 8px;
+            border-left: 4px solid #d4a017;
+            flex-shrink: 0;
+        }
+
+        .admit-card .instructions-wrap .inst-title {
+            font-weight: 700;
+            font-size: 13px;
+            color: #0b1a33;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admit-card .instructions-wrap ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .admit-card .instructions-wrap ul li {
+            font-size: 12px;
+            color: #2a4a5a;
+            padding: 2px 0 2px 20px;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        .admit-card .instructions-wrap ul li::before {
+            content: "◆";
+            position: absolute;
+            left: 2px;
+            color: #d4a017;
+            font-size: 10px;
+        }
+
+        .admit-card .wishes-wrap {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 800;
+            color: #0b1a33;
+            padding: 4px 0 2px 0;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        .admit-card .wishes-wrap span {
+            background: linear-gradient(135deg, #d4a017, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ---- Signatures at bottom ---- */
+        .admit-card .sig-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin: 4px 28px 8px 28px;
+            padding-top: 10px;
+            border-top: 3px solid #d4a017;
+            flex-shrink: 0;
+            gap: 20px;
+        }
+
+        .admit-card .sig-footer .sig-block {
+            text-align: center;
+            min-width: 120px;
+            flex: 1;
+        }
+
+        .admit-card .sig-footer .sig-block .sig-label {
+            font-size: 12px;
+            color: #3a5a7a;
+            font-weight: 600;
+            border-top: 1.5px solid #d0c8c0;
+            padding-top: 4px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .admit-card .sig-footer .sig-block img {
+            max-width: 150px;
+            max-height: 60px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 3px;
+        }
+
+        .admit-card .sig-footer .sig-block .sig-placeholder {
+            height: 40px;
+            border-bottom: 1.5px dashed #d0c8c0;
+            width: 120px;
+            margin: 0 auto 3px;
+        }
+
+        /* ---- Footer Note ---- */
+        .admit-card .card-footer-note {
+            text-align: center;
+            font-size: 10px;
+            color: #8a7a6a;
+            margin: 2px 28px 10px 28px;
+            padding-top: 6px;
+            border-top: 1px solid #eee8e0;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        /* ============================================================
+               PROGRESS OVERLAY
+               ============================================================ */
+        .progress-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .progress-overlay.active {
+            display: flex;
+        }
+
+        .progress-box {
+            background: #fff;
+            padding: 36px 48px 40px;
+            border-radius: 20px;
+            min-width: 360px;
+            max-width: 520px;
+            text-align: center;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.30);
+            animation: fadeSlideUp 0.3s ease;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-box h3 {
+            font-size: 20px;
+            color: #0b1a33;
+            margin-bottom: 8px;
+        }
+        .progress-box p {
+            color: #4a6a8a;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            background: #e8edf3;
+            border-radius: 30px;
+            overflow: hidden;
+            margin: 12px 0 14px;
+        }
+
+        .progress-track .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #0b1a33, #d4a017);
+            border-radius: 30px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-box .progress-text {
+            font-weight: 700;
+            color: #0b1a33;
+            font-size: 18px;
+        }
+
+        /* ============================================================
+               RESPONSIVE
+               ============================================================ */
+        @media (max-width: 1100px) {
+            .app-wrapper {
+                padding: 20px 18px 28px;
+                border-radius: 20px;
+            }
+            .main-header .brand h1 {
+                font-size: 24px;
+            }
+            .main-header .brand h1 small {
+                font-size: 14px;
+                display: block;
+                margin-left: 0;
+            }
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 840px) {
+            .app-wrapper {
+                padding: 16px 12px 20px;
+                border-radius: 16px;
+            }
+            #admitCard {
+                width: 100%;
+                min-height: auto;
+            }
+            .admit-card .card-header {
+                padding: 14px 16px 10px 16px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .admit-card .card-header .logo-wrap {
+                width: 70px;
+                height: 70px;
+            }
+            .admit-card .card-header .logo-wrap img {
+                max-height: 70px;
+            }
+            .admit-card .card-header .title-wrap .school-name {
+                font-size: 20px;
+                white-space: normal;
+            }
+            .admit-card .card-header .title-wrap .school-sub {
+                font-size: 14px;
+                white-space: normal;
+            }
+            .admit-card .card-header .title-wrap .school-address {
+                font-size: 12px;
+                white-space: normal;
+            }
+            .admit-card .card-header .title-wrap .exam-title {
+                font-size: 20px;
+                white-space: normal;
+            }
+            .admit-card .card-header .title-wrap .exam-sub-label {
+                font-size: 12px;
+                white-space: normal;
+            }
+            .admit-card .card-header .spacer {
+                width: 0;
+            }
+
+            .admit-card .student-info {
+                margin: 4px 12px 8px 12px;
+                grid-template-columns: 1fr;
+            }
+            .admit-card .student-info .photo-col {
+                border-left: none;
+                border-top: 2px solid #f5ede4;
+                padding: 10px 0;
+                min-width: unset;
+            }
+            .admit-card .student-info .info-row {
+                grid-template-columns: 1fr;
+            }
+            .admit-card .student-info .info-row .label {
+                border-right: none;
+                border-bottom: 1px solid #f5ede4;
+                padding: 4px 12px;
+                white-space: normal;
+            }
+            .admit-card .student-info .info-row .value {
+                padding: 4px 12px;
+                white-space: normal;
+            }
+
+            .admit-card .schedule-wrap {
+                margin: 2px 12px 6px 12px;
+                overflow-x: auto;
+            }
+            .schedule-table {
+                font-size: 11px;
+                min-width: 460px;
+            }
+            .schedule-table thead th {
+                padding: 5px 8px;
+                font-size: 10px;
+            }
+            .schedule-table tbody td {
+                padding: 5px 8px;
+                font-size: 11px;
+                height: 28px;
+            }
+
+            .admit-card .instructions-wrap {
+                margin: 3px 12px 4px 12px;
+                padding: 6px 12px;
+            }
+            .admit-card .instructions-wrap ul li {
+                font-size: 11px;
+            }
+            .admit-card .wishes-wrap {
+                font-size: 14px;
+            }
+
+            .admit-card .sig-footer {
+                margin: 3px 12px 6px 12px;
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+            }
+            .admit-card .sig-footer .sig-block {
+                min-width: unset;
+                width: 100%;
+                max-width: 200px;
+            }
+            .admit-card .sig-footer .sig-block .sig-placeholder {
+                width: 100%;
+                max-width: 120px;
+            }
+            .admit-card .card-footer-note {
+                margin: 2px 12px 8px 12px;
+                white-space: normal;
+            }
+
+            .student-nav {
+                padding: 8px 14px;
+                gap: 10px;
+            }
+            .student-nav .nav-item {
+                font-size: 13px;
+            }
+            .student-nav .nav-progress {
+                margin-left: 0;
+                width: 100%;
+                text-align: center;
+            }
+
+            .card-container {
+                padding: 16px 8px;
+            }
+            .controls-grid {
+                gap: 16px;
+            }
+            .upload-section {
+                padding: 16px 16px 20px;
+            }
+            .file-row {
+                gap: 8px;
+            }
+            .file-row label {
+                min-width: 80px;
+                font-size: 12px;
+                white-space: normal;
+            }
+            .main-header .brand .icon {
+                font-size: 28px;
+            }
+
+            .manual-entry-section {
+                padding: 16px 16px 20px;
+            }
+            .subject-entry {
+                grid-template-columns: 1fr;
+                gap: 5px;
+                padding: 10px 12px;
+            }
+            .subject-entry .sub-name-input {
+                font-size: 14px;
+                padding-bottom: 2px;
+                border-bottom: 1px solid #eee8e0;
+            }
+            .exam-title-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .exam-title-row label {
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .schedule-table {
+                font-size: 10px;
+                min-width: 360px;
+            }
+            .schedule-table thead th {
+                padding: 4px 5px;
+                font-size: 9px;
+            }
+            .schedule-table tbody td {
+                padding: 4px 5px;
+                font-size: 10px;
+                height: 24px;
+            }
+            .admit-card .student-info .photo-col img {
+                width: 65px;
+                height: 78px;
+            }
+            .admit-card .student-info .photo-col .placeholder-photo {
+                width: 65px;
+                height: 78px;
+                font-size: 28px;
+            }
+            .btn {
+                font-size: 13px;
+                padding: 7px 16px;
+            }
+            .btn-group {
+                gap: 6px;
+            }
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .action-bar .btn-group {
+                justify-content: center;
+            }
+            .progress-box {
+                min-width: unset;
+                width: 90%;
+                padding: 28px 20px 32px;
+            }
+        }
+
+        /* ---- PRINT ---- */
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+                margin: 0;
+            }
+            .app-wrapper {
+                max-width: 100%;
+                padding: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .controls-grid,
+            .student-nav,
+            .action-bar,
+            .sub-head .btn,
+            .main-header .badge-group,
+            .sub-head .hint,
+            .manual-entry-section {
+                display: none !important;
+            }
+            .main-header .brand h1 small {
+                display: inline-block;
+            }
+            .card-container {
+                background: #fff;
+                padding: 0;
+                border-radius: 0;
+                margin: 0;
+                overflow: visible;
+            }
+            #admitCard {
+                width: 100%;
+                min-height: auto;
+                box-shadow: none;
+                border: none;
+                border-radius: 0;
+                page-break-after: always;
+            }
+            .admit-card {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* ---- UTILITIES ---- */
+        .hidden {
+            display: none !important;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .mt-4 {
+            margin-top: 4px;
+        }
+        .mt-12 {
+            margin-top: 12px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .gap-6 {
+            gap: 6px;
+        }
+        .text-ellipsis {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+
+        <!-- ========== HEADER ========== -->
+        <div class="main-header">
+            <div class="brand">
+                <span class="icon">🏫</span>
+                <h1>
+                    Admit Card Generator
+                    <small>Half Yearly · Tabular</small>
+                </h1>
+            </div>
+            <div class="badge-group">
+                <span class="badge-count" id="studentCountBadge">0 students</span>
+            </div>
+        </div>
+
+        <div class="sub-head">
+            <span>📋 Generate admit cards · 7 editable subjects · Manual schedule entry</span>
+            <span class="hint">🔹 A4 ready · With instructions &amp; signatures</span>
+        </div>
+
+        <!-- ========== CONTROLS ========== -->
+        <div class="controls-grid">
+
+            <!-- LEFT: Uploads -->
+            <div class="upload-section">
+                <h3>🖼️ Upload Assets</h3>
+
+                <div class="file-row">
+                    <label>Logo</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="logoUpload" accept="image/*" />
+                        <img id="logoPreview" class="preview-img" src="" alt="Logo" style="display:none;" />
+                    </div>
+                </div>
+
+                <div class="file-row">
+                    <label>Teacher Sig.</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="teacherSigUpload" accept="image/*" />
+                        <img id="teacherSigPreview" class="preview-img" src="" alt="Teacher Sig" style="display:none;" />
+                    </div>
+                </div>
+
+                <div class="file-row">
+                    <label>Principal Sig.</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="principalSigUpload" accept="image/*" />
+                        <img id="principalSigPreview" class="preview-img" src="" alt="Principal Sig" style="display:none;" />
+                    </div>
+                </div>
+
+                <hr class="divider-light" />
+
+                <!-- Student Photos ZIP -->
+                <div>
+                    <div class="file-row">
+                        <label>📸 Student Photos</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="photoZipUpload" accept=".zip" />
+                            <button class="btn btn-sm btn-outline-dark" id="clearPhotosBtn" style="display:none;">✕ Clear</button>
+                        </div>
+                    </div>
+                    <div id="zipStatus" class="zip-status">No ZIP uploaded. File names must match Student ID.</div>
+                </div>
+
+                <hr class="divider-light" />
+
+                <!-- Excel Upload -->
+                <div>
+                    <h3 style="margin-bottom:10px;">📊 Student Data <span class="badge-soft">Excel</span></h3>
+                    <div class="file-row">
+                        <label style="min-width:70px;">Upload</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="excelUpload" accept=".xlsx,.xls" />
+                            <button class="btn btn-sm btn-outline-dark" id="sampleExcelBtn">📥 Sample</button>
+                        </div>
+                    </div>
+                    <div id="excelStatus" class="text-muted mt-8" style="font-size:13px;">No file uploaded</div>
+                    <div style="margin-top:8px; font-size:12px; color:#6a8aaa; display:flex; flex-wrap:wrap; gap:6px 14px;">
+                        <span><span class="jee-badge">📌</span> Student ID · Name · Class · Section · Mobile</span>
+                        <span><span class="jee-badge">🆔</span> Column "Student ID" for photo matching</span>
+                        <span><span class="jee-badge">📅</span> Fixed: 2026 – 2027</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Actions -->
+            <div class="upload-section" style="display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <h3>⚙️ Actions</h3>
+                    <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:12px;">
+                        <button class="btn btn-primary" id="generateBtn">🔄 Generate Admit Cards</button>
+                        <div class="btn-group">
+                            <button class="btn btn-success" id="downloadPdfBtn">📄 PDF (All)</button>
+                            <button class="btn btn-info" id="downloadIndividualBtn">📄 PDF (This)</button>
+                            <button class="btn btn-gold" id="downloadAllIndividualBtn">📦 All PDFs (ZIP)</button>
+                        </div>
+                        <button class="btn btn-outline" id="resetBtn">⟲ Reset</button>
+                    </div>
+                    <div class="text-muted mt-8" style="font-size:13px;">
+                        ✅ 7 Subjects · Dates · Times (e.g. 02:30) · Invigilator Signature (Empty Box)
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div style="margin-top:18px; padding-top:16px; border-top:1px solid #e6edf4; display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+                    <span style="font-weight:600; color:#0b1a33; font-size:14px;">Preview:</span>
+                    <button class="btn btn-sm btn-outline-dark" id="prevStudentBtn">◀ Prev</button>
+                    <span id="studentNavIndex" style="font-weight:700; min-width:70px; text-align:center; font-size:15px; color:#0b1a33;">0 / 0</span>
+                    <button class="btn btn-sm btn-outline-dark" id="nextStudentBtn">Next ▶</button>
+                    <span style="margin-left:auto; font-size:13px; color:#6a8aaa;" id="navProgress">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== MANUAL ENTRY SECTION ========== -->
+        <div class="manual-entry-section">
+            <h3>
+                ✏️ Manual Typing Option
+                <span class="badge-soft">Half Yearly Examination</span>
+            </h3>
+
+            <div class="exam-title-row">
+                <label for="examTitleInput">📋 Exam Title</label>
+                <input type="text" id="examTitleInput" value="HALF YEARLY EXAMINATION" placeholder="e.g. HALF YEARLY EXAMINATION" />
+            </div>
+
+            <div class="subjects-grid" id="subjectsGrid">
+                <!-- Subjects will be rendered by JS -->
+            </div>
+
+            <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn-sm btn-outline-dark" id="resetSubjectsBtn">↺ Reset Subjects</button>
+                <span style="font-size:12px; color:#6a8aaa; display:flex; align-items:center;">7 subjects · Click subject name to edit · Dates · Times (e.g. 02:30)</span>
+            </div>
+        </div>
+
+        <!-- ========== STUDENT NAV ========== -->
+        <div class="student-nav" id="studentNav">
+            <span class="nav-item"><span class="label">👤</span> <span class="value" id="currentStudentName">—</span></span>
+            <span class="nav-divider">|</span>
+            <span class="nav-item"><span class="label">🆔</span> <span class="value" id="currentStudentID">—</span></span>
+            <span class="nav-divider">|</span>
+            <span class="badge-class" id="currentStudentClass">—</span>
+            <span class="nav-divider">|</span>
+            <span class="nav-item"><span class="label">📞</span> <span class="value" id="currentStudentMobile">—</span></span>
+            <span class="nav-divider">|</span>
+            <span class="nav-item"><span class="label">📍</span> <span class="value" id="currentStudentLocation">Narasannapeta</span></span>
+            <span class="nav-progress" id="navProgressInline">1 of 1</span>
+        </div>
+
+        <!-- ========== CARD PREVIEW ========== -->
+        <div class="card-container" id="cardContainer">
+            <div id="admitCard">
+                <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px;">
+                    <span style="font-size:48px;">🎫</span>
+                    <span>Upload Excel &amp; click <strong>"Generate Admit Cards"</strong></span>
+                    <span style="font-size:14px; color:#aabaca;">A4 Admit Card with Subject Schedule</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== PROGRESS OVERLAY ========== -->
+        <div class="progress-overlay" id="progressOverlay">
+            <div class="progress-box">
+                <h3>📦 Generating Individual PDFs</h3>
+                <p id="progressStatus">Preparing...</p>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+        </div>
+
+        <!-- ========== FOOTER ========== -->
+        <div style="margin-top:16px; text-align:center; font-size:13px; color:#8a9aaa; border-top:1px solid #e6edf4; padding-top:18px;">
+            Admit Card Generator · Half Yearly Examination · A4 Ready
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  STATE
+        // ============================================================
+        const state = {
+            students: [],
+            currentIndex: 0,
+            logoDataURL: null,
+            teacherSigDataURL: null,
+            principalSigDataURL: null,
+            imageMap: {},
+            examTitle: 'HALF YEARLY EXAMINATION',
+            subjects: [
+                { name: 'TELUGU', date: '', time: '', invigilator: '' },
+                { name: 'HINDI', date: '', time: '', invigilator: '' },
+                { name: 'ENGLISH', date: '', time: '', invigilator: '' },
+                { name: 'MATHS', date: '', time: '', invigilator: '' },
+                { name: 'PHYSICS', date: '', time: '', invigilator: '' },
+                { name: 'BIOLOGY', date: '', time: '', invigilator: '' },
+                { name: 'SOCIAL', date: '', time: '', invigilator: '' },
+            ]
+        };
+
+        const FIXED_LOCATION = 'Narasannapeta';
+        const FIXED_ACADEMIC_YEAR = '2026 – 2027';
+
+        // DOM refs
+        const $ = id => document.getElementById(id);
+        const cardEl = $('admitCard');
+        const logoUpload = $('logoUpload');
+        const teacherSigUpload = $('teacherSigUpload');
+        const principalSigUpload = $('principalSigUpload');
+        const logoPreview = $('logoPreview');
+        const teacherSigPreview = $('teacherSigPreview');
+        const principalSigPreview = $('principalSigPreview');
+        const excelUpload = $('excelUpload');
+        const excelStatus = $('excelStatus');
+        const photoZipUpload = $('photoZipUpload');
+        const zipStatus = $('zipStatus');
+        const clearPhotosBtn = $('clearPhotosBtn');
+        const generateBtn = $('generateBtn');
+        const downloadPdfBtn = $('downloadPdfBtn');
+        const downloadIndividualBtn = $('downloadIndividualBtn');
+        const downloadAllIndividualBtn = $('downloadAllIndividualBtn');
+        const resetBtn = $('resetBtn');
+        const prevStudentBtn = $('prevStudentBtn');
+        const nextStudentBtn = $('nextStudentBtn');
+        const studentNav = $('studentNav');
+        const currentStudentName = $('currentStudentName');
+        const currentStudentID = $('currentStudentID');
+        const currentStudentClass = $('currentStudentClass');
+        const currentStudentMobile = $('currentStudentMobile');
+        const currentStudentLocation = $('currentStudentLocation');
+        const studentNavIndex = $('studentNavIndex');
+        const navProgress = $('navProgress');
+        const navProgressInline = $('navProgressInline');
+        const studentCountBadge = $('studentCountBadge');
+        const sampleExcelBtn = $('sampleExcelBtn');
+        const progressOverlay = $('progressOverlay');
+        const progressFill = $('progressFill');
+        const progressText = $('progressText');
+        const progressStatus = $('progressStatus');
+        const examTitleInput = $('examTitleInput');
+        const subjectsGrid = $('subjectsGrid');
+        const resetSubjectsBtn = $('resetSubjectsBtn');
+
+        // ============================================================
+        //  SAMPLE EXCEL (for admit card)
+        // ============================================================
+        function generateSampleExcel() {
+            const data = [
+                ['Student ID', 'Student Name', 'Class', 'Section', 'Mobile Number'],
+                ['S1001', 'T. SHAMYUU', 'VIII', 'A', '145698'],
+                ['S1002', 'A. RAHUL', 'IX', 'B', '987654'],
+                ['S1003', 'S. PRIYA', 'X', 'A', '456123'],
+                ['S1004', 'M. KIRAN', 'VIII', 'C', '321654'],
+                ['S1005', 'R. ANJALI', 'IX', 'A', '789456'],
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Students');
+            XLSX.writeFile(wb, 'Admit_Card_Students_Sample.xlsx');
+        }
+        sampleExcelBtn.addEventListener('click', generateSampleExcel);
+
+        // ============================================================
+        //  IMAGE UPLOADS
+        // ============================================================
+        function handleImageUpload(input, previewEl, setDataURL) {
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const dataUrl = ev.target.result;
+                    previewEl.src = dataUrl;
+                    previewEl.style.display = 'block';
+                    setDataURL(dataUrl);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        handleImageUpload(logoUpload, logoPreview, (url) => { state.logoDataURL = url; });
+        handleImageUpload(teacherSigUpload, teacherSigPreview, (url) => { state.teacherSigDataURL = url; });
+        handleImageUpload(principalSigUpload, principalSigPreview, (url) => { state.principalSigDataURL = url; });
+
+        // ============================================================
+        //  BULK PHOTO UPLOAD (ZIP)
+        // ============================================================
+        photoZipUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                zipStatus.textContent = 'No ZIP uploaded. File names must match Student ID.';
+                zipStatus.className = 'zip-status';
+                clearPhotosBtn.style.display = 'none';
+                return;
+            }
+
+            zipStatus.textContent = '⏳ Reading ZIP...';
+            zipStatus.className = 'zip-status';
+
+            const zip = new JSZip();
+            zip.loadAsync(file)
+                .then(function(zipData) {
+                    const imageMap = {};
+                    const promises = [];
+
+                    zipData.forEach(function(relativePath, zipEntry) {
+                        if (!zipEntry.dir) {
+                            const fileName = zipEntry.name;
+                            const ext = fileName.split('.').pop().toLowerCase();
+                            if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext)) {
+                                const baseName = fileName.substring(0, fileName.lastIndexOf('.')).trim()
+                                    .toUpperCase();
+                                const promise = zipEntry.async('base64').then(function(data) {
+                                    const mimeType = 'image/' + (ext === 'jpg' ? 'jpeg' : ext);
+                                    imageMap[baseName] = `data:${mimeType};base64,${data}`;
+                                });
+                                promises.push(promise);
+                            }
+                        }
+                    });
+
+                    return Promise.all(promises).then(function() {
+                        state.imageMap = imageMap;
+                        const count = Object.keys(imageMap).length;
+                        zipStatus.textContent = `✅ Loaded ${count} images.`;
+                        zipStatus.className = 'zip-status success';
+                        clearPhotosBtn.style.display = 'inline-flex';
+                        if (state.students.length > 0) renderAdmitCard();
+                    });
+                })
+                .catch(function(err) {
+                    console.error(err);
+                    zipStatus.textContent = '❌ Invalid ZIP file. Please check and try again.';
+                    zipStatus.className = 'zip-status error';
+                    state.imageMap = {};
+                    clearPhotosBtn.style.display = 'none';
+                });
+        });
+
+        clearPhotosBtn.addEventListener('click', function() {
+            state.imageMap = {};
+            photoZipUpload.value = '';
+            zipStatus.textContent = 'No ZIP uploaded. File names must match Student ID.';
+            zipStatus.className = 'zip-status';
+            clearPhotosBtn.style.display = 'none';
+            if (state.students.length > 0) renderAdmitCard();
+        });
+
+        // ============================================================
+        //  MANUAL SUBJECTS — RENDER
+        // ============================================================
+        function renderSubjectEntries() {
+            let html = '';
+            state.subjects.forEach((sub, idx) => {
+                html += `
+                        <div class="subject-entry" data-index="${idx}">
+                            <input type="text" class="sub-name-input" value="${sub.name}" placeholder="Subject Name" />
+                            <input type="date" class="sub-date" value="${sub.date}" placeholder="Date" />
+                            <input type="text" class="sub-time" value="${sub.time}" placeholder="e.g. 02:30" />
+                            <input type="text" class="sub-invigilator" value="${sub.invigilator}" placeholder="Invigilator (Optional)" />
+                        </div>
+                    `;
+            });
+            subjectsGrid.innerHTML = html;
+
+            // Bind events
+            document.querySelectorAll('.subject-entry').forEach((entry, idx) => {
+                const nameInput = entry.querySelector('.sub-name-input');
+                const dateInput = entry.querySelector('.sub-date');
+                const timeInput = entry.querySelector('.sub-time');
+                const invigilatorInput = entry.querySelector('.sub-invigilator');
+
+                nameInput.addEventListener('input', function() {
+                    state.subjects[idx].name = this.value.toUpperCase();
+                    if (state.students.length > 0) renderAdmitCard();
+                });
+
+                dateInput.addEventListener('change', function() {
+                    state.subjects[idx].date = this.value;
+                    if (state.students.length > 0) renderAdmitCard();
+                });
+                timeInput.addEventListener('input', function() {
+                    state.subjects[idx].time = this.value;
+                    if (state.students.length > 0) renderAdmitCard();
+                });
+                invigilatorInput.addEventListener('input', function() {
+                    state.subjects[idx].invigilator = this.value;
+                });
+            });
+        }
+
+        // Reset subjects to empty
+        resetSubjectsBtn.addEventListener('click', function() {
+            state.subjects.forEach(s => { s.date = '';
+                s.time = '';
+                s.invigilator = ''; });
+            renderSubjectEntries();
+            if (state.students.length > 0) renderAdmitCard();
+        });
+
+        // Exam title input
+        examTitleInput.addEventListener('input', function() {
+            state.examTitle = this.value || 'HALF YEARLY EXAMINATION';
+            if (state.students.length > 0) renderAdmitCard();
+        });
+
+        // ============================================================
+        //  EXCEL UPLOAD
+        // ============================================================
+        let excelData = null;
+
+        excelUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) { excelStatus.textContent = 'No file selected'; return; }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const data = new Uint8Array(ev.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(firstSheet);
+                    if (!json || json.length === 0) {
+                        excelStatus.textContent = '⚠️ Excel is empty.';
+                        return;
+                    }
+                    excelData = json;
+                    excelStatus.textContent = `✅ Loaded ${json.length} student(s) from "${file.name}"`;
+                    parseStudentsFromExcel(json);
+                } catch (err) {
+                    excelStatus.textContent = '❌ Error: ' + err.message;
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // ============================================================
+        //  PARSE STUDENTS
+        // ============================================================
+        function parseStudentsFromExcel(json) {
+            const students = [];
+            const cols = Object.keys(json[0] || {});
+            const mapKey = (key) => {
+                const k = String(key).trim().toLowerCase();
+                if (k.includes('student id') || k.includes('id') || k.includes('roll') || k.includes('registration'))
+                    return 'studentId';
+                if (k.includes('name')) return 'name';
+                if (k.includes('class')) return 'class';
+                if (k.includes('section')) return 'section';
+                if (k.includes('mobile') || k.includes('phone')) return 'mobile';
+                return null;
+            };
+
+            const colMap = {};
+            cols.forEach(c => {
+                const mapped = mapKey(c);
+                if (mapped) colMap[mapped] = c;
+            });
+
+            if (!colMap.name) {
+                excelStatus.textContent = '⚠️ Column "Student Name" not found. Found: ' + cols.join(', ');
+                return;
+            }
+
+            json.forEach(row => {
+                const name = String(row[colMap.name] || '').trim();
+                if (!name) return;
+
+                let studentId = '';
+                if (colMap.studentId) studentId = String(row[colMap.studentId] || '').trim();
+
+                students.push({
+                    studentId: studentId || '—',
+                    name: name,
+                    class: String(row[colMap.class] || '').trim() || '—',
+                    section: String(row[colMap.section] || '').trim() || '—',
+                    mobile: String(row[colMap.mobile] || '').trim() || '—',
+                    location: FIXED_LOCATION,
+                });
+            });
+
+            if (students.length === 0) {
+                excelStatus.textContent = '⚠️ No valid student records found.';
+                return;
+            }
+
+            state.students = students;
+            state.currentIndex = 0;
+            updateUI();
+            renderAdmitCard();
+            excelStatus.textContent = `✅ Loaded ${students.length} student(s). Click "Generate Admit Cards" to refresh.`;
+        }
+
+        // ============================================================
+        //  UI UPDATE
+        // ============================================================
+        function updateUI() {
+            const count = state.students.length;
+            studentCountBadge.textContent = count + ' student' + (count !== 1 ? 's' : '');
+            if (count === 0) {
+                studentNav.classList.remove('active');
+                return;
+            }
+            studentNav.classList.add('active');
+            const idx = state.currentIndex;
+            const s = state.students[idx];
+            if (s) {
+                currentStudentName.textContent = s.name;
+                currentStudentID.textContent = s.studentId;
+                currentStudentClass.textContent = s.class + (s.section ? ' - ' + s.section : '');
+                currentStudentMobile.textContent = s.mobile;
+                currentStudentLocation.textContent = FIXED_LOCATION;
+                studentNavIndex.textContent = (idx + 1) + ' / ' + count;
+                navProgress.textContent = (idx + 1) + ' of ' + count;
+                navProgressInline.textContent = (idx + 1) + ' of ' + count;
+            }
+        }
+
+        // ============================================================
+        //  RENDER ADMIT CARD — COMPACT TABLE WITH SLIGHTLY INCREASED ROW HEIGHT
+        // ============================================================
+        function renderAdmitCard() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                cardEl.innerHTML = `
+                        <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px;">
+                            <span style="font-size:48px;">🎫</span>
+                            <span>Upload Excel &amp; click <strong>"Generate Admit Cards"</strong></span>
+                            <span style="font-size:14px; color:#aabaca;">A4 Admit Card with Subject Schedule</span>
+                        </div>
+                    `;
+                return;
+            }
+
+            const idx = Math.min(state.currentIndex, students.length - 1);
+            const s = students[idx];
+            if (!s) return;
+
+            const logoHtml = state.logoDataURL ?
+                `<img src="${state.logoDataURL}" alt="Logo" style="max-width:100px; max-height:100px; object-fit:contain;" />` :
+                '';
+
+            const teacherSigHtml = state.teacherSigDataURL ?
+                `<img src="${state.teacherSigDataURL}" alt="Teacher Signature" style="max-width:150px; max-height:60px; object-fit:contain;" />` :
+                '<div class="sig-placeholder"></div>';
+
+            const principalSigHtml = state.principalSigDataURL ?
+                `<img src="${state.principalSigDataURL}" alt="Principal Signature" style="max-width:150px; max-height:60px; object-fit:contain;" />` :
+                '<div class="sig-placeholder"></div>';
+
+            // Photo
+            const imageKey = s.studentId.trim().toUpperCase();
+            const imageData = state.imageMap ? state.imageMap[imageKey] : null;
+            const photoHtml = imageData ?
+                `<img src="${imageData}" alt="Student Photo" />` :
+                `<div class="placeholder-photo">📷</div>`;
+
+            // Build schedule table rows
+            let tableRows = '';
+            state.subjects.forEach((sub, i) => {
+                const dateDisplay = sub.date || '—';
+                const timeDisplay = sub.time || '—';
+                tableRows += `
+                        <tr>
+                            <td>${i+1}</td>
+                            <td class="subj-label">${sub.name}</td>
+                            <td>${dateDisplay}</td>
+                            <td>${timeDisplay}</td>
+                            <td><div class="invigilator-box"></div></td>
+                        </tr>
+                    `;
+            });
+
+            const examTitle = state.examTitle || 'HALF YEARLY EXAMINATION';
+
+            cardEl.innerHTML = `
+                <div class="admit-card">
+                    <div class="top-bar"></div>
+
+                    <div class="card-header">
+                        <div class="logo-wrap">${logoHtml}</div>
+                        <div class="title-wrap">
+                            <div class="school-name">SRI VENKATESWARA JY SCHOOL</div>
+                            <div class="school-sub">(IIT-JEE / NEET Foundation · Olympiads)</div>
+                            <div class="school-address">Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta</div>
+                            <div class="exam-title">${examTitle}</div>
+                            <div class="exam-sub-label">✦ ADMIT CARD ✦</div>
+                        </div>
+                        <div class="spacer"></div>
+                    </div>
+
+                    <div class="deco-line">
+                        <span class="ornament">✦</span>
+                        <div class="line"></div>
+                        <span class="ornament" style="color:#d4a017;">★</span>
+                        <div class="line"></div>
+                        <span class="ornament">✦</span>
+                    </div>
+
+                    <div class="student-info">
+                        <div class="info-details">
+                            <div class="info-row">
+                                <div class="label">👤 Student Name</div>
+                                <div class="value">${s.name}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">🆔 Student ID</div>
+                                <div class="value">${s.studentId}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">📚 Class</div>
+                                <div class="value">${s.class}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">📖 Section</div>
+                                <div class="value">${s.section}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">📞 Mobile</div>
+                                <div class="value">${s.mobile}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">📅 Academic Year</div>
+                                <div class="value">${FIXED_ACADEMIC_YEAR}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="label">📍 Location</div>
+                                <div class="value">${s.location}</div>
+                            </div>
+                        </div>
+                        <div class="photo-col">
+                            ${photoHtml}
+                        </div>
+                    </div>
+
+                    <!-- ===== SUBJECT SCHEDULE TABLE ===== -->
+                    <div class="schedule-wrap">
+                        <div class="schedule-title">
+                            <span class="icon">📅</span>
+                            <span>Examination Schedule</span>
+                            <span style="margin-left:auto; font-size:12px; font-weight:400; color:#6a8aaa;">7 Subjects</span>
+                        </div>
+
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:44px;">S.No</th>
+                                    <th style="text-align:left; padding-left:14px;">Subject</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Invigilator Signature</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ===== INSTRUCTIONS ===== -->
+                    <div class="instructions-wrap">
+                        <div class="inst-title">📋 INSTRUCTIONS FOR CANDIDATES</div>
+                        <ul>
+                            <li>Carry this Admit card on all examination days.</li>
+                            <li>Reach exam hall 15 minutes before the exam start.</li>
+                            <li>Use only blue or black ball pens.</li>
+                            <li>Strictly avoid unfair means. Mobile phones not allowed.</li>
+                        </ul>
+                    </div>
+
+                    <!-- ===== WISHES ===== -->
+                    <div class="wishes-wrap">
+                        <span>✨ Wishing You All the Best ! ✨</span>
+                    </div>
+
+                    <!-- ===== SIGNATURES ===== -->
+                    <div class="sig-footer">
+                        <div class="sig-block">
+                            <div class="sig-placeholder"></div>
+                            <div class="sig-label">✍ Signature of Parent</div>
+                        </div>
+                        <div class="sig-block">
+                            ${principalSigHtml}
+                            <div class="sig-label">✍ Signature of Principal</div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer-note">
+                        ★ This is a system-generated admit card for ${examTitle} ★
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================================
+        //  NAVIGATION
+        // ============================================================
+        function goToStudent(index) {
+            if (!state.students.length) return;
+            state.currentIndex = Math.max(0, Math.min(index, state.students.length - 1));
+            updateUI();
+            renderAdmitCard();
+        }
+
+        prevStudentBtn.addEventListener('click', () => goToStudent(state.currentIndex - 1));
+        nextStudentBtn.addEventListener('click', () => goToStudent(state.currentIndex + 1));
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevStudentBtn.click();
+            if (e.key === 'ArrowRight') nextStudentBtn.click();
+        });
+
+        // ============================================================
+        //  GENERATE
+        // ============================================================
+        generateBtn.addEventListener('click', function() {
+            if (!state.students.length) {
+                if (excelData && excelData.length) {
+                    parseStudentsFromExcel(excelData);
+                } else {
+                    alert('Please upload an Excel file with student data first.');
+                }
+                return;
+            }
+            renderAdmitCard();
+            updateUI();
+        });
+
+        // ============================================================
+        //  CAPTURE & PDF HELPERS
+        // ============================================================
+        async function captureCardAsImage() {
+            await new Promise(resolve => setTimeout(resolve, 200));
+            const canvas = await html2canvas(cardEl, {
+                scale: 2.5,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: '#ffffff',
+                logging: false,
+                width: 794,
+                height: 1123,
+            });
+            return canvas.toDataURL('image/jpeg', 0.95);
+        }
+
+        function imageToPDF(imgData) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 210;
+            const imgHeight = (1123 / 794) * imgWidth;
+            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+            return pdf.output('arraybuffer');
+        }
+
+        function sanitizeFileName(name) {
+            return name.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 60);
+        }
+
+        // ============================================================
+        //  DOWNLOAD: ALL CARDS (SINGLE PDF)
+        // ============================================================
+        downloadPdfBtn.addEventListener('click', async function() {
+            if (!state.students.length) {
+                alert('No student data. Please upload an Excel file and generate cards.');
+                return;
+            }
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Generating...';
+            btn.disabled = true;
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = 210;
+
+                for (let i = 0; i < state.students.length; i++) {
+                    state.currentIndex = i;
+                    renderAdmitCard();
+                    updateUI();
+                    await new Promise(r => setTimeout(r, 250));
+                    const imgData = await captureCardAsImage();
+                    const imgHeight = (1123 / 794) * pageWidth;
+                    if (i > 0) pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, imgHeight);
+                }
+
+                state.currentIndex = 0;
+                renderAdmitCard();
+                updateUI();
+                pdf.save('Admit_Cards_All.pdf');
+                btn.textContent = '✅ Downloaded!';
+                setTimeout(() => { btn.textContent = origText;
+                    btn.disabled = false; }, 2000);
+            } catch (err) {
+                console.error(err);
+                alert('Error: ' + err.message);
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        //  DOWNLOAD: INDIVIDUAL PDF (CURRENT)
+        // ============================================================
+        downloadIndividualBtn.addEventListener('click', async function() {
+            if (!state.students.length) {
+                alert('No student data.');
+                return;
+            }
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳...';
+            btn.disabled = true;
+
+            try {
+                const idx = state.currentIndex;
+                const student = state.students[idx];
+                renderAdmitCard();
+                await new Promise(r => setTimeout(r, 250));
+                const imgData = await captureCardAsImage();
+                const pdfBuffer = imageToPDF(imgData);
+                const safeName = sanitizeFileName(student.name);
+                const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${safeName}_Admit_Card.pdf`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+                btn.textContent = '✅ Done!';
+                setTimeout(() => { btn.textContent = origText;
+                    btn.disabled = false; }, 1800);
+            } catch (err) {
+                console.error(err);
+                alert('Error: ' + err.message);
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        //  DOWNLOAD: ALL INDIVIDUAL PDFs AS ZIP
+        // ============================================================
+        downloadAllIndividualBtn.addEventListener('click', async function() {
+            if (!state.students.length) {
+                alert('No student data.');
+                return;
+            }
+
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Preparing...';
+            btn.disabled = true;
+
+            progressOverlay.classList.add('active');
+            progressFill.style.width = '0%';
+            progressText.textContent = '0%';
+            progressStatus.textContent = 'Starting...';
+
+            try {
+                const zip = new JSZip();
+                const total = state.students.length;
+
+                for (let i = 0; i < total; i++) {
+                    state.currentIndex = i;
+                    renderAdmitCard();
+                    updateUI();
+
+                    progressStatus.textContent = `Processing ${i+1} of ${total}: ${state.students[i].name}`;
+                    const pct = Math.round(((i) / total) * 100);
+                    progressFill.style.width = pct + '%';
+                    progressText.textContent = pct + '%';
+
+                    await new Promise(r => setTimeout(r, 200));
+
+                    const imgData = await captureCardAsImage();
+                    const pdfBuffer = imageToPDF(imgData);
+                    const safeName = sanitizeFileName(state.students[i].name);
+                    zip.file(`${safeName}_Admit_Card.pdf`, pdfBuffer);
+                }
+
+                progressStatus.textContent = 'Creating ZIP file...';
+                progressFill.style.width = '95%';
+                progressText.textContent = '95%';
+
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+                progressFill.style.width = '100%';
+                progressText.textContent = '100%';
+                progressStatus.textContent = '✅ Done! Downloading...';
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(zipBlob);
+                link.download = 'All_Admit_Cards.zip';
+                link.click();
+                URL.revokeObjectURL(link.href);
+
+                state.currentIndex = 0;
+                renderAdmitCard();
+                updateUI();
+
+                btn.textContent = '✅ Downloaded!';
+                setTimeout(() => {
+                    btn.textContent = origText;
+                    btn.disabled = false;
+                }, 2000);
+
+                setTimeout(() => {
+                    progressOverlay.classList.remove('active');
+                }, 800);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error: ' + err.message);
+                progressOverlay.classList.remove('active');
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        //  RESET
+        // ============================================================
+        resetBtn.addEventListener('click', function() {
+            state.students = [];
+            state.currentIndex = 0;
+            state.logoDataURL = null;
+            state.teacherSigDataURL = null;
+            state.principalSigDataURL = null;
+            state.imageMap = {};
+            excelData = null;
+
+            // Reset subjects
+            state.subjects.forEach(s => { s.date = '';
+                s.time = '';
+                s.invigilator = ''; });
+            renderSubjectEntries();
+
+            logoUpload.value = '';
+            teacherSigUpload.value = '';
+            principalSigUpload.value = '';
+            excelUpload.value = '';
+            photoZipUpload.value = '';
+            logoPreview.style.display = 'none';
+            teacherSigPreview.style.display = 'none';
+            principalSigPreview.style.display = 'none';
+            logoPreview.src = '';
+            teacherSigPreview.src = '';
+            principalSigPreview.src = '';
+            excelStatus.textContent = 'No file uploaded';
+            zipStatus.textContent = 'No ZIP uploaded. File names must match Student ID.';
+            zipStatus.className = 'zip-status';
+            clearPhotosBtn.style.display = 'none';
+
+            examTitleInput.value = 'HALF YEARLY EXAMINATION';
+            state.examTitle = 'HALF YEARLY EXAMINATION';
+
+            cardEl.innerHTML = `
+                    <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px;">
+                        <span style="font-size:48px;">🎫</span>
+                        <span>Upload Excel &amp; click <strong>"Generate Admit Cards"</strong></span>
+                        <span style="font-size:14px; color:#aabaca;">A4 Admit Card with Subject Schedule</span>
+                    </div>
+                `;
+            studentNav.classList.remove('active');
+            studentCountBadge.textContent = '0 students';
+            progressOverlay.classList.remove('active');
+        });
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        renderSubjectEntries();
+
+        console.log('🎫 Admit Card Generator — Half Yearly Examination');
+        console.log('📐 Page width: 1800px · A4 ready (794×1123px)');
+        console.log('📚 Subjects: Editable names · Dates · Times (e.g. 02:30)');
+        console.log('📸 Upload ZIP with images named by Student ID (e.g. S1001.jpg)');
+        console.log('✍️ Invigilator Signature: Empty box (non-editable) in admit card');
+        console.log('📅 Academic Year: 2026 - 2027 (locked)');
+        console.log('📋 School Seal removed. Table row height slightly increased for readability.');
+    </script>
+
+</body>
+</html>

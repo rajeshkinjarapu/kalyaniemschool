@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SSC Slip Test · Rank Card</title>
+
+    <!-- CDN Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+    </script>
+
+    <style>
+        /* ===== GLOBAL RESET & BASE ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(145deg, #f0f4fb 0%, #e2eaf5 100%);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-wrapper {
+            max-width: 1240px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 36px;
+            box-shadow: 0 30px 90px rgba(0, 20, 50, 0.12), 0 8px 32px rgba(0, 0, 0, 0.04);
+            padding: 32px 40px 44px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* ===== HEADER ===== */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 6px;
+        }
+
+        .main-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .main-header .brand .icon-wrap {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #1a3a7a, #2d5aa0);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 6px 20px rgba(26, 58, 122, 0.25);
+        }
+
+        .main-header .brand h1 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #0a1e3a;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #0a1e3a 0%, #1a4a7a 60%, #c0392b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-header .brand h1 small {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a6a8a;
+            -webkit-text-fill-color: #4a6a8a;
+            letter-spacing: 0.4px;
+            margin-left: 6px;
+            background: none;
+        }
+
+        .badge-count {
+            background: linear-gradient(135deg, #1a3a7a, #2d5aa0);
+            color: #fff;
+            padding: 6px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 4px 16px rgba(26, 58, 122, 0.20);
+            letter-spacing: 0.3px;
+        }
+
+        .sub-head {
+            color: #2a4a6a;
+            font-size: 14px;
+            border-bottom: 2px solid rgba(26, 58, 122, 0.10);
+            padding-bottom: 14px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .sub-head .hint {
+            color: #4a7a9a;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(26, 58, 122, 0.06);
+            padding: 4px 16px;
+            border-radius: 30px;
+        }
+
+        .sub-head .hint span {
+            font-weight: 600;
+        }
+
+        /* ===== CONTROLS GRID ===== */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 900px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .app-wrapper {
+                padding: 16px 14px 20px;
+                border-radius: 20px;
+            }
+        }
+
+        /* ===== UPLOAD SECTIONS ===== */
+        .upload-section {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 20px;
+            padding: 22px 26px 26px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .upload-section h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0a1e3a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-section h3 .badge-soft {
+            font-size: 11px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #e8edf6, #d5dfec);
+            color: #1a3a6a;
+            padding: 2px 14px;
+            border-radius: 30px;
+        }
+
+        .file-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .file-row label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1a3a5a;
+            min-width: 90px;
+            white-space: nowrap;
+        }
+
+        .file-row input[type="file"] {
+            flex: 1;
+            font-size: 13px;
+            padding: 6px 0;
+            min-width: 120px;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .divider-light {
+            border: none;
+            border-top: 2px solid rgba(26, 58, 122, 0.08);
+            margin: 14px 0;
+        }
+
+        .upload-status {
+            font-size: 13px;
+            color: #4a6a8a;
+            margin-top: 4px;
+            padding: 4px 0;
+        }
+        .upload-status .success {
+            color: #1a8a4a;
+            font-weight: 600;
+        }
+        .upload-status .error {
+            color: #c0392b;
+            font-weight: 600;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            font-family: inherit;
+            line-height: 1.4;
+            letter-spacing: 0.2px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            color: #fff;
+            box-shadow: 0 6px 24px rgba(192, 57, 43, 0.30);
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 36px rgba(192, 57, 43, 0.40);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #d4a017, #f5b82e);
+            color: #fff;
+            box-shadow: 0 6px 24px rgba(212, 160, 23, 0.30);
+        }
+        .btn-gold:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 36px rgba(212, 160, 23, 0.40);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #c0392b;
+            color: #c0392b;
+        }
+        .btn-outline:hover:not(:disabled) {
+            background: #fef3f1;
+            transform: translateY(-3px);
+        }
+
+        .btn-outline-dark {
+            background: transparent;
+            border: 2px solid #1a3a5a;
+            color: #1a3a5a;
+        }
+        .btn-outline-dark:hover:not(:disabled) {
+            background: #f0f4fa;
+            transform: translateY(-3px);
+        }
+
+        .btn-purple {
+            background: linear-gradient(135deg, #6c3483, #8e44ad);
+            color: #fff;
+            box-shadow: 0 6px 24px rgba(108, 52, 131, 0.30);
+        }
+        .btn-purple:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 36px rgba(108, 52, 131, 0.40);
+        }
+
+        .btn-teal {
+            background: linear-gradient(135deg, #0e7c7b, #16a085);
+            color: #fff;
+            box-shadow: 0 6px 24px rgba(14, 124, 123, 0.30);
+        }
+        .btn-teal:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 36px rgba(14, 124, 123, 0.40);
+        }
+
+        .btn-sm {
+            padding: 6px 18px;
+            font-size: 13px;
+            border-radius: 10px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .text-muted {
+            color: #6a8aaa;
+            font-size: 13px;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-12 {
+            margin-top: 12px;
+        }
+
+        .jee-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #0a1e3a, #1a4a7a);
+            color: #fff;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* ===== CARD CONTAINER ===== */
+        .card-container {
+            display: flex;
+            justify-content: center;
+            background: linear-gradient(145deg, #e8edf6, #dce4ef);
+            padding: 34px 24px;
+            border-radius: 22px;
+            margin: 6px 0 22px;
+            overflow: auto;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        #resultCard {
+            width: 794px;
+            min-height: 1123px;
+            background: #ffffff;
+            padding: 0;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 20, 50, 0.12), 0 8px 24px rgba(0, 0, 0, 0.04);
+            flex-shrink: 0;
+            overflow: visible;
+            transition: box-shadow 0.3s ease;
+        }
+
+        #resultCard:hover {
+            box-shadow: 0 24px 72px rgba(0, 20, 50, 0.18);
+        }
+
+        /* ============================================================
+           SLIP CARD — PROFESSIONAL, CLEAN, NO DECORATIVE GRAPHICS
+           ============================================================ */
+        .slip-card {
+            background: #ffffff;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 0;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* ===== TOP BAR — simple solid color ===== */
+        .slip-card .top-bar {
+            height: 6px;
+            background: #1a3a7a;
+            flex-shrink: 0;
+        }
+
+        /* ===== HEADER ===== */
+        .slip-card .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 32px 12px 32px;
+            gap: 24px;
+            flex-shrink: 0;
+            border-bottom: 2px solid #d4a017;
+            background: #ffffff;
+        }
+
+        .slip-card .card-header .logo-wrap {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: #f8faff;
+            border-radius: 10px;
+            padding: 4px;
+            border: 1px solid #e8edf6;
+        }
+
+        .slip-card .card-header .logo-wrap img {
+            max-width: 100%;
+            max-height: 80px;
+            object-fit: contain;
+        }
+
+        .slip-card .card-header .title-wrap {
+            text-align: center;
+            flex: 1;
+            padding: 0 8px;
+        }
+
+        .slip-card .card-header .title-wrap .school-name {
+            font-size: 30px;
+            font-weight: 900;
+            color: #0a1e3a;
+            letter-spacing: 1.5px;
+            font-family: 'Times New Roman', 'Georgia', serif;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .slip-card .card-header .title-wrap .school-sub {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a4a7a;
+            letter-spacing: 0.5px;
+            margin: 2px 0;
+        }
+
+        .slip-card .card-header .title-wrap .school-sub2 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2a5a7a;
+            letter-spacing: 0.3px;
+            margin: 0 0 2px 0;
+        }
+
+        .slip-card .card-header .title-wrap .school-address {
+            font-size: 13px;
+            font-weight: 400;
+            color: #4a7a8a;
+            letter-spacing: 0.2px;
+            margin-top: 2px;
+        }
+
+        .slip-card .card-header .spacer {
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        /* ===== MAIN TITLE ===== */
+        .slip-card .main-title {
+            text-align: center;
+            padding: 6px 32px 4px 32px;
+            flex-shrink: 0;
+            background: #ffffff;
+        }
+
+        .slip-card .main-title h2 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0a1e3a;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-family: 'Times New Roman', 'Georgia', serif;
+            margin-bottom: 0;
+            border-bottom: 2px solid #d4a017;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+
+        /* ===== INFO TABLE — PROFESSIONAL TABULAR FORM ===== */
+        .slip-card .info-table-wrap {
+            margin: 10px 32px 12px 32px;
+            flex-shrink: 0;
+            background: #f8faff;
+            border-radius: 10px;
+            padding: 6px 8px;
+            border: 1px solid #e4ebf4;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .slip-card .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        .slip-card .info-table td {
+            padding: 8px 12px;
+            text-align: center;
+            border-right: 1px solid #e4ebf4;
+            font-weight: 500;
+            color: #0a1e3a;
+            vertical-align: middle;
+        }
+
+        .slip-card .info-table td:last-child {
+            border-right: none;
+        }
+
+        .slip-card .info-table .info-label {
+            font-weight: 400;
+            color: #4a7a9a;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        .slip-card .info-table .info-value {
+            font-weight: 700;
+            color: #0a1e3a;
+            font-size: 17px;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .slip-card .info-table .info-value.highlight {
+            color: #c0392b;
+            font-weight: 800;
+        }
+
+        .slip-card .info-table td:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+        .slip-card .info-table td:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* ===== TABLE ===== */
+        .slip-card .table-wrap {
+            margin: 4px 28px 10px 28px;
+            padding: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slip-card .table-wrap .table-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0a1e3a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+        }
+
+        .slip-card .table-wrap .table-title .icon {
+            font-size: 20px;
+        }
+        .slip-card .table-wrap .table-title .count-hint {
+            margin-left: auto;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4a7a9a;
+            white-space: nowrap;
+            background: rgba(26, 58, 122, 0.06);
+            padding: 2px 16px;
+            border-radius: 30px;
+        }
+
+        .slip-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            font-size: 13px;
+        }
+
+        .slip-table thead tr {
+            background: #1a3a7a;
+        }
+
+        .slip-table thead th {
+            color: #ffffff;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 10px 14px;
+            text-align: center;
+            white-space: nowrap;
+            font-size: 12px;
+            border: 1px solid #1a3a6a;
+        }
+
+        .slip-table thead th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+        .slip-table thead th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .slip-table tbody td {
+            padding: 8px 14px;
+            text-align: center;
+            white-space: nowrap;
+            border: 1px solid #e8e0d8;
+            background: #ffffff;
+            font-weight: 500;
+            color: #0a1e3a;
+            font-size: 13px;
+        }
+
+        .slip-table tbody tr:nth-child(even) td {
+            background: #faf8f6;
+        }
+
+        .slip-table tbody tr:hover td {
+            background: #f5f0e8;
+            transition: background 0.2s ease;
+        }
+
+        .slip-table tbody .rank-cell {
+            font-weight: 700;
+            color: #0a1e3a;
+            font-size: 14px;
+        }
+
+        .slip-table tbody .rank-1 {
+            background: #fff9e6 !important;
+            font-weight: 800;
+            color: #d4a017;
+        }
+        .slip-table tbody .rank-2 {
+            background: #f0f2f5 !important;
+            font-weight: 700;
+            color: #5a7a8a;
+        }
+        .slip-table tbody .rank-3 {
+            background: #fdf0e6 !important;
+            font-weight: 700;
+            color: #b87a3a;
+        }
+        .slip-table tbody tr:hover .rank-1 {
+            background: #fff3d0 !important;
+        }
+        .slip-table tbody tr:hover .rank-2 {
+            background: #e8ecf0 !important;
+        }
+        .slip-table tbody tr:hover .rank-3 {
+            background: #fce8d8 !important;
+        }
+
+        .slip-table tbody .name-cell {
+            text-align: left;
+            padding-left: 18px;
+            font-weight: 600;
+            color: #0a1e3a;
+        }
+
+        .slip-table tbody .marks-cell {
+            font-weight: 700;
+            font-size: 15px;
+            color: #0a1e3a;
+        }
+
+        .slip-table tbody .max-cell {
+            color: #6a8aaa;
+            font-weight: 400;
+        }
+
+        .slip-table tbody .pct-cell {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1a8a4a;
+        }
+        .slip-table tbody .pct-cell.high {
+            color: #1a7a3a;
+        }
+        .slip-table tbody .pct-cell.medium {
+            color: #d4a017;
+        }
+        .slip-table tbody .pct-cell.low {
+            color: #c0392b;
+        }
+
+        /* ===== FOOTER ===== */
+        .slip-card .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin: 6px 28px 10px 28px;
+            padding-top: 12px;
+            border-top: 2px solid #d4a017;
+            flex-shrink: 0;
+            background: #ffffff;
+        }
+
+        .slip-card .card-footer .left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .slip-card .card-footer .left .footer-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #3a5a7a;
+            white-space: nowrap;
+        }
+
+        .slip-card .card-footer .signatures {
+            display: flex;
+            gap: 50px;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
+        .slip-card .card-footer .signatures .sig-block {
+            text-align: center;
+            min-width: 110px;
+        }
+
+        .slip-card .card-footer .signatures .sig-block img {
+            max-width: 130px;
+            max-height: 55px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 4px;
+            border-radius: 4px;
+        }
+
+        .slip-card .card-footer .signatures .sig-block .sig-label {
+            font-size: 12px;
+            color: #3a5a7a;
+            font-weight: 500;
+            border-top: 2px solid #d0c8c0;
+            padding-top: 4px;
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+        }
+
+        .slip-card .card-footer .signatures .sig-block .sig-placeholder {
+            height: 40px;
+            border-bottom: 2px dashed #d0c8c0;
+            width: 120px;
+            margin: 0 auto 4px;
+        }
+
+        .slip-card .card-footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #7a8a7a;
+            margin: 4px 28px 14px 28px;
+            padding-top: 8px;
+            border-top: 1px solid #eee8e0;
+            letter-spacing: 0.4px;
+            flex-shrink: 0;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        /* ===== DOWNLOAD SECTION ===== */
+        .download-section {
+            display: none;
+            text-align: center;
+            margin: 18px 0 8px 0;
+            padding: 22px 28px;
+            background: linear-gradient(135deg, #f8faff, #f0f4fa);
+            border-radius: 18px;
+            border: 2px solid #d4a017;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            box-shadow: 0 4px 24px rgba(212, 160, 23, 0.10);
+        }
+
+        .download-section.active {
+            display: flex;
+        }
+
+        .download-section .label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0a1e3a;
+            margin-right: 8px;
+            white-space: nowrap;
+        }
+
+        .download-section .btn {
+            min-width: 160px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 840px) {
+            .app-wrapper {
+                padding: 16px 12px 20px;
+                border-radius: 16px;
+            }
+            #resultCard {
+                width: 100%;
+                min-height: auto;
+            }
+            .slip-card .card-header {
+                padding: 12px 16px 8px 16px;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            .slip-card .card-header .logo-wrap {
+                width: 56px;
+                height: 56px;
+            }
+            .slip-card .card-header .logo-wrap img {
+                max-height: 56px;
+            }
+            .slip-card .card-header .title-wrap .school-name {
+                font-size: 20px;
+                letter-spacing: 1px;
+                white-space: normal;
+            }
+            .slip-card .card-header .title-wrap .school-sub {
+                font-size: 13px;
+            }
+            .slip-card .card-header .title-wrap .school-sub2 {
+                font-size: 12px;
+            }
+            .slip-card .card-header .title-wrap .school-address {
+                font-size: 11px;
+            }
+            .slip-card .card-header .spacer {
+                width: 0;
+            }
+            .slip-card .main-title h2 {
+                font-size: 22px;
+                letter-spacing: 2px;
+            }
+            .slip-card .info-table-wrap {
+                margin: 4px 12px 8px 12px;
+                overflow-x: auto;
+            }
+            .slip-card .info-table {
+                font-size: 13px;
+                min-width: 320px;
+            }
+            .slip-card .info-table td {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+            .slip-card .info-table .info-value {
+                font-size: 14px;
+            }
+            .slip-card .table-wrap {
+                margin: 4px 12px 8px 12px;
+                overflow-x: auto;
+            }
+            .slip-table {
+                font-size: 11px;
+                min-width: 420px;
+            }
+            .slip-table thead th {
+                padding: 5px 8px;
+                font-size: 10px;
+            }
+            .slip-table tbody td {
+                padding: 5px 8px;
+                font-size: 11px;
+            }
+            .slip-table tbody .marks-cell {
+                font-size: 13px;
+            }
+            .slip-table tbody .pct-cell {
+                font-size: 13px;
+            }
+            .slip-table tbody .name-cell {
+                padding-left: 10px;
+            }
+            .slip-card .card-footer {
+                margin: 4px 12px 6px 12px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .slip-card .card-footer .signatures {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            .slip-card .card-footer-note {
+                margin: 2px 12px 8px 12px;
+                white-space: normal;
+            }
+            .card-container {
+                padding: 16px 8px;
+                border-radius: 14px;
+            }
+            .controls-grid {
+                gap: 16px;
+            }
+            .upload-section {
+                padding: 16px 16px 20px;
+            }
+            .file-row {
+                gap: 8px;
+            }
+            .file-row label {
+                min-width: 70px;
+                font-size: 12px;
+                white-space: normal;
+            }
+            .main-header .brand .icon-wrap {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            .main-header .brand h1 {
+                font-size: 20px;
+            }
+            .main-header .brand h1 small {
+                font-size: 12px;
+                display: block;
+                margin-left: 0;
+            }
+            .sub-head .hint {
+                font-size: 12px;
+                padding: 2px 12px;
+            }
+            .download-section {
+                flex-direction: column;
+                padding: 16px;
+            }
+            .download-section .btn {
+                min-width: 100%;
+            }
+            .download-section .label {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .slip-table {
+                font-size: 10px;
+                min-width: 320px;
+            }
+            .slip-table thead th {
+                padding: 3px 5px;
+                font-size: 9px;
+            }
+            .slip-table tbody td {
+                padding: 3px 5px;
+                font-size: 10px;
+            }
+            .slip-table tbody .marks-cell {
+                font-size: 11px;
+            }
+            .slip-table tbody .pct-cell {
+                font-size: 11px;
+            }
+            .slip-table tbody .name-cell {
+                padding-left: 6px;
+            }
+            .slip-card .main-title h2 {
+                font-size: 18px;
+                letter-spacing: 1px;
+            }
+            .slip-card .info-table-wrap {
+                margin: 4px 8px 6px 8px;
+            }
+            .slip-card .info-table {
+                font-size: 11px;
+                min-width: 260px;
+            }
+            .slip-card .info-table td {
+                padding: 4px 6px;
+                font-size: 11px;
+            }
+            .slip-card .info-table .info-value {
+                font-size: 12px;
+            }
+            .btn {
+                font-size: 12px;
+                padding: 6px 14px;
+            }
+            .btn-group {
+                gap: 4px;
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+                margin: 0;
+            }
+            .app-wrapper {
+                max-width: 100%;
+                padding: 0;
+                border-radius: 0;
+                box-shadow: none;
+                background: #fff;
+                backdrop-filter: none;
+            }
+            .controls-grid,
+            .sub-head .btn,
+            .main-header .badge-group,
+            .sub-head .hint,
+            .download-section {
+                display: none !important;
+            }
+            .main-header .brand h1 small {
+                display: inline-block;
+            }
+            .card-container {
+                background: #fff;
+                padding: 0;
+                border-radius: 0;
+                margin: 0;
+                overflow: visible;
+                border: none;
+                box-shadow: none;
+            }
+            #resultCard {
+                width: 100%;
+                min-height: auto;
+                box-shadow: none;
+                border: none;
+                border-radius: 0;
+                page-break-after: avoid;
+            }
+            .slip-card {
+                page-break-inside: avoid;
+                border-radius: 0;
+            }
+            .slip-card .top-bar {
+                background: #1a3a7a !important;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+        .text-center {
+            text-align: center;
+        }
+
+        /* ===== PROGRESS OVERLAY ===== */
+        .progress-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 30, 58, 0.60);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .progress-overlay.active {
+            display: flex;
+        }
+        .progress-box {
+            background: #ffffff;
+            padding: 40px 52px 44px;
+            border-radius: 24px;
+            min-width: 380px;
+            max-width: 540px;
+            text-align: center;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.30);
+            animation: fadeSlideUp 0.4s ease;
+        }
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .progress-box h3 {
+            font-size: 22px;
+            color: #0a1e3a;
+            margin-bottom: 6px;
+        }
+        .progress-box p {
+            color: #4a6a8a;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        .progress-track {
+            width: 100%;
+            height: 12px;
+            background: #e8edf6;
+            border-radius: 30px;
+            overflow: hidden;
+            margin: 14px 0 16px;
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        .progress-track .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #0a1e3a, #1a4a7a, #d4a017, #f39c12);
+            border-radius: 30px;
+            transition: width 0.4s ease;
+        }
+        .progress-box .progress-text {
+            font-weight: 700;
+            color: #0a1e3a;
+            font-size: 20px;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e8edf6;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #1a4a7a, #2d7a9a);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #0a1e3a, #1a4a7a);
+        }
+
+        /* Hide preview images in upload section */
+        .upload-preview-hidden {
+            display: none !important;
+        }
+        .file-row .preview-img {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+
+        <!-- HEADER -->
+        <div class="main-header">
+            <div class="brand">
+                <div class="icon-wrap">📝</div>
+                <h1>
+                    Slip Test Rank Card
+                    <small>SSC · Dense Ranking</small>
+                </h1>
+            </div>
+            <div class="badge-group">
+                <span class="badge-count" id="studentCountBadge">0 students</span>
+            </div>
+        </div>
+
+        <div class="sub-head">
+            <span>📋 Upload Excel · Dense Ranking · Max 20 · Percentage last column</span>
+            <span class="hint">🔹 Rank 1🥇 2🥈 3🥉 · 500 DPI JPG</span>
+        </div>
+
+        <!-- CONTROLS -->
+        <div class="controls-grid">
+
+            <!-- LEFT: Branding -->
+            <div class="upload-section">
+                <h3>🖼️ School Branding</h3>
+
+                <div class="file-row">
+                    <label>Logo</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="logoUpload" accept="image/*" />
+                    </div>
+                </div>
+
+                <div class="file-row">
+                    <label>Teacher Sig.</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="teacherSigUpload" accept="image/*" />
+                    </div>
+                </div>
+
+                <div class="file-row">
+                    <label>Principal Sig.</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="principalSigUpload" accept="image/*" />
+                    </div>
+                </div>
+
+                <hr class="divider-light" />
+
+                <div style="margin-top:12px;">
+                    <h3 style="margin-bottom:8px;">📝 Test Details</h3>
+                    <div class="file-row">
+                        <label style="min-width:70px;">Subject</label>
+                        <div class="file-input-wrapper">
+                            <input type="text" id="subjectInput" value="SOCIAL" style="flex:1; padding:8px 14px; border:2px solid #dce6f0; border-radius:10px; font-size:14px; font-weight:500; color:#0a1e3a; background:#fff; min-width:120px; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#1a4a7a'" onblur="this.style.borderColor='#dce6f0'" />
+                        </div>
+                    </div>
+                    <div class="file-row">
+                        <label style="min-width:70px;">Exam Date</label>
+                        <div class="file-input-wrapper">
+                            <input type="date" id="examDateInput" style="flex:1; padding:8px 14px; border:2px solid #dce6f0; border-radius:10px; font-size:14px; font-weight:500; color:#0a1e3a; background:#fff; min-width:120px; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#1a4a7a'" onblur="this.style.borderColor='#dce6f0'" />
+                        </div>
+                    </div>
+                    <div class="file-row">
+                        <label style="min-width:70px;">Class</label>
+                        <div class="file-input-wrapper">
+                            <input type="text" id="classInput" value="SSC" style="flex:1; padding:8px 14px; border:2px solid #dce6f0; border-radius:10px; font-size:14px; font-weight:500; color:#0a1e3a; background:#fff; min-width:120px; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#1a4a7a'" onblur="this.style.borderColor='#dce6f0'" />
+                        </div>
+                    </div>
+                    <div style="font-size:12px; color:#4a7a9a; margin-top:6px; background:rgba(26,58,122,0.04); padding:4px 12px; border-radius:8px;">
+                        📌 Max Marks fixed at <strong>20</strong> · Percentage = (Obtained/20)×100
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Data & Actions -->
+            <div class="upload-section" style="display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <h3>📊 Student Data <span class="badge-soft">Excel</span></h3>
+                    <div class="file-row">
+                        <label style="min-width:70px;">Upload</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="excelUpload" accept=".xlsx,.xls" />
+                            <button class="btn btn-sm btn-teal" id="sampleExcelBtn">📥 Sample</button>
+                        </div>
+                    </div>
+                    <div id="excelStatus" class="text-muted mt-8" style="font-size:13px;">No file uploaded</div>
+                    <div style="margin-top:8px; font-size:12px; color:#4a7a9a; display:flex; flex-wrap:wrap; gap:6px 14px;">
+                        <span><span class="jee-badge">📌</span> Student ID · Name · Obtained</span>
+                        <span><span class="jee-badge">📊</span> Max fixed: 20</span>
+                        <span><span class="jee-badge">🏆</span> Dense Ranking</span>
+                        <span><span class="jee-badge">📈</span> Percentage last col</span>
+                    </div>
+
+                    <hr class="divider-light" />
+
+                    <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:6px;">
+                        <button class="btn btn-primary" id="generateBtn">🔄 Generate Rank Card</button>
+                        <button class="btn btn-outline" id="resetBtn">⟲ Reset</button>
+                    </div>
+                    <div class="text-muted mt-8" style="font-size:13px;">
+                        ✅ All students on single A4 · Dense ranking · Percentage last col
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD PREVIEW -->
+        <div class="card-container" id="cardContainer">
+            <div id="resultCard">
+                <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px; background:linear-gradient(180deg, #fafcff, #f0f4fa); border-radius:16px;">
+                    <span style="font-size:52px;">📄</span>
+                    <span style="font-weight:600; color:#1a3a5a;">Upload Excel &amp; click <strong style="color:#c0392b;">"Generate Rank Card"</strong></span>
+                    <span style="font-size:14px; color:#7a9aaa;">SSC Slip Test · Dense Ranking · A4 Portrait</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== DOWNLOAD SECTION ===== -->
+        <div class="download-section" id="downloadSection">
+            <span class="label">📥 Download Full Card</span>
+            <button class="btn btn-gold" id="downloadFullJpgBtn">🖼️ JPG (500 DPI)</button>
+            <button class="btn btn-purple" id="exportExcelBtn">📊 Export to Excel</button>
+        </div>
+
+        <div style="margin-top:16px; text-align:center; font-size:13px; color:#7a9aaa; border-top:1px solid rgba(26,58,122,0.08); padding-top:18px; letter-spacing:0.3px;">
+            SSC Slip Test · Dense Ranking · Max 20 · Percentage last column · 500 DPI
+        </div>
+    </div>
+
+    <!-- Progress Overlay -->
+    <div class="progress-overlay" id="progressOverlay">
+        <div class="progress-box">
+            <h3>🖼️ Generating 500 DPI JPG</h3>
+            <p id="progressStatus">Rendering full card …</p>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">0%</div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  STATE
+        // ============================================================
+        const state = {
+            students: [],
+            logoDataURL: null,
+            teacherSigDataURL: null,
+            principalSigDataURL: null,
+            subject: 'SOCIAL',
+            examDate: '',
+            className: 'SSC',
+        };
+
+        const MAX_MARKS = 20;
+
+        const $ = id => document.getElementById(id);
+        const cardEl = $('resultCard');
+        const logoUpload = $('logoUpload');
+        const teacherSigUpload = $('teacherSigUpload');
+        const principalSigUpload = $('principalSigUpload');
+        const excelUpload = $('excelUpload');
+        const excelStatus = $('excelStatus');
+        const generateBtn = $('generateBtn');
+        const downloadFullJpgBtn = $('downloadFullJpgBtn');
+        const exportExcelBtn = $('exportExcelBtn');
+        const resetBtn = $('resetBtn');
+        const studentCountBadge = $('studentCountBadge');
+        const sampleExcelBtn = $('sampleExcelBtn');
+        const subjectInput = $('subjectInput');
+        const examDateInput = $('examDateInput');
+        const classInput = $('classInput');
+        const progressOverlay = $('progressOverlay');
+        const progressFill = $('progressFill');
+        const progressText = $('progressText');
+        const progressStatus = $('progressStatus');
+        const downloadSection = $('downloadSection');
+
+        // Set default date
+        const today = new Date();
+        const dateStr = today.toISOString().split('T')[0];
+        examDateInput.value = dateStr;
+        state.examDate = dateStr;
+
+        // ============================================================
+        //  SAMPLE EXCEL
+        // ============================================================
+        function generateSampleExcel() {
+            const data = [
+                ['Student ID', 'Name of the Student', 'Obtained Marks'],
+                ['SSC001', 'T. SHAMYUU', 18],
+                ['SSC002', 'A. RAHUL', 19],
+                ['SSC003', 'S. PRIYA', 16],
+                ['SSC004', 'M. KIRAN', 9],
+                ['SSC005', 'R. ANJALI', 14],
+                ['SSC006', 'V. SAI', 17],
+                ['SSC007', 'K. DEEPAK', 15],
+                ['SSC008', 'N. LAKSHMI', 12],
+                ['SSC009', 'P. SURESH', 20],
+                ['SSC010', 'M. ANITHA', 16],
+                ['SSC011', 'R. VENKAT', 7],
+                ['SSC012', 'K. SWETHA', 14],
+                ['SSC013', 'G. NAVEEN', 19],
+                ['SSC014', 'B. SAI', 16],
+                ['SSC015', 'L. SITA', 16],
+                ['SSC016', 'D. RAM', 10],
+                ['SSC017', 'S. LAKSHMI', 13],
+                ['SSC018', 'P. SUNIL', 18],
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'SlipTest');
+            XLSX.writeFile(wb, 'SSC_Slip_Test_Sample.xlsx');
+        }
+        sampleExcelBtn.addEventListener('click', generateSampleExcel);
+
+        // ============================================================
+        //  IMAGE UPLOADS — store dataURL without showing preview
+        // ============================================================
+        function handleImageUpload(input, setDataURL) {
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const dataUrl = ev.target.result;
+                    setDataURL(dataUrl);
+                    // No preview shown — user requested to hide upload previews
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        handleImageUpload(logoUpload, (url) => { state.logoDataURL = url; });
+        handleImageUpload(teacherSigUpload, (url) => { state.teacherSigDataURL = url; });
+        handleImageUpload(principalSigUpload, (url) => { state.principalSigDataURL = url; });
+
+        // ============================================================
+        //  EXCEL UPLOAD
+        // ============================================================
+        let excelData = null;
+
+        excelUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) { excelStatus.textContent = 'No file selected'; return; }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const data = new Uint8Array(ev.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(firstSheet);
+                    if (!json || json.length === 0) {
+                        excelStatus.textContent = '⚠️ Excel is empty.';
+                        return;
+                    }
+                    excelData = json;
+                    excelStatus.textContent = `✅ Loaded ${json.length} record(s) from "${file.name}"`;
+                    parseStudentsFromExcel(json);
+                } catch (err) {
+                    excelStatus.textContent = '❌ Error: ' + err.message;
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // ============================================================
+        //  PARSE STUDENTS — DENSE RANKING
+        // ============================================================
+        function parseStudentsFromExcel(json) {
+            const students = [];
+            const cols = Object.keys(json[0] || {});
+            const mapKey = (key) => {
+                const k = String(key).trim().toLowerCase();
+                if (k.includes('student id') || k.includes('id') || k.includes('roll')) return 'studentId';
+                if (k.includes('name') || k.includes('student name')) return 'name';
+                if (k.includes('obtained') || k.includes('marks') || k.includes('score')) return 'obtained';
+                return null;
+            };
+
+            const colMap = {};
+            cols.forEach(c => {
+                const mapped = mapKey(c);
+                if (mapped) colMap[mapped] = c;
+            });
+
+            if (!colMap.name) {
+                excelStatus.textContent = '⚠️ Column "Name of the Student" not found. Found: ' + cols.join(', ');
+                return;
+            }
+            if (!colMap.obtained) {
+                excelStatus.textContent = '⚠️ Column "Obtained Marks" not found.';
+                return;
+            }
+
+            json.forEach(row => {
+                const name = String(row[colMap.name] || '').trim();
+                if (!name) return;
+                const studentId = String(row[colMap.studentId] || '').trim() || '—';
+                const obtained = parseFloat(row[colMap.obtained] !== undefined ? row[colMap.obtained] : 0);
+                const marks = Math.min(Math.max(isNaN(obtained) ? 0 : obtained, 0), MAX_MARKS);
+                students.push({ studentId, name, obtained: marks, maximum: MAX_MARKS, rank: 0 });
+            });
+
+            if (students.length === 0) {
+                excelStatus.textContent = '⚠️ No valid student records found.';
+                return;
+            }
+
+            students.sort((a, b) => b.obtained - a.obtained);
+
+            let denseRank = 1;
+            for (let i = 0; i < students.length; i++) {
+                if (i === 0) {
+                    students[i].rank = denseRank;
+                } else {
+                    if (students[i].obtained < students[i - 1].obtained) {
+                        denseRank++;
+                    }
+                    students[i].rank = denseRank;
+                }
+            }
+
+            state.students = students;
+            updateUI();
+            renderCard();
+            excelStatus.textContent = `✅ ${students.length} student(s). Dense ranking applied. Max: ${MAX_MARKS}`;
+            showDownloadSection(true);
+        }
+
+        // ============================================================
+        //  UI UPDATE
+        // ============================================================
+        function updateUI() {
+            const count = state.students.length;
+            studentCountBadge.textContent = count + ' student' + (count !== 1 ? 's' : '');
+        }
+
+        // ============================================================
+        //  SHOW/HIDE DOWNLOAD SECTION
+        // ============================================================
+        function showDownloadSection(show) {
+            if (show && state.students.length > 0) {
+                downloadSection.classList.add('active');
+            } else {
+                downloadSection.classList.remove('active');
+            }
+        }
+
+        // ============================================================
+        //  FORMAT DATE
+        // ============================================================
+        function formatDate(dateStr) {
+            if (!dateStr) return '—';
+            try {
+                const d = new Date(dateStr + 'T00:00:00');
+                return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            } catch {
+                return dateStr;
+            }
+        }
+
+        // ============================================================
+        //  RENDER CARD — PROFESSIONAL, CLEAN, NO EXTRA GRAPHICS
+        // ============================================================
+        function renderCard() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                cardEl.innerHTML = `
+                        <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px; background:linear-gradient(180deg, #fafcff, #f0f4fa); border-radius:16px;">
+                            <span style="font-size:52px;">📄</span>
+                            <span style="font-weight:600; color:#1a3a5a;">Upload Excel &amp; click <strong style="color:#c0392b;">"Generate Rank Card"</strong></span>
+                            <span style="font-size:14px; color:#7a9aaa;">SSC Slip Test · Dense Ranking · A4 Portrait</span>
+                        </div>
+                    `;
+                showDownloadSection(false);
+                return;
+            }
+
+            const subject = subjectInput.value.trim() || 'SOCIAL';
+            const examDate = examDateInput.value || '';
+            const className = classInput.value.trim() || 'SSC';
+            const displayDate = formatDate(examDate);
+
+            const logoHtml = state.logoDataURL ?
+                `<img src="${state.logoDataURL}" alt="Logo" style="max-width:80px; max-height:80px; object-fit:contain;" />` :
+                '';
+
+            // Teacher signature — LEFT corner
+            const teacherSigHtml = state.teacherSigDataURL ?
+                `<img src="${state.teacherSigDataURL}" alt="Teacher Signature" style="max-width:130px; max-height:55px; object-fit:contain;" />` :
+                '<div class="sig-placeholder"></div>';
+
+            // Principal signature — RIGHT corner
+            const principalSigHtml = state.principalSigDataURL ?
+                `<img src="${state.principalSigDataURL}" alt="Principal Signature" style="max-width:130px; max-height:55px; object-fit:contain;" />` :
+                '<div class="sig-placeholder"></div>';
+
+            let tableRows = '';
+            const totalStudents = students.length;
+
+            students.forEach((s) => {
+                const rankClass = s.rank === 1 ? 'rank-1' : (s.rank === 2 ? 'rank-2' : (s.rank === 3 ? 'rank-3' :
+                ''));
+                const medal = s.rank === 1 ? '🥇' : (s.rank === 2 ? '🥈' : (s.rank === 3 ? '🥉' : ''));
+                const pct = ((s.obtained / MAX_MARKS) * 100);
+                let pctClass = 'pct-cell';
+                if (pct >= 80) pctClass += ' high';
+                else if (pct >= 50) pctClass += ' medium';
+                else pctClass += ' low';
+                const pctStr = pct.toFixed(1);
+                tableRows += `
+                        <tr>
+                            <td class="rank-cell ${rankClass}">${medal} ${s.rank}</td>
+                            <td style="font-weight:600; color:#0a1e3a;">${s.studentId}</td>
+                            <td class="name-cell">${s.name}</td>
+                            <td class="marks-cell">${s.obtained}</td>
+                            <td class="max-cell">${MAX_MARKS}</td>
+                            <td class="${pctClass}">${pctStr}%</td>
+                        </tr>
+                    `;
+            });
+
+            // Build the card — clean, no decorative stars or gradients
+            cardEl.innerHTML = `
+                    <div class="slip-card" id="slipCard">
+                        <div class="top-bar"></div>
+
+                        <!-- HEADER -->
+                        <div class="card-header">
+                            <div class="logo-wrap">${logoHtml}</div>
+                            <div class="title-wrap">
+                                <div class="school-name">SRI VENKATESWARA JY SCHOOL</div>
+                                <div class="school-sub2">IIT-JEE / NEET Foundation · Olympiads</div>
+                                <div class="school-address">Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta</div>
+                            </div>
+                            <div class="spacer"></div>
+                        </div>
+
+                        <!-- MAIN TITLE -->
+                        <div class="main-title">
+                            <h2>📊 SLIP TEST RESULTS</h2>
+                        </div>
+
+                        <!-- INFO TABLE — TABULAR HEADER -->
+                        <div class="info-table-wrap">
+                            <table class="info-table">
+                                <tr>
+                                    <td>
+                                        <span class="info-label">📚 CLASS</span>
+                                        <span class="info-value">${className}</span>
+                                    </td>
+                                    <td>
+                                        <span class="info-label">📖 SUBJECT</span>
+                                        <span class="info-value">${subject}</span>
+                                    </td>
+                                    <td>
+                                        <span class="info-label">📅 EXAM DATE</span>
+                                        <span class="info-value">${displayDate}</span>
+                                    </td>
+                                    <td>
+                                        <span class="info-label">🎯 MAX MARKS</span>
+                                        <span class="info-value highlight">${MAX_MARKS}</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- TABLE -->
+                        <div class="table-wrap">
+                            <div class="table-title">
+                                <span class="icon">🏆</span>
+                                <span>Rank-Wise Performance (Dense Ranking)</span>
+                                <span class="count-hint">📌 ${totalStudents} student${totalStudents !== 1 ? 's' : ''}</span>
+                            </div>
+
+                            <table class="slip-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:10%;">Rank</th>
+                                        <th style="width:14%;">Student ID</th>
+                                        <th style="width:32%; text-align:left; padding-left:18px;">Name of the Student</th>
+                                        <th style="width:12%;">Obtained</th>
+                                        <th style="width:10%;">Max</th>
+                                        <th style="width:16%;">Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${tableRows}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- FOOTER — Teacher LEFT, Principal RIGHT -->
+                        <div class="card-footer">
+                            <div class="left">
+                                <div class="footer-label">📋 Total: ${totalStudents} students · Dense Ranking · Max: ${MAX_MARKS}</div>
+                            </div>
+                            <div class="signatures">
+                                <div class="sig-block">
+                                    ${teacherSigHtml}
+                                    <div class="sig-label">✍ Teacher Signature</div>
+                                </div>
+                                <div class="sig-block">
+                                    ${principalSigHtml}
+                                    <div class="sig-label">✍ Principal Signature</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer-note">
+                            ★ System-generated slip test · ${className} · ${subject} · Dense Ranking · Max: ${MAX_MARKS} ★
+                        </div>
+                    </div>
+                `;
+
+            showDownloadSection(true);
+        }
+
+        // ============================================================
+        //  GENERATE
+        // ============================================================
+        generateBtn.addEventListener('click', function() {
+            if (!state.students.length) {
+                if (excelData && excelData.length) {
+                    parseStudentsFromExcel(excelData);
+                } else {
+                    alert('Please upload an Excel file with student data first.');
+                }
+                return;
+            }
+            const students = state.students;
+            students.sort((a, b) => b.obtained - a.obtained);
+            let denseRank = 1;
+            for (let i = 0; i < students.length; i++) {
+                if (i === 0) {
+                    students[i].rank = denseRank;
+                } else {
+                    if (students[i].obtained < students[i - 1].obtained) denseRank++;
+                    students[i].rank = denseRank;
+                }
+            }
+            renderCard();
+            updateUI();
+            showDownloadSection(true);
+        });
+
+        // ============================================================
+        //  CAPTURE FULL CARD — 500 DPI with perfect match
+        // ============================================================
+        async function captureFullCard() {
+            await new Promise(resolve => setTimeout(resolve, 400));
+
+            const targetElement = document.getElementById('resultCard');
+            if (!targetElement) {
+                throw new Error('Card element not found. Please generate the card first.');
+            }
+
+            const scaleFactor = 5.2;
+
+            const canvas = await html2canvas(targetElement, {
+                scale: scaleFactor,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: '#ffffff',
+                logging: false,
+                windowWidth: 794,
+                windowHeight: targetElement.scrollHeight || 1123,
+                onclone: (clonedDoc, clonedElement) => {
+                    const clonedCard = clonedElement.querySelector('#resultCard');
+                    if (clonedCard) {
+                        clonedCard.style.overflow = 'visible';
+                        clonedCard.style.height = 'auto';
+                        clonedCard.style.minHeight = '1123px';
+                    }
+                }
+            });
+
+            return canvas;
+        }
+
+        // ============================================================
+        //  DOWNLOAD FULL JPG — 500 DPI
+        // ============================================================
+        downloadFullJpgBtn.addEventListener('click', async function() {
+            if (!state.students.length) {
+                alert('No student data. Please upload an Excel file and generate the card.');
+                return;
+            }
+
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Rendering...';
+            btn.disabled = true;
+
+            progressOverlay.classList.add('active');
+            progressFill.style.width = '10%';
+            progressText.textContent = '10%';
+            progressStatus.textContent = 'Preparing full card capture at 500 DPI...';
+
+            try {
+                renderCard();
+                await new Promise(r => setTimeout(r, 500));
+
+                progressFill.style.width = '30%';
+                progressText.textContent = '30%';
+                progressStatus.textContent = 'Capturing full card (logo to signature)...';
+
+                const canvas = await captureFullCard();
+
+                progressFill.style.width = '70%';
+                progressText.textContent = '70%';
+                progressStatus.textContent = 'Encoding high-quality JPG...';
+
+                const jpgDataUrl = canvas.toDataURL('image/jpeg', 0.98);
+
+                progressFill.style.width = '95%';
+                progressText.textContent = '95%';
+                progressStatus.textContent = 'Preparing download...';
+
+                const link = document.createElement('a');
+                link.href = jpgDataUrl;
+                const subject = subjectInput.value.trim() || 'SlipTest';
+                const dateStr = examDateInput.value || new Date().toISOString().split('T')[0];
+                link.download = `SSC_SlipTest_Full_${subject}_${dateStr}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                progressFill.style.width = '100%';
+                progressText.textContent = '100%';
+                progressStatus.textContent = '✅ Done! 500 DPI JPG downloaded.';
+
+                btn.textContent = '✅ Downloaded!';
+                setTimeout(() => {
+                    btn.textContent = origText;
+                    btn.disabled = false;
+                    progressOverlay.classList.remove('active');
+                }, 1800);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error: ' + err.message);
+                btn.textContent = origText;
+                btn.disabled = false;
+                progressOverlay.classList.remove('active');
+            }
+        });
+
+        // ============================================================
+        //  EXPORT TO EXCEL
+        // ============================================================
+        exportExcelBtn.addEventListener('click', function() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                alert('No student data. Please upload an Excel file and generate the card.');
+                return;
+            }
+
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Generating...';
+            btn.disabled = true;
+
+            try {
+                const data = [
+                    ['Rank', 'Student ID', 'Name of the Student', 'Obtained Marks', 'Maximum Marks', 'Percentage (%)']
+                ];
+
+                students.forEach(s => {
+                    const pct = ((s.obtained / MAX_MARKS) * 100).toFixed(1);
+                    data.push([
+                        s.rank,
+                        s.studentId,
+                        s.name,
+                        s.obtained,
+                        MAX_MARKS,
+                        parseFloat(pct)
+                    ]);
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                ws['!cols'] = [
+                    { wch: 8 }, { wch: 16 }, { wch: 28 }, { wch: 14 }, { wch: 14 }, { wch: 16 }
+                ];
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'SlipTest_Rank');
+                const subject = subjectInput.value.trim() || 'SlipTest';
+                const dateStr = examDateInput.value || new Date().toISOString().split('T')[0];
+                XLSX.writeFile(wb, `SSC_SlipTest_Rank_${subject}_${dateStr}.xlsx`);
+
+                btn.textContent = '✅ Exported!';
+                setTimeout(() => { btn.textContent = origText;
+                    btn.disabled = false; }, 1500);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error exporting Excel: ' + err.message);
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        //  LIVE PREVIEW
+        // ============================================================
+        subjectInput.addEventListener('input', function() {
+            state.subject = this.value.trim() || 'SOCIAL';
+            if (state.students.length > 0) renderCard();
+        });
+
+        examDateInput.addEventListener('change', function() {
+            state.examDate = this.value || '';
+            if (state.students.length > 0) renderCard();
+        });
+
+        classInput.addEventListener('input', function() {
+            state.className = this.value.trim() || 'SSC';
+            if (state.students.length > 0) renderCard();
+        });
+
+        // ============================================================
+        //  RESET
+        // ============================================================
+        resetBtn.addEventListener('click', function() {
+            state.students = [];
+            state.logoDataURL = null;
+            state.teacherSigDataURL = null;
+            state.principalSigDataURL = null;
+            excelData = null;
+
+            logoUpload.value = '';
+            teacherSigUpload.value = '';
+            principalSigUpload.value = '';
+            excelUpload.value = '';
+            excelStatus.textContent = 'No file uploaded';
+
+            cardEl.innerHTML = `
+                    <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px; background:linear-gradient(180deg, #fafcff, #f0f4fa); border-radius:16px;">
+                        <span style="font-size:52px;">📄</span>
+                        <span style="font-weight:600; color:#1a3a5a;">Upload Excel &amp; click <strong style="color:#c0392b;">"Generate Rank Card"</strong></span>
+                        <span style="font-size:14px; color:#7a9aaa;">SSC Slip Test · Dense Ranking · A4 Portrait</span>
+                    </div>
+                `;
+            studentCountBadge.textContent = '0 students';
+            showDownloadSection(false);
+            progressOverlay.classList.remove('active');
+        });
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        console.log('📝 SSC Slip Test · Dense Ranking · 500 DPI');
+        console.log(`📐 Max Marks: ${MAX_MARKS} · Percentage last column`);
+        console.log('🥇🥈🥉 Rank 1,2,3 with medals');
+        console.log('📊 Export to Excel · 500 DPI JPG download at bottom');
+        console.log('📌 Dense ranking: 1,1,1,2,2,2,3,3,4,5,6,7...');
+        console.log('✅ Teacher signature — LEFT corner | Principal signature — RIGHT corner');
+        console.log('✅ School name in single line: SRI VENKATESWARA JY SCHOOL');
+        console.log('✅ Upload previews hidden — only card shows images');
+        console.log('✅ Clean design: no decorative graphics, just professional layout');
+    </script>
+
+</body>
+</html>
