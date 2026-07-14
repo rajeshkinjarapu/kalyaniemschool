@@ -24,6 +24,7 @@ export const StudentProfilePage: React.FC = () => {
   const [printPayment, setPrintPayment] = useState<any>(null);
   
   // Payment Modal States
+  const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDiscountModal, setShowDiscountModal] = useState(false);
   const [editingPayment, setEditingPayment] = useState<any>(null);
