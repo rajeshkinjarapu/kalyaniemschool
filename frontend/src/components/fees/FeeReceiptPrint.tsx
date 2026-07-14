@@ -8,11 +8,11 @@ interface FeeReceiptPrintProps {
 }
 
 export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoolName = 'JY SCHOOL' }) => {
-  if (!payment) return null;
-
-  const receiptNumber = payment.receiptNo || React.useMemo(() => {
+  const receiptNumber = payment?.receiptNo || React.useMemo(() => {
     return 'JY26' + Math.floor(10000000 + Math.random() * 90000000);
-  }, [payment.id]);
+  }, [payment?.id]);
+
+  if (!payment) return null;
 
   const pendingBalance = payment.feeStructure 
     ? (payment.feeStructure.amount - (payment.feeStructure.feePayments?.reduce((sum: number, p: any) => sum + p.amountPaid, 0) || payment.amountPaid))
@@ -31,7 +31,7 @@ export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoo
         <div className="flex items-center justify-between border-b-2 border-indigo-900 pb-4 mb-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 bg-white shadow-sm border border-slate-100">
-              <img src="/logo.png" alt="School Logo" className="w-full h-full object-contain p-1" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<School class="w-8 h-8 text-indigo-900" />'; }} />
+              <img src="/logo.png" alt="School Logo" className="w-full h-full object-contain p-1" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
             </div>
             <div>
               <h1 className="text-2xl font-black uppercase tracking-widest text-indigo-900">{schoolName}</h1>
@@ -123,10 +123,13 @@ export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoo
         </div>
 
         {/* Signatures */}
-        <div className="mt-auto pt-8 flex justify-end items-end">
+        <div className="mt-8 pt-6 border-t-2 border-slate-100 flex justify-between items-end">
           <div className="text-center">
-            <div className="w-48 border-b-2 border-slate-800 mb-3 mx-auto"></div>
-            <p className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Cashier / Accountant</p>
+            <p className="text-xs font-bold text-slate-800 border-t border-slate-800 pt-1 mt-8 inline-block px-4">CASHIER / ACCOUNTANT</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] text-slate-400 font-medium">System Generated Receipt</p>
+            <p className="text-[10px] text-slate-400 font-medium">Valid without signature if paid online</p>
           </div>
         </div>
       </div>
@@ -135,30 +138,17 @@ export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoo
 
   return (
     <div className="hidden print:flex flex-col fixed top-0 left-0 right-0 bottom-0 bg-white z-[9999] w-full h-[297mm] text-black print:overflow-hidden print:!m-0 print:!p-0 font-sans">
-      <style>
-        {`
-          @page { size: A4 portrait; margin: 0; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white; margin: 0; padding: 0; }
-          @media print {
-            html, body { height: 297mm; overflow: hidden; }
-          }
-        `}
-      </style>
       
-      {/* Student Copy (Top Half) */}
-      <ReceiptHalf type="STUDENT COPY" />
-      
-      {/* Cutting Line (Middle) */}
-      <div className="w-full flex items-center justify-center relative my-0 h-0 print:opacity-40">
-        <div className="absolute w-[210mm] mx-auto border-t-[1.5px] border-dashed border-slate-400 z-10"></div>
-        <div className="absolute bg-white px-6 z-20 flex items-center gap-2 text-slate-400">
-          <span className="text-[10px] tracking-[0.3em] font-extrabold uppercase">✂ Cut Here ✂</span>
-        </div>
+      {/* Top Half - Student Copy */}
+      <div className="h-[148mm] border-b-2 border-dashed border-slate-300 relative box-border">
+        <ReceiptHalf type="STUDENT COPY" />
       </div>
-      
-      {/* Office Copy (Bottom Half) */}
-      <ReceiptHalf type="OFFICE COPY" />
-      
+
+      {/* Bottom Half - Office Copy */}
+      <div className="h-[148mm] relative box-border">
+        <ReceiptHalf type="OFFICE COPY" />
+      </div>
+
     </div>
   );
 };

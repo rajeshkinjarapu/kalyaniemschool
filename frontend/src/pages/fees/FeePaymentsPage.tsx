@@ -296,56 +296,66 @@ export const FeePaymentsPage: React.FC = () => {
                 <div>
                   <label className="label mb-2">Select Fee Components & Amount</label>
                   <div className="space-y-2 border border-gray-200 dark:border-gray-800 rounded-xl p-3 bg-gray-50 dark:bg-gray-800/20 max-h-48 overflow-y-auto">
-                    {structures
-                      .filter((s) => s.studentId === studentId || s.classId === students.find((st) => st.id === studentId)?.classId)
-                      .map((s) => {
+                    {(() => {
+                      const availableStructures = structures.filter((s) => s.studentId === studentId || s.classId === students.find((st) => st.id === studentId)?.classId);
+                      const allPaid = availableStructures.every(s => {
                         const paidSoFar = payments.filter(p => p.studentId === studentId && p.feeStructureId === s.id).reduce((sum, p) => sum + p.amountPaid, 0);
-                        const pendingAmount = Math.max(0, s.amount - paidSoFar);
-                        if (pendingAmount <= 0) return null;
+                        return Math.max(0, s.amount - paidSoFar) <= 0;
+                      });
 
-                        const isSelected = selectedFees.find(f => f.feeStructureId === s.id);
+                      return (
+                        <>
+                          {availableStructures.map((s) => {
+                            const paidSoFar = payments.filter(p => p.studentId === studentId && p.feeStructureId === s.id).reduce((sum, p) => sum + p.amountPaid, 0);
+                            const pendingAmount = Math.max(0, s.amount - paidSoFar);
+                            if (pendingAmount <= 0) return null;
 
-                        return (
-                          <div key={s.id} className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700 rounded-lg">
-                            <div className="flex items-center gap-3">
-                              <input
-                                type="checkbox"
-                                className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
-                                checked={!!isSelected}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setSelectedFees([...selectedFees, { feeStructureId: s.id, amountPaid: pendingAmount }]);
-                                  } else {
-                                    setSelectedFees(selectedFees.filter(f => f.feeStructureId !== s.id));
-                                  }
-                                }}
-                              />
-                              <div>
-                                <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{s.name}</p>
-                                <p className="text-[10px] text-gray-500">Pending: ₹{pendingAmount}</p>
+                            const isSelected = selectedFees.find(f => f.feeStructureId === s.id);
+
+                            return (
+                              <div key={s.id} className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                  <input
+                                    type="checkbox"
+                                    className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                                    checked={!!isSelected}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSelectedFees([...selectedFees, { feeStructureId: s.id, amountPaid: pendingAmount }]);
+                                      } else {
+                                        setSelectedFees(selectedFees.filter(f => f.feeStructureId !== s.id));
+                                      }
+                                    }}
+                                  />
+                                  <div>
+                                    <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{s.name}</p>
+                                    <p className="text-[10px] text-gray-500">Pending: ₹{pendingAmount}</p>
+                                  </div>
+                                </div>
+                                {isSelected && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-xs text-gray-500">₹</span>
+                                    <input
+                                      type="number"
+                                      className="w-20 px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 outline-none"
+                                      value={isSelected.amountPaid}
+                                      onChange={(e) => {
+                                        setSelectedFees(selectedFees.map(f => f.feeStructureId === s.id ? { ...f, amountPaid: Number(e.target.value) } : f));
+                                      }}
+                                      max={pendingAmount}
+                                    />
+                                  </div>
+                                )}
                               </div>
-                            </div>
-                            {isSelected && (
-                              <div className="flex items-center gap-1">
-                                <span className="text-xs text-gray-500">₹</span>
-                                <input
-                                  type="number"
-                                  className="w-20 px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 outline-none"
-                                  value={isSelected.amountPaid}
-                                  onChange={(e) => {
-                                    setSelectedFees(selectedFees.map(f => f.feeStructureId === s.id ? { ...f, amountPaid: Number(e.target.value) } : f));
-                                  }}
-                                  max={pendingAmount}
-                                />
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                      
-                      {structures.filter((s) => s.studentId === studentId || s.classId === students.find((st) => st.id === studentId)?.classId).every(s => Math.max(0, s.amount - payments.filter(p => p.studentId === studentId && p.feeStructureId === s.id).reduce((sum, p) => sum + p.amountPaid, 0)) <= 0) && (
-                        <p className="text-xs text-emerald-600 font-bold text-center py-2">No pending fees found for this student!</p>
-                      )}
+                            );
+                          })}
+                          
+                          {allPaid && (
+                            <p className="text-xs text-emerald-600 font-bold text-center py-2">No pending fees found for this student!</p>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                   
                   {selectedFees.length > 0 && (
