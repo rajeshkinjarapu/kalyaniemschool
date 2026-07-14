@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../hooks/useAuth';
@@ -100,13 +101,13 @@ export const StudentProfilePage: React.FC = () => {
     
     setIsSubmitting(true);
     try {
-      await api.post('/api/fees/payments/bulk', {
+      await api.post('/api/fees/payments', {
         studentId: student.id,
         payments: selectedFees,
         method,
         remarks,
-        receiptNo: utrNumber || undefined,
-        receiptUrl: receiptUrl || undefined,
+        utrNumber: method === 'UPI' ? utrNumber : null,
+        receiptUrl: method === 'UPI' ? receiptUrl : null,
       });
       
       toast.success('Payment recorded successfully!');
@@ -600,8 +601,8 @@ export const StudentProfilePage: React.FC = () => {
     </div>
 
       {/* Record Payment Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-xs print:hidden">
+      {showModal && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-xs print:hidden">
           <div className="fixed inset-0" onClick={() => setShowModal(false)} />
           <div className="relative card w-full max-w-md p-6 space-y-5 animate-scale-in z-10 bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
             <div>
@@ -734,7 +735,8 @@ export const StudentProfilePage: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
