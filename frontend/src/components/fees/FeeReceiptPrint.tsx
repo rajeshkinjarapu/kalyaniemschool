@@ -8,11 +8,20 @@ interface FeeReceiptPrintProps {
 }
 
 export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoolName = 'JY SCHOOL' }) => {
-  const receiptNumber = payment?.receiptNo || React.useMemo(() => {
-    return 'JY26' + Math.floor(10000000 + Math.random() * 90000000);
-  }, [payment?.id]);
-
   if (!payment) return null;
+
+  const formatReceiptNumber = (rNo: string) => {
+    if (!rNo) return '';
+    if (rNo.includes('-')) {
+      const clean = rNo.replace(/[^a-zA-Z0-9]/g, '');
+      return 'JY' + clean.substring(0, 8).toUpperCase();
+    }
+    return rNo;
+  };
+
+  const receiptNumber = payment?.receiptNo 
+    ? formatReceiptNumber(payment.receiptNo) 
+    : ('JY26' + Math.floor(10000000 + Math.random() * 90000000));
 
   const pendingBalance = payment.feeStructure 
     ? (payment.feeStructure.amount - (payment.feeStructure.feePayments?.reduce((sum: number, p: any) => sum + p.amountPaid, 0) || payment.amountPaid))

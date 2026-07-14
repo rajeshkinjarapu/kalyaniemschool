@@ -94,6 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       { to: '/messages',  label: 'Messages',      icon: MessageSquare },
     ];
     if (role === 'PARENT') return [...base,
+      { to: '/attendance',label: 'Attendance',    icon: CalendarCheck },
       { to: '/finance',   label: 'My Fees',       icon: CreditCard    },
       { to: '/announcements', label: 'Announcements', icon: Megaphone },
       { to: '/messages',  label: 'Messages',      icon: MessageSquare },
