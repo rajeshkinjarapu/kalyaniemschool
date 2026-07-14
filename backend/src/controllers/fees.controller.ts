@@ -5,6 +5,7 @@ import { prisma } from '../utils/prisma';
 import { successResponse, paginatedResponse } from '../utils/response';
 import PDFDocument from 'pdfkit';
 import * as XLSX from 'xlsx';
+import { clearDashboardCache } from './dashboard.controller';
 
 export const bulkImportFees = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   if (!req.file) return next(createError('No file uploaded', 400));
@@ -187,6 +188,7 @@ export const createPayment = async (req: AuthRequest, res: Response, next: NextF
     return results;
   });
 
+  clearDashboardCache();
   successResponse(res, createdPayments.length === 1 ? createdPayments[0] : createdPayments, 'Payment(s) recorded', 201);
 };
 
@@ -196,6 +198,7 @@ export const deleteFeePayment = async (req: AuthRequest, res: Response, next: Ne
   if (!payment) return next(createError('Fee payment not found', 404));
 
   await prisma.feePayment.delete({ where: { id } });
+  clearDashboardCache();
   successResponse(res, null, 'Fee payment deleted successfully');
 };
 
