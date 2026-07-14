@@ -10,58 +10,71 @@ interface FeeReceiptPrintProps {
 export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoolName = 'JY SCHOOL' }) => {
   if (!payment) return null;
 
+  const receiptNumber = React.useMemo(() => {
+    return 'JY26' + Math.floor(10000000 + Math.random() * 90000000);
+  }, [payment.id]);
+
+  const pendingBalance = payment.feeStructure 
+    ? (payment.feeStructure.amount - (payment.feeStructure.feePayments?.reduce((sum: number, p: any) => sum + p.amountPaid, 0) || payment.amountPaid))
+    : 0;
+
   const ReceiptHalf = ({ type }: { type: 'STUDENT COPY' | 'OFFICE COPY' }) => (
-    <div className="flex-1 w-[210mm] p-10 flex flex-col justify-between bg-white text-black relative box-border mx-auto overflow-hidden">
+    <div className="flex-1 w-[210mm] p-8 flex flex-col justify-between bg-white text-black relative box-border mx-auto overflow-hidden">
       
-      {/* Background Watermark (Optional) */}
+      {/* Background Watermark */}
       <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
-        <School className="w-64 h-64" />
+        <img src="/logo.png" alt="Watermark" className="w-80 h-80 object-contain grayscale" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
       </div>
 
       <div className="relative z-10 flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center justify-between border-b-2 border-slate-800 pb-4 mb-6">
+        <div className="flex items-center justify-between border-b-2 border-indigo-900 pb-4 mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-slate-900 rounded-full flex items-center justify-center print:bg-black">
-              <School className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 bg-white shadow-sm border border-slate-100">
+              <img src="/logo.png" alt="School Logo" className="w-full h-full object-contain p-1" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<School class="w-8 h-8 text-indigo-900" />'; }} />
             </div>
             <div>
-              <h1 className="text-2xl font-black uppercase tracking-widest text-slate-900">{schoolName}</h1>
-              <p className="text-xs text-slate-600 font-semibold tracking-wider">PREMIUM EDUCATION INSTITUTE</p>
+              <h1 className="text-2xl font-black uppercase tracking-widest text-indigo-900">{schoolName}</h1>
+              <p className="text-[10px] text-slate-600 font-bold mt-1">Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta</p>
             </div>
           </div>
           <div className="text-right">
-            <div className="inline-block px-3 py-1 bg-slate-100 border border-slate-300 rounded font-bold text-sm tracking-widest text-slate-700">
+            <div className="inline-block px-4 py-1.5 bg-indigo-50 border border-indigo-200 rounded-lg font-black text-sm tracking-widest text-indigo-800">
               {type}
             </div>
-            <p className="text-xs text-slate-500 mt-2 font-medium">Date: <strong>{format(new Date(payment.createdAt || new Date()), 'dd MMM yyyy')}</strong></p>
+            <p className="text-xs text-slate-500 mt-2 font-medium">Date: <strong className="text-slate-800">{format(new Date(payment.createdAt || new Date()), 'dd MMM yyyy')}</strong></p>
+            <p className="text-xs text-slate-500 mt-1 font-medium">Receipt No: <strong className="text-slate-800">{receiptNumber}</strong></p>
           </div>
         </div>
 
         {/* Details Section */}
         <div className="grid grid-cols-2 gap-6 mb-6">
           <div className="space-y-3">
-            <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold mb-1">Student Details</p>
-              <h2 className="text-lg font-bold text-slate-900">{payment.student?.user?.name || 'N/A'}</h2>
-              <div className="text-sm font-medium text-slate-700 mt-1 flex justify-between">
-                <span>ID: {payment.student?.rollNo || 'N/A'}</span>
-                <span>Class: {payment.student?.class?.name} {payment.student?.class?.section}</span>
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm h-full">
+              <p className="text-[10px] text-indigo-600 uppercase tracking-wider font-extrabold mb-2">Student Details</p>
+              <h2 className="text-lg font-black text-slate-900 uppercase">{payment.student?.user?.name || 'N/A'}</h2>
+              <div className="grid grid-cols-2 gap-y-2 mt-3 text-sm">
+                <div><span className="text-slate-500 text-xs">ID:</span> <span className="font-bold text-slate-800">{payment.student?.rollNo || 'N/A'}</span></div>
+                <div><span className="text-slate-500 text-xs">Class:</span> <span className="font-bold text-slate-800">{payment.student?.class?.name}</span></div>
+                <div><span className="text-slate-500 text-xs">Section:</span> <span className="font-bold text-slate-800">{payment.student?.class?.section || '-'}</span></div>
+                <div><span className="text-slate-500 text-xs">Father:</span> <span className="font-bold text-slate-800">{payment.student?.fatherName || 'N/A'}</span></div>
               </div>
             </div>
           </div>
           <div className="space-y-3">
-            <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold mb-1">Payment Details</p>
-              <div className="grid grid-cols-2 gap-2 text-sm font-medium text-slate-700">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm h-full">
+              <p className="text-[10px] text-indigo-600 uppercase tracking-wider font-extrabold mb-2">Payment Details</p>
+              <div className="grid grid-cols-2 gap-y-3 text-sm font-medium">
                 <div className="text-slate-500">Amount Paid:</div>
-                <div className="font-bold text-slate-900">₹{payment.amountPaid}</div>
+                <div className="font-black text-emerald-600 text-base">₹{payment.amountPaid}</div>
+                
                 <div className="text-slate-500">Method:</div>
-                <div className="font-bold text-slate-900">{payment.method}</div>
+                <div className="font-bold text-slate-800">{payment.method}</div>
+                
                 {payment.utrNumber && (
                   <>
                     <div className="text-slate-500">UTR / Ref:</div>
-                    <div className="font-bold text-slate-900">{payment.utrNumber}</div>
+                    <div className="font-bold text-slate-800">{payment.utrNumber}</div>
                   </>
                 )}
               </div>
@@ -71,32 +84,38 @@ export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoo
 
         {/* Table */}
         <div className="flex-1 mb-6">
-          <table className="w-full text-left border-collapse border border-slate-300">
+          <table className="w-full text-left border-collapse rounded-lg overflow-hidden border border-slate-200">
             <thead>
-              <tr className="bg-slate-100 print:bg-slate-200 text-slate-800">
-                <th className="p-3 text-xs font-bold uppercase border-b border-r border-slate-300">Description</th>
-                <th className="p-3 text-xs font-bold uppercase border-b border-slate-300 text-right w-32">Amount</th>
+              <tr className="bg-indigo-50 text-indigo-900">
+                <th className="p-3 text-xs font-extrabold uppercase border-b border-r border-indigo-100">Description</th>
+                <th className="p-3 text-xs font-extrabold uppercase border-b border-indigo-100 text-right w-40">Amount</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td className="p-3 text-sm font-semibold border-b border-r border-slate-300">
+                <td className="p-4 text-sm font-bold text-slate-800 border-b border-r border-slate-200 bg-white">
                   {payment.feeStructure?.name || 'Tuition Fee'}
-                  <div className="text-xs text-slate-500 font-normal mt-1">{payment.remarks || 'Fee Payment'}</div>
+                  <div className="text-xs text-slate-500 font-medium mt-1">{payment.remarks || 'Fee Payment'}</div>
                 </td>
-                <td className="p-3 text-sm font-bold text-right border-b border-slate-300">
+                <td className="p-4 text-sm font-bold text-slate-800 text-right border-b border-slate-200 bg-white">
                   ₹{payment.amountPaid}
                 </td>
               </tr>
               {/* Empty padding rows for professional look */}
               <tr>
-                <td className="p-3 border-r border-slate-300 h-10"></td>
-                <td className="p-3 border-slate-300"></td>
+                <td className="p-4 border-r border-slate-200 bg-white h-12"></td>
+                <td className="p-4 border-slate-200 bg-white"></td>
               </tr>
               <tr className="bg-slate-50">
-                <td className="p-3 text-sm font-bold text-right uppercase tracking-wider border-t border-r border-slate-300">Total Paid</td>
-                <td className="p-3 text-base font-black text-right border-t border-slate-300">
+                <td className="p-3 text-sm font-extrabold text-slate-600 text-right uppercase tracking-wider border-t border-r border-slate-200">Total Paid</td>
+                <td className="p-3 text-lg font-black text-emerald-600 text-right border-t border-slate-200">
                   ₹{payment.amountPaid}
+                </td>
+              </tr>
+              <tr className="bg-slate-50">
+                <td className="p-3 text-xs font-bold text-slate-500 text-right uppercase tracking-wider border-r border-slate-200">Pending Balance</td>
+                <td className="p-3 text-sm font-bold text-rose-500 text-right border-slate-200">
+                  ₹{pendingBalance > 0 ? pendingBalance : 0}
                 </td>
               </tr>
             </tbody>
@@ -104,14 +123,10 @@ export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoo
         </div>
 
         {/* Signatures */}
-        <div className="mt-auto pt-6 flex justify-between items-end border-t border-slate-200">
+        <div className="mt-auto pt-8 flex justify-end items-end">
           <div className="text-center">
-            <div className="w-40 border-b border-slate-400 mb-2"></div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cashier / Accountant</p>
-          </div>
-          <div className="text-center">
-            <div className="w-40 border-b border-slate-400 mb-2"></div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Parent / Student Signature</p>
+            <div className="w-48 border-b-2 border-slate-800 mb-3 mx-auto"></div>
+            <p className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Cashier / Accountant</p>
           </div>
         </div>
       </div>
@@ -134,10 +149,10 @@ export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoo
       <ReceiptHalf type="STUDENT COPY" />
       
       {/* Cutting Line (Middle) */}
-      <div className="w-full flex items-center justify-center relative my-0 h-0 print:opacity-50">
-        <div className="absolute w-[210mm] mx-auto border-t-[1.5px] border-dashed border-slate-300 z-10"></div>
+      <div className="w-full flex items-center justify-center relative my-0 h-0 print:opacity-40">
+        <div className="absolute w-[210mm] mx-auto border-t-[1.5px] border-dashed border-slate-400 z-10"></div>
         <div className="absolute bg-white px-6 z-20 flex items-center gap-2 text-slate-400">
-          <span className="text-[9px] tracking-[0.25em] font-extrabold uppercase">✂ Cut Here ✂</span>
+          <span className="text-[10px] tracking-[0.3em] font-extrabold uppercase">✂ Cut Here ✂</span>
         </div>
       </div>
       
