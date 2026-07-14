@@ -28,6 +28,7 @@ import SubjectPage from '../pages/subjects/SubjectPage';
 
 // Attendance
 import AttendanceMarkingPage from '../pages/attendance/AttendanceMarkingPage';
+import { MyAttendancePage } from '../pages/attendance/MyAttendancePage';
 import AttendanceReportPage from '../pages/attendance/AttendanceReportPage';
 import AttendanceDailyReportPage from '../pages/attendance/AttendanceDailyReportPage';
 
@@ -57,6 +58,17 @@ import MessagesPage from '../pages/messages/MessagesPage';
 
 // Reports
 import ReportsPage from '../pages/reports/ReportsPage';
+
+// Context
+import { useAuth } from '../hooks/useAuth';
+
+const AttendanceWrapper = () => {
+  const { user } = useAuth();
+  if (user?.role === 'STUDENT' || user?.role === 'PARENT') {
+    return <MyAttendancePage />;
+  }
+  return <AttendanceMarkingPage />;
+};
 
 // Settings
 import SettingsPage from '../pages/settings/SettingsPage';
@@ -172,7 +184,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'attendance',
-        element: <AttendanceMarkingPage />,
+        element: <AttendanceWrapper />,
       },
       {
         path: 'attendance/report',

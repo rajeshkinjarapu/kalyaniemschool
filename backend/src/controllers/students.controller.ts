@@ -58,6 +58,7 @@ export const getById = async (req: AuthRequest, res: Response, next: NextFunctio
       parent: { include: { user: { select: { name: true, phone: true, email: true } } } },
       marks: { include: { exam: true, subject: true }, orderBy: { createdAt: 'desc' } },
       feePayments: { include: { feeStructure: true }, orderBy: { createdAt: 'desc' } },
+      feeDiscounts: true,
     },
   });
   if (!student) return next(createError('Student not found', 404));
@@ -268,7 +269,7 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
           },
         });
 
-        await prisma.student.create({
+        const newStudent = await prisma.student.create({
           data: {
             userId: user.id,
             rollNo,
@@ -282,6 +283,50 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
             penNumber: penNumber ? String(penNumber) : null,
           },
         });
+        
+        // Fee details creation
+        const admissionFee = row['Admission fee'] || row['Admission Fee'] || null;
+        const tuitionFee = row['Tution fee'] || row['Tution Fee'] || row['Tuition fee'] || row['Tuition Fee'] || null;
+        const booksFee = row['Books fee'] || row['Books Fee'] || null;
+        
+        const feeStructuresToCreate = [];
+        const dueDate = new Date(); // Default due date to today
+        
+        if (admissionFee && !isNaN(parseFloat(admissionFee))) {
+          feeStructuresToCreate.push({
+            studentId: newStudent.id,
+            term: 'Term 1',
+            name: 'Admission Fee',
+            amount: parseFloat(admissionFee),
+            dueDate
+          });
+        }
+        
+        if (tuitionFee && !isNaN(parseFloat(tuitionFee))) {
+          feeStructuresToCreate.push({
+            studentId: newStudent.id,
+            term: 'Term 1',
+            name: 'Tuition Fee',
+            amount: parseFloat(tuitionFee),
+            dueDate
+          });
+        }
+        
+        if (booksFee && !isNaN(parseFloat(booksFee))) {
+          feeStructuresToCreate.push({
+            studentId: newStudent.id,
+            term: 'Term 1',
+            name: 'Books Fee',
+            amount: parseFloat(booksFee),
+            dueDate
+          });
+        }
+        
+        if (feeStructuresToCreate.length > 0) {
+          await prisma.feeStructure.createMany({
+            data: feeStructuresToCreate
+          });
+        }
         
         currentStudentCount++;
         success++;
@@ -412,4 +457,18 @@ export const bulkUploadPhotos = async (req: AuthRequest, res: Response, next: Ne
   } catch (error) {
     next(error);
   }
+};
+
+export const getTemplate = async (_req: AuthRequest, res: Response): Promise<void> => {
+  const headers = ['Student ID', 'Student Name', 'Mobile No', 'Class Name', 'Section Name', 'Gender', 'Blood Group', 'Father Name', 'Mother Name', 'Aadhar No', 'PEN Number', 'Address', 'Admission fee', 'Tution fee', 'Books fee'];
+  const sampleRow = ['JY26-0004', 'John Doe', '9876543210', 'Grade 10', 'A', 'MALE', 'O+', 'Richard Doe', 'Jane Doe', '123456789012', 'PEN123', '123 Main St', '5000', '25000', '2000'];
+  
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([headers, sampleRow]);
+  XLSX.utils.book_append_sheet(wb, ws, 'Template');
+  const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+
+  res.setHeader('Content-Disposition', 'attachment; filename=Student_Import_Template.xlsx');
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.send(buffer);
 };

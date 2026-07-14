@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { Badge } from '../../components/UI/Badge';
-import { Plus, FileDown } from 'lucide-react';
+import { Plus, FileDown, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -16,11 +16,11 @@ export const FeePaymentsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [printPayment, setPrintPayment] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form states
   const [studentId, setStudentId] = useState('');
-  const [feeStructureId, setFeeStructureId] = useState('');
-  const [amountPaid, setAmountPaid] = useState('');
+  const [selectedFees, setSelectedFees] = useState<{ feeStructureId: string; amountPaid: number }[]>([]);
   const [method, setMethod] = useState('CASH');
   const [remarks, setRemarks] = useState('');
   const [utrNumber, setUtrNumber] = useState('');
@@ -72,6 +72,11 @@ export const FeePaymentsPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    if (selectedFees.length === 0) {
+      toast.error('Please select at least one fee component to pay.');
+      return;
+    }
     if (method === 'UPI' && !utrNumber) {
       toast.error('UTR Reference Number is required for UPI payments.');
       return;
@@ -80,11 +85,11 @@ export const FeePaymentsPage: React.FC = () => {
       toast.error('Please upload the transaction receipt screenshot.');
       return;
     }
+    setIsSubmitting(true);
     try {
       await api.post('/api/fees/payments', {
         studentId,
-        feeStructureId,
-        amountPaid: Number(amountPaid),
+        payments: selectedFees,
         method,
         remarks,
         utrNumber: method === 'UPI' ? utrNumber : null,
@@ -93,14 +98,27 @@ export const FeePaymentsPage: React.FC = () => {
       toast.success('Payment transaction recorded!');
       setShowModal(false);
       setStudentId('');
-      setFeeStructureId('');
-      setAmountPaid('');
+      setSelectedFees([]);
       setRemarks('');
       setUtrNumber('');
       setReceiptUrl('');
       fetchData();
     } catch (error: any) {
       toast.error(error.message || 'Error recording payment');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeletePayment = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this payment record? This action cannot be undone.')) return;
+    const t = toast.loading('Deleting payment...');
+    try {
+      await api.delete(`/api/fees/payments/${id}`);
+      setPayments(payments.filter(p => p.id !== id));
+      toast.success('Payment deleted successfully', { id: t });
+    } catch {
+      toast.error('Failed to delete payment', { id: t });
     }
   };
 
@@ -219,7 +237,7 @@ export const FeePaymentsPage: React.FC = () => {
                     <Badge variant={p.method === 'UPI' ? 'danger' : 'info'}>{p.method}</Badge>
                   </td>
                   <td className="px-6 py-4 font-mono text-xs text-gray-400 opacity-70 truncate max-w-[120px]">{p.receiptNo}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
                     <button
                       onClick={() => handlePrintReceipt(p.id)}
                       className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 cursor-pointer"
@@ -227,6 +245,15 @@ export const FeePaymentsPage: React.FC = () => {
                     >
                       <FileDown className="w-4 h-4" />
                     </button>
+                    {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT') && (
+                      <button
+                        onClick={() => handleDeletePayment(p.id)}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
+                        title="Delete Payment"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -239,10 +266,10 @@ export const FeePaymentsPage: React.FC = () => {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-xs">
           <div className="fixed inset-0" onClick={() => setShowModal(false)} />
-          <div className="relative card w-full max-w-md p-6 space-y-5 animate-scale-in z-10 bg-white dark:bg-gray-900">
+          <div className="relative card w-full max-w-md p-6 space-y-5 animate-scale-in z-10 bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
             <div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">Record Tuition Payment</h3>
-              <p className="text-xs text-gray-450 mt-1">Manual collection log entry for fees ledger.</p>
+              <p className="text-xs text-gray-450 mt-1">Select multiple fees to collect them at once.</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -252,11 +279,7 @@ export const FeePaymentsPage: React.FC = () => {
                   value={studentId}
                   onChange={(e) => {
                     setStudentId(e.target.value);
-                    const selectedStructure = structures.find(s => s.id === feeStructureId);
-                    if (selectedStructure && feeStructureId) {
-                      const paidSoFar = payments.filter(p => p.studentId === e.target.value && p.feeStructureId === feeStructureId).reduce((sum, p) => sum + p.amountPaid, 0);
-                      setAmountPaid(Math.max(0, selectedStructure.amount - paidSoFar).toString());
-                    }
+                    setSelectedFees([]);
                   }}
                   className="input text-xs"
                 >
@@ -269,46 +292,80 @@ export const FeePaymentsPage: React.FC = () => {
                 </select>
               </div>
 
-              <div>
-                <label className="label">Select Fee Component</label>
-                <select
-                  value={feeStructureId}
-                  onChange={(e) => {
-                    setFeeStructureId(e.target.value);
-                    const selected = structures.find(s => s.id === e.target.value);
-                    if (selected && studentId) {
-                      const paidSoFar = payments.filter(p => p.studentId === studentId && p.feeStructureId === e.target.value).reduce((sum, p) => sum + p.amountPaid, 0);
-                      setAmountPaid(Math.max(0, selected.amount - paidSoFar).toString());
-                    }
-                  }}
-                  className="input text-xs"
-                >
-                  <option value="">Select Structure</option>
-                  {structures
-                    .filter((s) => !studentId || s.studentId === studentId || s.classId === students.find((st) => st.id === studentId)?.classId)
-                    .map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} - ₹{s.amount.toLocaleString()} ({s.studentId ? 'Personal Fee' : s.class?.name || 'All'})
-                    </option>
-                  ))}
-                </select>
-                {feeStructureId && studentId && (
-                  <p className="text-xs text-red-500 font-bold mt-1.5">
-                    Pending Amount: ₹{Math.max(0, (structures.find(s => s.id === feeStructureId)?.amount || 0) - payments.filter(p => p.studentId === studentId && p.feeStructureId === feeStructureId).reduce((sum, p) => sum + p.amountPaid, 0)).toLocaleString()}
-                  </p>
-                )}
-              </div>
+              {studentId && (
+                <div>
+                  <label className="label mb-2">Select Fee Components & Amount</label>
+                  <div className="space-y-2 border border-gray-200 dark:border-gray-800 rounded-xl p-3 bg-gray-50 dark:bg-gray-800/20 max-h-48 overflow-y-auto">
+                    {(() => {
+                      const availableStructures = structures.filter((s) => s.studentId === studentId || s.classId === students.find((st) => st.id === studentId)?.classId);
+                      const allPaid = availableStructures.every(s => {
+                        const paidSoFar = payments.filter(p => p.studentId === studentId && p.feeStructureId === s.id).reduce((sum, p) => sum + p.amountPaid, 0);
+                        return Math.max(0, s.amount - paidSoFar) <= 0;
+                      });
 
-              <div>
-                <label className="label">Amount to Pay Now (₹)</label>
-                <input
-                  type="number"
-                  required
-                  value={amountPaid}
-                  onChange={(e) => setAmountPaid(e.target.value)}
-                  className="input text-xs"
-                />
-              </div>
+                      return (
+                        <>
+                          {availableStructures.map((s) => {
+                            const paidSoFar = payments.filter(p => p.studentId === studentId && p.feeStructureId === s.id).reduce((sum, p) => sum + p.amountPaid, 0);
+                            const pendingAmount = Math.max(0, s.amount - paidSoFar);
+                            if (pendingAmount <= 0) return null;
+
+                            const isSelected = selectedFees.find(f => f.feeStructureId === s.id);
+
+                            return (
+                              <div key={s.id} className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                  <input
+                                    type="checkbox"
+                                    className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                                    checked={!!isSelected}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSelectedFees([...selectedFees, { feeStructureId: s.id, amountPaid: pendingAmount }]);
+                                      } else {
+                                        setSelectedFees(selectedFees.filter(f => f.feeStructureId !== s.id));
+                                      }
+                                    }}
+                                  />
+                                  <div>
+                                    <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{s.name}</p>
+                                    <p className="text-[10px] text-gray-500">Pending: ₹{pendingAmount}</p>
+                                  </div>
+                                </div>
+                                {isSelected && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-xs text-gray-500">₹</span>
+                                    <input
+                                      type="number"
+                                      className="w-20 px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 outline-none"
+                                      value={isSelected.amountPaid}
+                                      onChange={(e) => {
+                                        setSelectedFees(selectedFees.map(f => f.feeStructureId === s.id ? { ...f, amountPaid: Number(e.target.value) } : f));
+                                      }}
+                                      max={pendingAmount}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                          
+                          {allPaid && (
+                            <p className="text-xs text-emerald-600 font-bold text-center py-2">No pending fees found for this student!</p>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                  
+                  {selectedFees.length > 0 && (
+                    <div className="mt-3 flex justify-between items-center p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800/30">
+                      <span className="text-xs font-bold text-indigo-900 dark:text-indigo-300">Total Amount to Pay</span>
+                      <span className="text-lg font-black text-indigo-600 dark:text-indigo-400">₹{selectedFees.reduce((sum, f) => sum + f.amountPaid, 0).toLocaleString()}</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div>
                 <label className="label">Payment Method</label>

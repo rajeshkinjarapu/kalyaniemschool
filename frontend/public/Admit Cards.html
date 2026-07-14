@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JEE Mains Result Card · Tabular</title>
+    <title>Admit Card · Half Yearly Examination</title>
 
     <!-- CDN Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
@@ -219,6 +219,152 @@
             font-weight: 500;
         }
 
+        /* ---- MANUAL ENTRY SECTION ---- */
+        .manual-entry-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 22px 26px 26px;
+            border: 1px solid #e6edf4;
+            margin-top: 20px;
+        }
+
+        .manual-entry-section h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0b1a33;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .manual-entry-section h3 .badge-soft {
+            font-size: 11px;
+            font-weight: 600;
+            background: #e6edf4;
+            color: #2a4a6a;
+            padding: 1px 12px;
+            border-radius: 30px;
+        }
+
+        .exam-title-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .exam-title-row label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a3a5a;
+            min-width: 120px;
+        }
+
+        .exam-title-row input {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 14px;
+            border: 1.5px solid #dce4ed;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0b1a33;
+            background: #fff;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .exam-title-row input:focus {
+            border-color: #d4a017;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .subject-entry {
+            display: grid;
+            grid-template-columns: 160px 1fr 1fr 1.2fr;
+            gap: 10px;
+            align-items: center;
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #e6edf4;
+        }
+
+        .subject-entry .sub-name-input {
+            font-weight: 700;
+            color: #0b1a33;
+            font-size: 13px;
+            border: 1.5px solid #dce4ed;
+            border-radius: 5px;
+            padding: 5px 8px;
+            background: #fafcfd;
+            outline: none;
+            width: 100%;
+            transition: border 0.2s;
+            text-transform: uppercase;
+        }
+
+        .subject-entry .sub-name-input:focus {
+            border-color: #d4a017;
+        }
+
+        .subject-entry input[type="date"],
+        .subject-entry input[type="text"] {
+            padding: 5px 8px;
+            border: 1.5px solid #dce4ed;
+            border-radius: 5px;
+            font-size: 13px;
+            outline: none;
+            transition: border 0.2s;
+            background: #fafcfd;
+            width: 100%;
+        }
+
+        .subject-entry input:focus {
+            border-color: #d4a017;
+        }
+
+        .subject-entry .invigilator-input {
+            min-width: 100px;
+        }
+
+        @media (max-width: 860px) {
+            .subject-entry {
+                grid-template-columns: 1fr;
+                gap: 5px;
+                padding: 10px 12px;
+            }
+            .subject-entry .sub-name-input {
+                font-size: 14px;
+                padding-bottom: 2px;
+                border-bottom: 1px solid #eee8e0;
+                text-transform: uppercase;
+            }
+            .exam-title-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .exam-title-row label {
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .subject-entry input[type="date"],
+            .subject-entry input[type="text"] {
+                font-size: 12px;
+                padding: 4px 6px;
+            }
+        }
+
         /* ---- BUTTONS ---- */
         .btn {
             display: inline-flex;
@@ -303,26 +449,6 @@
             transform: translateY(-2px);
         }
 
-        .btn-purple {
-            background: #6c3483;
-            color: #fff;
-        }
-        .btn-purple:hover:not(:disabled) {
-            background: #512e5f;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(108, 52, 131, 0.30);
-        }
-
-        .btn-teal {
-            background: #0e6655;
-            color: #fff;
-        }
-        .btn-teal:hover:not(:disabled) {
-            background: #0a4a3e;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(14, 102, 85, 0.30);
-        }
-
         .btn-sm {
             padding: 5px 16px;
             font-size: 13px;
@@ -351,9 +477,6 @@
         }
         .mt-8 {
             margin-top: 8px;
-        }
-        .mt-12 {
-            margin-top: 12px;
         }
         .flex-wrap {
             display: flex;
@@ -444,8 +567,8 @@
             overflow: auto;
         }
 
-        /* ---- RESULT CARD — A4 (794×1123px) ---- */
-        #resultCard {
+        /* ---- ADMIT CARD — A4 (794×1123px) ---- */
+        #admitCard {
             width: 794px;
             min-height: 1123px;
             background: #ffffff;
@@ -457,9 +580,9 @@
         }
 
         /* ============================================================
-               JEE CARD — Premium Design · NO TEXT WRAP
+               ADMIT CARD — Premium Design
                ============================================================ */
-        .jee-card {
+        .admit-card {
             background: #ffffff;
             height: 100%;
             display: flex;
@@ -468,14 +591,14 @@
         }
 
         /* Top bar */
-        .jee-card .top-bar {
+        .admit-card .top-bar {
             height: 8px;
             background: linear-gradient(90deg, #0b1a33 0%, #1a4a7a 40%, #d4a017 80%, #f39c12 100%);
             flex-shrink: 0;
         }
 
         /* Header */
-        .jee-card .card-header {
+        .admit-card .card-header {
             display: flex;
             align-items: center;
             padding: 18px 32px 12px 32px;
@@ -484,7 +607,7 @@
             border-bottom: 3px solid #f39c12;
         }
 
-        .jee-card .card-header .logo-wrap {
+        .admit-card .card-header .logo-wrap {
             width: 100px;
             height: 100px;
             display: flex;
@@ -493,23 +616,21 @@
             flex-shrink: 0;
         }
 
-        .jee-card .card-header .logo-wrap img {
+        .admit-card .card-header .logo-wrap img {
             max-width: 100%;
             max-height: 100px;
             object-fit: contain;
         }
 
-        .jee-card .card-header .title-wrap {
+        .admit-card .card-header .title-wrap {
             text-align: center;
             flex: 1;
             padding: 0 8px;
         }
 
-        /* ---- SCHOOL NAME BOLD, REST NORMAL ---- */
-        .jee-card .card-header .title-wrap .school-name {
+        .admit-card .card-header .title-wrap .school-name {
             font-size: 28px;
             font-weight: 900;
-            /* BOLD */
             color: #0b1a33;
             letter-spacing: 1.5px;
             font-family: 'Times New Roman', 'Georgia', serif;
@@ -517,30 +638,27 @@
             white-space: nowrap;
         }
 
-        .jee-card .card-header .title-wrap .school-sub {
+        .admit-card .card-header .title-wrap .school-sub {
             font-size: 16px;
-            font-weight: 400;
-            /* NORMAL */
+            font-weight: 600;
             color: #1a4a7a;
             letter-spacing: 0.8px;
             margin: 2px 0;
             white-space: nowrap;
         }
 
-        .jee-card .card-header .title-wrap .school-address {
+        .admit-card .card-header .title-wrap .school-address {
             font-size: 13px;
             font-weight: 400;
-            /* NORMAL */
             color: #5a7a8a;
             letter-spacing: 0.3px;
             margin-top: 2px;
             white-space: nowrap;
         }
 
-        .jee-card .card-header .title-wrap .exam-title {
-            font-size: 22px;
-            font-weight: 400;
-            /* NORMAL */
+        .admit-card .card-header .title-wrap .exam-title {
+            font-size: 26px;
+            font-weight: 900;
             color: #0b1a33;
             letter-spacing: 2px;
             margin: 6px 0 0;
@@ -548,50 +666,49 @@
             white-space: nowrap;
         }
 
-        .jee-card .card-header .title-wrap .result-card-label {
-            font-size: 18px;
-            font-weight: 400;
-            /* NORMAL */
+        .admit-card .card-header .title-wrap .exam-sub-label {
+            font-size: 14px;
+            font-weight: 600;
             color: #d4a017;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             margin-top: 2px;
             text-transform: uppercase;
             white-space: nowrap;
         }
 
-        .jee-card .card-header .spacer {
+        .admit-card .card-header .spacer {
             width: 100px;
             flex-shrink: 0;
         }
 
         /* Decorative line */
-        .jee-card .deco-line {
+        .admit-card .deco-line {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 14px;
-            padding: 6px 32px 10px 32px;
+            padding: 4px 32px 8px 32px;
             flex-shrink: 0;
         }
 
-        .jee-card .deco-line .ornament {
-            font-size: 18px;
+        .admit-card .deco-line .ornament {
+            font-size: 16px;
             color: #d4a017;
             flex-shrink: 0;
         }
 
-        .jee-card .deco-line .line {
+        .admit-card .deco-line .line {
             flex: 1;
-            max-width: 140px;
+            max-width: 120px;
             height: 2px;
             background: linear-gradient(90deg, transparent, #d4a017, transparent);
         }
 
         /* ---- Student Info ---- */
-        .jee-card .student-info {
-            margin: 6px 28px 14px 28px;
+        .admit-card .student-info {
+            margin: 4px 28px 10px 28px;
             border: 2px solid #d4a017;
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
             background: #ffffff;
             box-shadow: 0 4px 16px rgba(212, 160, 23, 0.12);
@@ -600,26 +717,26 @@
             flex-shrink: 0;
         }
 
-        .jee-card .student-info .info-details {
+        .admit-card .student-info .info-details {
             display: flex;
             flex-direction: column;
         }
 
-        .jee-card .student-info .info-row {
+        .admit-card .student-info .info-row {
             display: grid;
-            grid-template-columns: 150px 1fr;
+            grid-template-columns: 140px 1fr;
             border-bottom: 1px solid #f5ede4;
         }
 
-        .jee-card .student-info .info-row:last-child {
+        .admit-card .student-info .info-row:last-child {
             border-bottom: none;
         }
 
-        .jee-card .student-info .info-row .label {
+        .admit-card .student-info .info-row .label {
             background: #fdf9f4;
-            padding: 7px 18px;
+            padding: 5px 16px;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 12px;
             color: #6a3a1a;
             border-right: 1px solid #f5ede4;
             display: flex;
@@ -628,10 +745,10 @@
             white-space: nowrap;
         }
 
-        .jee-card .student-info .info-row .value {
-            padding: 7px 18px;
+        .admit-card .student-info .info-row .value {
+            padding: 5px 16px;
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
             color: #0b1a33;
             background: #ffffff;
             display: flex;
@@ -641,24 +758,24 @@
             text-overflow: ellipsis;
         }
 
-        .jee-card .student-info .info-row:nth-child(even) .value {
+        .admit-card .student-info .info-row:nth-child(even) .value {
             background: #fefcf9;
         }
 
-        /* Photo column — 5:6 ratio */
-        .jee-card .student-info .photo-col {
-            padding: 14px 20px 14px 12px;
+        /* Photo column */
+        .admit-card .student-info .photo-col {
+            padding: 10px 18px 10px 10px;
             display: flex;
             align-items: flex-start;
             justify-content: center;
             border-left: 2px solid #f5ede4;
             background: #fefcf9;
-            min-width: 130px;
+            min-width: 120px;
         }
 
-        .jee-card .student-info .photo-col img {
-            width: 95px;
-            height: 114px;
+        .admit-card .student-info .photo-col img {
+            width: 85px;
+            height: 102px;
             object-fit: cover;
             border: 3px solid #d4a017;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
@@ -667,251 +784,220 @@
             flex-shrink: 0;
         }
 
-        .jee-card .student-info .photo-col .placeholder-photo {
-            width: 95px;
-            height: 114px;
+        .admit-card .student-info .photo-col .placeholder-photo {
+            width: 85px;
+            height: 102px;
             background: #ede8e0;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #8a7a6a;
-            font-size: 44px;
+            font-size: 38px;
             border: 3px dashed #c8b8a8;
             border-radius: 6px;
             flex-shrink: 0;
         }
 
         /* ============================================================
-               PERFORMANCE TABLE — TABULAR FORM · NO WRAP
+               ADMIT CARD TABLE — Subjects Schedule (COMPACT + SLIGHTLY INCREASED ROW)
                ============================================================ */
-        .jee-card .perf-table-wrap {
-            margin: 4px 28px 12px 28px;
+        .admit-card .schedule-wrap {
+            margin: 2px 28px 8px 28px;
             padding: 0;
             flex-shrink: 0;
         }
 
-        .jee-card .perf-table-wrap .perf-title {
-            font-size: 16px;
+        .admit-card .schedule-wrap .schedule-title {
+            font-size: 15px;
             font-weight: 700;
             color: #0b1a33;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             white-space: nowrap;
         }
 
-        .jee-card .perf-table-wrap .perf-title .icon {
-            font-size: 22px;
-        }
-        .jee-card .perf-table-wrap .perf-title .max-hint {
-            margin-left: auto;
-            font-size: 13px;
-            font-weight: 400;
-            color: #6a8aaa;
-            white-space: nowrap;
+        .admit-card .schedule-wrap .schedule-title .icon {
+            font-size: 18px;
         }
 
-        /* ---- The Table ---- */
-        .perf-table {
+        .schedule-table {
             width: 100%;
             border-collapse: collapse;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            font-size: 14px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            font-size: 13px;
         }
 
-        .perf-table thead tr {
+        .schedule-table thead tr {
             background: linear-gradient(135deg, #0b1a33, #1a3a5a);
         }
 
-        .perf-table thead th {
+        .schedule-table thead th {
             color: #ffffff;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 10px 16px;
+            letter-spacing: 0.4px;
+            padding: 7px 12px;
             text-align: center;
             white-space: nowrap;
-            font-size: 13px;
+            font-size: 11px;
             border: 1px solid #1a3a5a;
         }
 
-        .perf-table tbody td {
-            padding: 9px 16px;
+        .schedule-table tbody td {
+            padding: 6px 10px; /* increased from 4px to 6px top/bottom */
             text-align: center;
             white-space: nowrap;
             border: 1px solid #e8e0d8;
             background: #fff;
             font-weight: 500;
             color: #0b1a33;
+            font-size: 12px;
+            height: 32px; /* increased from 28px to 32px */
         }
 
-        .perf-table tbody tr:nth-child(even) td {
+        .schedule-table tbody tr:nth-child(even) td {
             background: #fdfcf9;
         }
 
-        .perf-table tbody .subject-label {
+        .schedule-table tbody .subj-label {
             font-weight: 600;
             text-align: left;
-            padding-left: 20px;
+            padding-left: 14px;
             color: #1a3a5a;
+            font-size: 12px;
         }
 
-        .perf-table tbody .subject-label .sub-icon {
-            margin-right: 8px;
+        .schedule-table tbody .invigilator-box {
+            min-height: 22px; /* slightly increased */
+            border-bottom: 2px solid #4a5a6a;
+            width: 100%;
+            background: #fff;
+            margin: 0 auto;
         }
 
-        .perf-table tbody .marks-cell {
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .perf-table tbody .max-cell {
-            color: #6a8aaa;
-            font-weight: 400;
-        }
-
-        .perf-table tbody .pct-cell {
+        .schedule-table tbody td:first-child {
             font-weight: 600;
-        }
-
-        /* Total row */
-        .perf-table tbody .total-row td {
-            background: #fdf9f4 !important;
-            font-weight: 700;
-            font-size: 15px;
-            border-top: 2.5px solid #d4a017;
-            border-bottom: 2.5px solid #d4a017;
-        }
-
-        .perf-table tbody .total-row .total-label {
-            text-align: left;
-            padding-left: 20px;
             color: #0b1a33;
-            font-weight: 800;
+            font-size: 12px;
         }
 
-        .perf-table tbody .total-row .marks-cell {
-            font-size: 18px;
-            color: #0b1a33;
-        }
-
-        .perf-table tbody .total-row .pct-cell {
-            font-size: 17px;
-            color: #1a7a4a;
-        }
-
-        /* ---- Score Bar (below table) ---- */
-        .jee-card .score-bar-wrap {
-            margin: 6px 28px 2px 28px;
-            padding: 2px 0;
+        /* ============================================================
+               INSTRUCTIONS & WISHES
+               ============================================================ */
+        .admit-card .instructions-wrap {
+            margin: 4px 28px 6px 28px;
+            padding: 8px 16px;
+            background: #fdf9f4;
+            border-radius: 8px;
+            border-left: 4px solid #d4a017;
             flex-shrink: 0;
         }
 
-        .jee-card .score-bar-wrap .score-bar {
-            height: 12px;
-            background: #e8e0d8;
-            border-radius: 30px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .jee-card .score-bar-wrap .score-bar .fill {
-            height: 100%;
-            border-radius: 30px;
-            background: linear-gradient(90deg, #d4a017, #0b1a33);
-            transition: width 0.8s ease;
-            width: 0%;
-        }
-
-        .jee-card .score-bar-wrap .score-labels {
+        .admit-card .instructions-wrap .inst-title {
+            font-weight: 700;
+            font-size: 13px;
+            color: #0b1a33;
+            margin-bottom: 4px;
             display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: #6a5a4a;
-            margin-top: 4px;
-            padding: 0 2px;
-            white-space: nowrap;
+            align-items: center;
+            gap: 6px;
         }
 
-        /* ---- Result Footer ---- */
-        .jee-card .result-footer {
+        .admit-card .instructions-wrap ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .admit-card .instructions-wrap ul li {
+            font-size: 12px;
+            color: #2a4a5a;
+            padding: 2px 0 2px 20px;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        .admit-card .instructions-wrap ul li::before {
+            content: "◆";
+            position: absolute;
+            left: 2px;
+            color: #d4a017;
+            font-size: 10px;
+        }
+
+        .admit-card .wishes-wrap {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 800;
+            color: #0b1a33;
+            padding: 4px 0 2px 0;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        .admit-card .wishes-wrap span {
+            background: linear-gradient(135deg, #d4a017, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ---- Signatures at bottom ---- */
+        .admit-card .sig-footer {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin: 8px 28px 6px 28px;
-            padding-top: 12px;
+            margin: 4px 28px 8px 28px;
+            padding-top: 10px;
             border-top: 3px solid #d4a017;
             flex-shrink: 0;
+            gap: 20px;
         }
 
-        .jee-card .result-footer .left {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .jee-card .result-footer .left .total-label {
-            font-size: 15px;
-            font-weight: 700;
-            color: #0b1a33;
-            white-space: nowrap;
-        }
-
-        .jee-card .result-footer .left .percentage {
-            font-size: 22px;
-            font-weight: 800;
-            color: #1a7a4a;
-            white-space: nowrap;
-        }
-
-        .jee-card .result-footer .signatures {
-            display: flex;
-            gap: 40px;
-            align-items: flex-end;
-        }
-
-        .jee-card .result-footer .signatures .sig-block {
+        .admit-card .sig-footer .sig-block {
             text-align: center;
-            min-width: 110px;
+            min-width: 120px;
+            flex: 1;
         }
 
-        .jee-card .result-footer .signatures .sig-block img {
-            max-width: 140px;
-            max-height: 60px;
-            object-fit: contain;
-            display: block;
-            margin: 0 auto 4px;
-        }
-
-        .jee-card .result-footer .signatures .sig-block .sig-label {
-            font-size: 13px;
+        .admit-card .sig-footer .sig-block .sig-label {
+            font-size: 12px;
             color: #3a5a7a;
-            font-weight: 500;
+            font-weight: 600;
             border-top: 1.5px solid #d0c8c0;
-            padding-top: 5px;
+            padding-top: 4px;
             letter-spacing: 0.3px;
             white-space: nowrap;
         }
 
-        .jee-card .result-footer .signatures .sig-block .sig-placeholder {
-            height: 44px;
+        .admit-card .sig-footer .sig-block img {
+            max-width: 150px;
+            max-height: 60px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 3px;
+        }
+
+        .admit-card .sig-footer .sig-block .sig-placeholder {
+            height: 40px;
             border-bottom: 1.5px dashed #d0c8c0;
-            width: 130px;
-            margin: 0 auto 4px;
+            width: 120px;
+            margin: 0 auto 3px;
         }
 
         /* ---- Footer Note ---- */
-        .jee-card .card-footer-note {
+        .admit-card .card-footer-note {
             text-align: center;
-            font-size: 11px;
+            font-size: 10px;
             color: #8a7a6a;
-            margin: 6px 28px 14px 28px;
-            padding-top: 8px;
+            margin: 2px 28px 10px 28px;
+            padding-top: 6px;
             border-top: 1px solid #eee8e0;
-            letter-spacing: 0.4px;
+            letter-spacing: 0.3px;
             flex-shrink: 0;
             white-space: nowrap;
         }
@@ -996,136 +1082,6 @@
         }
 
         /* ============================================================
-               CLASS WISE REPORT — NEW SECTION
-               ============================================================ */
-        .report-section {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 22px 26px 26px;
-            border: 1px solid #e6edf4;
-            margin-bottom: 28px;
-        }
-
-        .report-section h3 {
-            font-size: 15px;
-            font-weight: 700;
-            color: #0b1a33;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .report-section h3 .badge-soft {
-            font-size: 11px;
-            font-weight: 600;
-            background: #e6edf4;
-            color: #2a4a6a;
-            padding: 1px 12px;
-            border-radius: 30px;
-        }
-
-        .report-controls {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 16px 24px;
-        }
-
-        .report-controls .field-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .report-controls .field-group label {
-            font-weight: 600;
-            font-size: 13px;
-            color: #1a3a5a;
-            white-space: nowrap;
-        }
-
-        .report-controls .field-group select {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1.5px solid #dce4ed;
-            background: #fff;
-            font-size: 14px;
-            font-weight: 500;
-            color: #0b1a33;
-            cursor: pointer;
-            min-width: 160px;
-            outline: none;
-            transition: border 0.2s;
-        }
-
-        .report-controls .field-group select:focus {
-            border-color: #1a4a7a;
-            box-shadow: 0 0 0 3px rgba(26, 74, 122, 0.12);
-        }
-
-        .report-controls .field-group select option {
-            padding: 4px 8px;
-        }
-
-        .report-status {
-            font-size: 13px;
-            color: #4a6a8a;
-            margin-top: 10px;
-            padding: 4px 0;
-        }
-        .report-status .success {
-            color: #1a7a4a;
-            font-weight: 500;
-        }
-        .report-status .error {
-            color: #b13a3a;
-            font-weight: 500;
-        }
-
-        .report-stats {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 18px 32px;
-            margin-top: 14px;
-            padding-top: 14px;
-            border-top: 1px solid #e6edf4;
-        }
-
-        .report-stats .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #1a3a5a;
-        }
-        .report-stats .stat-item .num {
-            font-weight: 700;
-            font-size: 16px;
-            color: #0b1a33;
-        }
-        .report-stats .stat-item .label {
-            color: #6a8aaa;
-        }
-
-        /* ---- RANK LIST BUTTONS (new) ---- */
-        .rank-list-actions {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 14px 18px;
-            margin-top: 14px;
-            padding-top: 14px;
-            border-top: 1px solid #e6edf4;
-        }
-        .rank-list-actions .label {
-            font-weight: 600;
-            font-size: 13px;
-            color: #1a3a5a;
-            white-space: nowrap;
-        }
-
-        /* ============================================================
                RESPONSIVE
                ============================================================ */
         @media (max-width: 1100px) {
@@ -1144,24 +1100,6 @@
             .controls-grid {
                 grid-template-columns: 1fr;
             }
-            .report-controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .report-controls .field-group {
-                flex-wrap: wrap;
-            }
-            .report-controls .field-group select {
-                min-width: 120px;
-                flex: 1;
-            }
-            .rank-list-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .rank-list-actions .label {
-                text-align: center;
-            }
         }
 
         @media (max-width: 840px) {
@@ -1169,109 +1107,116 @@
                 padding: 16px 12px 20px;
                 border-radius: 16px;
             }
-            #resultCard {
+            #admitCard {
                 width: 100%;
                 min-height: auto;
             }
-            .jee-card .card-header {
+            .admit-card .card-header {
                 padding: 14px 16px 10px 16px;
                 flex-wrap: wrap;
                 justify-content: center;
             }
-            .jee-card .card-header .logo-wrap {
+            .admit-card .card-header .logo-wrap {
                 width: 70px;
                 height: 70px;
             }
-            .jee-card .card-header .logo-wrap img {
+            .admit-card .card-header .logo-wrap img {
                 max-height: 70px;
             }
-            .jee-card .card-header .title-wrap .school-name {
+            .admit-card .card-header .title-wrap .school-name {
                 font-size: 20px;
                 white-space: normal;
             }
-            .jee-card .card-header .title-wrap .school-sub {
+            .admit-card .card-header .title-wrap .school-sub {
                 font-size: 14px;
                 white-space: normal;
             }
-            .jee-card .card-header .title-wrap .school-address {
+            .admit-card .card-header .title-wrap .school-address {
                 font-size: 12px;
                 white-space: normal;
             }
-            .jee-card .card-header .title-wrap .exam-title {
-                font-size: 17px;
+            .admit-card .card-header .title-wrap .exam-title {
+                font-size: 20px;
                 white-space: normal;
             }
-            .jee-card .card-header .title-wrap .result-card-label {
-                font-size: 15px;
+            .admit-card .card-header .title-wrap .exam-sub-label {
+                font-size: 12px;
                 white-space: normal;
             }
-            .jee-card .card-header .spacer {
+            .admit-card .card-header .spacer {
                 width: 0;
             }
 
-            .jee-card .student-info {
-                margin: 6px 12px 12px 12px;
+            .admit-card .student-info {
+                margin: 4px 12px 8px 12px;
                 grid-template-columns: 1fr;
             }
-            .jee-card .student-info .photo-col {
+            .admit-card .student-info .photo-col {
                 border-left: none;
                 border-top: 2px solid #f5ede4;
-                padding: 12px 0;
+                padding: 10px 0;
                 min-width: unset;
             }
-            .jee-card .student-info .info-row {
+            .admit-card .student-info .info-row {
                 grid-template-columns: 1fr;
             }
-            .jee-card .student-info .info-row .label {
+            .admit-card .student-info .info-row .label {
                 border-right: none;
                 border-bottom: 1px solid #f5ede4;
-                padding: 5px 14px;
+                padding: 4px 12px;
                 white-space: normal;
             }
-            .jee-card .student-info .info-row .value {
-                padding: 5px 14px;
+            .admit-card .student-info .info-row .value {
+                padding: 4px 12px;
                 white-space: normal;
             }
 
-            .jee-card .perf-table-wrap {
-                margin: 4px 12px 10px 12px;
+            .admit-card .schedule-wrap {
+                margin: 2px 12px 6px 12px;
                 overflow-x: auto;
             }
-            .perf-table {
-                font-size: 12px;
-                min-width: 360px;
-            }
-            .perf-table thead th {
-                padding: 6px 10px;
+            .schedule-table {
                 font-size: 11px;
+                min-width: 460px;
             }
-            .perf-table tbody td {
-                padding: 6px 10px;
-                font-size: 12px;
+            .schedule-table thead th {
+                padding: 5px 8px;
+                font-size: 10px;
             }
-            .perf-table tbody .marks-cell {
-                font-size: 14px;
-            }
-            .perf-table tbody .total-row .marks-cell {
-                font-size: 15px;
+            .schedule-table tbody td {
+                padding: 5px 8px;
+                font-size: 11px;
+                height: 28px;
             }
 
-            .jee-card .score-bar-wrap {
-                margin: 4px 12px 2px 12px;
+            .admit-card .instructions-wrap {
+                margin: 3px 12px 4px 12px;
+                padding: 6px 12px;
             }
-            .jee-card .result-footer {
-                margin: 6px 12px 4px 12px;
+            .admit-card .instructions-wrap ul li {
+                font-size: 11px;
+            }
+            .admit-card .wishes-wrap {
+                font-size: 14px;
+            }
+
+            .admit-card .sig-footer {
+                margin: 3px 12px 6px 12px;
                 flex-direction: column;
-                align-items: stretch;
+                align-items: center;
                 gap: 12px;
             }
-            .jee-card .result-footer .signatures {
-                justify-content: center;
-                flex-wrap: wrap;
-                gap: 20px;
+            .admit-card .sig-footer .sig-block {
+                min-width: unset;
+                width: 100%;
+                max-width: 200px;
             }
-            .jee-card .card-footer-note {
-                margin: 4px 12px 10px 12px;
+            .admit-card .sig-footer .sig-block .sig-placeholder {
+                width: 100%;
+                max-width: 120px;
+            }
+            .admit-card .card-footer-note {
+                margin: 2px 12px 8px 12px;
                 white-space: normal;
             }
 
@@ -1308,44 +1253,51 @@
             .main-header .brand .icon {
                 font-size: 28px;
             }
-            .report-section {
+
+            .manual-entry-section {
                 padding: 16px 16px 20px;
             }
-            .report-stats {
-                gap: 12px 20px;
+            .subject-entry {
+                grid-template-columns: 1fr;
+                gap: 5px;
+                padding: 10px 12px;
+            }
+            .subject-entry .sub-name-input {
+                font-size: 14px;
+                padding-bottom: 2px;
+                border-bottom: 1px solid #eee8e0;
+            }
+            .exam-title-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .exam-title-row label {
+                min-width: unset;
             }
         }
 
         @media (max-width: 500px) {
-            .perf-table {
-                font-size: 11px;
-                min-width: 300px;
-            }
-            .perf-table thead th {
-                padding: 4px 6px;
+            .schedule-table {
                 font-size: 10px;
+                min-width: 360px;
             }
-            .perf-table tbody td {
-                padding: 4px 6px;
-                font-size: 11px;
+            .schedule-table thead th {
+                padding: 4px 5px;
+                font-size: 9px;
             }
-            .perf-table tbody .subject-label {
-                padding-left: 10px;
+            .schedule-table tbody td {
+                padding: 4px 5px;
+                font-size: 10px;
+                height: 24px;
             }
-            .perf-table tbody .marks-cell {
-                font-size: 12px;
+            .admit-card .student-info .photo-col img {
+                width: 65px;
+                height: 78px;
             }
-            .perf-table tbody .total-row .marks-cell {
-                font-size: 13px;
-            }
-            .jee-card .student-info .photo-col img {
-                width: 70px;
-                height: 84px;
-            }
-            .jee-card .student-info .photo-col .placeholder-photo {
-                width: 70px;
-                height: 84px;
-                font-size: 32px;
+            .admit-card .student-info .photo-col .placeholder-photo {
+                width: 65px;
+                height: 78px;
+                font-size: 28px;
             }
             .btn {
                 font-size: 13px;
@@ -1365,20 +1317,6 @@
                 min-width: unset;
                 width: 90%;
                 padding: 28px 20px 32px;
-            }
-            .report-controls .field-group {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .report-controls .field-group select {
-                min-width: unset;
-            }
-            .rank-list-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .rank-list-actions .btn {
-                justify-content: center;
             }
         }
 
@@ -1401,7 +1339,7 @@
             .sub-head .btn,
             .main-header .badge-group,
             .sub-head .hint,
-            .report-section {
+            .manual-entry-section {
                 display: none !important;
             }
             .main-header .brand h1 small {
@@ -1414,7 +1352,7 @@
                 margin: 0;
                 overflow: visible;
             }
-            #resultCard {
+            #admitCard {
                 width: 100%;
                 min-height: auto;
                 box-shadow: none;
@@ -1422,11 +1360,8 @@
                 border-radius: 0;
                 page-break-after: always;
             }
-            .jee-card {
+            .admit-card {
                 page-break-inside: avoid;
-            }
-            .jee-card .score-bar-wrap .score-bar .fill {
-                background: #0b1a33 !important;
             }
         }
 
@@ -1468,8 +1403,8 @@
             <div class="brand">
                 <span class="icon">🏫</span>
                 <h1>
-                    Result Card Generator
-                    <small>JEE Mains · Tabular</small>
+                    Admit Card Generator
+                    <small>Half Yearly · Tabular</small>
                 </h1>
             </div>
             <div class="badge-group">
@@ -1478,8 +1413,8 @@
         </div>
 
         <div class="sub-head">
-            <span>📋 Generate result cards · 100 marks per subject · Total 300</span>
-            <span class="hint">🔹 A4 ready · Table view</span>
+            <span>📋 Generate admit cards · 7 editable subjects · Manual schedule entry</span>
+            <span class="hint">🔹 A4 ready · With instructions &amp; signatures</span>
         </div>
 
         <!-- ========== CONTROLS ========== -->
@@ -1529,20 +1464,6 @@
 
                 <hr class="divider-light" />
 
-                <!-- Exam Name (Manual typing) -->
-                <div style="margin-top:12px;">
-                    <h3 style="margin-bottom:8px;">📝 Examination Name</h3>
-                    <div class="file-row">
-                        <label style="min-width:80px;">Name</label>
-                        <div class="file-input-wrapper">
-                            <input type="text" id="examNameInput" value="JEE MAINS MODEL EXAMINATION – 2" style="flex:1; padding:8px 12px; border:1.5px solid #dce4ed; border-radius:8px; font-size:14px; font-weight:400; color:#0b1a33; background:#fff; min-width:120px;" />
-                        </div>
-                    </div>
-                    <div style="font-size:12px; color:#6a8aaa; margin-top:4px;">Type any examination title (appears on the card)</div>
-                </div>
-
-                <hr class="divider-light" />
-
                 <!-- Excel Upload -->
                 <div>
                     <h3 style="margin-bottom:10px;">📊 Student Data <span class="badge-soft">Excel</span></h3>
@@ -1555,9 +1476,8 @@
                     </div>
                     <div id="excelStatus" class="text-muted mt-8" style="font-size:13px;">No file uploaded</div>
                     <div style="margin-top:8px; font-size:12px; color:#6a8aaa; display:flex; flex-wrap:wrap; gap:6px 14px;">
-                        <span><span class="jee-badge">📌</span> Mathematics · Physics · Chemistry</span>
-                        <span><span class="jee-badge">🎯</span> Max: 100 each · Total: 300</span>
-                        <span><span class="jee-badge">🆔</span> Column "Student ID"</span>
+                        <span><span class="jee-badge">📌</span> Student ID · Name · Class · Section · Mobile</span>
+                        <span><span class="jee-badge">🆔</span> Column "Student ID" for photo matching</span>
                         <span><span class="jee-badge">📅</span> Fixed: 2026 – 2027</span>
                     </div>
                 </div>
@@ -1568,7 +1488,7 @@
                 <div>
                     <h3>⚙️ Actions</h3>
                     <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:12px;">
-                        <button class="btn btn-primary" id="generateBtn">🔄 Generate Cards</button>
+                        <button class="btn btn-primary" id="generateBtn">🔄 Generate Admit Cards</button>
                         <div class="btn-group">
                             <button class="btn btn-success" id="downloadPdfBtn">📄 PDF (All)</button>
                             <button class="btn btn-info" id="downloadIndividualBtn">📄 PDF (This)</button>
@@ -1577,7 +1497,7 @@
                         <button class="btn btn-outline" id="resetBtn">⟲ Reset</button>
                     </div>
                     <div class="text-muted mt-8" style="font-size:13px;">
-                        ✅ Total: 300 marks &bull; Individual PDFs named by student
+                        ✅ 7 Subjects · Dates · Times (e.g. 02:30) · Invigilator Signature (Empty Box)
                     </div>
                 </div>
 
@@ -1592,32 +1512,25 @@
             </div>
         </div>
 
-        <!-- ========== CLASS WISE REPORT ========== -->
-        <div class="report-section" id="reportSection">
-            <h3>📊 Class‑Wise Report <span class="badge-soft">NEW</span></h3>
-            <div class="report-controls">
-                <div class="field-group">
-                    <label for="classSelect">🎯 Select Class:</label>
-                    <select id="classSelect">
-                        <option value="__ALL__">All Classes</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" id="generateReportBtn">📄 Generate Report PDF</button>
-                <button class="btn btn-outline-dark btn-sm" id="refreshReportBtn">⟳ Refresh</button>
-            </div>
-            <div id="reportStatus" class="report-status">Load student data to see class-wise report options.</div>
-            <div class="report-stats" id="reportStats">
-                <span class="stat-item"><span class="label">📚 Total Students:</span> <span class="num" id="reportTotalStudents">0</span></span>
-                <span class="stat-item"><span class="label">📖 Classes:</span> <span class="num" id="reportTotalClasses">0</span></span>
-                <span class="stat-item"><span class="label">🏅 Top Rank (All):</span> <span class="num" id="reportTopRank">—</span></span>
+        <!-- ========== MANUAL ENTRY SECTION ========== -->
+        <div class="manual-entry-section">
+            <h3>
+                ✏️ Manual Typing Option
+                <span class="badge-soft">Half Yearly Examination</span>
+            </h3>
+
+            <div class="exam-title-row">
+                <label for="examTitleInput">📋 Exam Title</label>
+                <input type="text" id="examTitleInput" value="HALF YEARLY EXAMINATION" placeholder="e.g. HALF YEARLY EXAMINATION" />
             </div>
 
-            <!-- ===== NEW: Rank List Actions ===== -->
-            <div class="rank-list-actions">
-                <span class="label">🏆 Rank List (All Students):</span>
-                <button class="btn btn-purple" id="rankListPdfBtn">📄 PDF (Rank List)</button>
-                <button class="btn btn-teal" id="rankListExcelBtn">📊 Excel (Rank List)</button>
-                <span style="font-size:12px; color:#6a8aaa; margin-left:4px;">Overall rank based on Total marks</span>
+            <div class="subjects-grid" id="subjectsGrid">
+                <!-- Subjects will be rendered by JS -->
+            </div>
+
+            <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn-sm btn-outline-dark" id="resetSubjectsBtn">↺ Reset Subjects</button>
+                <span style="font-size:12px; color:#6a8aaa; display:flex; align-items:center;">7 subjects · Click subject name to edit · Dates · Times (e.g. 02:30)</span>
             </div>
         </div>
 
@@ -1637,11 +1550,11 @@
 
         <!-- ========== CARD PREVIEW ========== -->
         <div class="card-container" id="cardContainer">
-            <div id="resultCard">
+            <div id="admitCard">
                 <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px;">
-                    <span style="font-size:48px;">📄</span>
-                    <span>Upload Excel &amp; click <strong>"Generate Cards"</strong></span>
-                    <span style="font-size:14px; color:#aabaca;">A4 Result Card with Tabular Performance</span>
+                    <span style="font-size:48px;">🎫</span>
+                    <span>Upload Excel &amp; click <strong>"Generate Admit Cards"</strong></span>
+                    <span style="font-size:14px; color:#aabaca;">A4 Admit Card with Subject Schedule</span>
                 </div>
             </div>
         </div>
@@ -1660,7 +1573,7 @@
 
         <!-- ========== FOOTER ========== -->
         <div style="margin-top:16px; text-align:center; font-size:13px; color:#8a9aaa; border-top:1px solid #e6edf4; padding-top:18px;">
-            JEE Mains Result Card Generator &bull; Tabular Performance &bull; A4 Ready
+            Admit Card Generator · Half Yearly Examination · A4 Ready
         </div>
     </div>
 
@@ -1675,20 +1588,24 @@
             teacherSigDataURL: null,
             principalSigDataURL: null,
             imageMap: {},
-            examName: 'JEE MAINS MODEL EXAMINATION – 2',
-            reportData: [],
+            examTitle: 'HALF YEARLY EXAMINATION',
+            subjects: [
+                { name: 'TELUGU', date: '', time: '', invigilator: '' },
+                { name: 'HINDI', date: '', time: '', invigilator: '' },
+                { name: 'ENGLISH', date: '', time: '', invigilator: '' },
+                { name: 'MATHS', date: '', time: '', invigilator: '' },
+                { name: 'PHYSICS', date: '', time: '', invigilator: '' },
+                { name: 'BIOLOGY', date: '', time: '', invigilator: '' },
+                { name: 'SOCIAL', date: '', time: '', invigilator: '' },
+            ]
         };
 
-        const SUBJECTS = ['Mathematics', 'Physics', 'Chemistry'];
-        const MAX_MARKS_PER_SUBJECT = 100;
-        const TOTAL_MAX_MARKS = 300;
-        const PASS_THRESHOLD = 40;
-        const FIXED_ACADEMIC_YEAR = '2026 – 2027';
         const FIXED_LOCATION = 'Narasannapeta';
+        const FIXED_ACADEMIC_YEAR = '2026 – 2027';
 
         // DOM refs
         const $ = id => document.getElementById(id);
-        const cardEl = $('resultCard');
+        const cardEl = $('admitCard');
         const logoUpload = $('logoUpload');
         const teacherSigUpload = $('teacherSigUpload');
         const principalSigUpload = $('principalSigUpload');
@@ -1722,48 +1639,26 @@
         const progressFill = $('progressFill');
         const progressText = $('progressText');
         const progressStatus = $('progressStatus');
-
-        // Report DOM
-        const classSelect = $('classSelect');
-        const generateReportBtn = $('generateReportBtn');
-        const refreshReportBtn = $('refreshReportBtn');
-        const reportStatus = $('reportStatus');
-        const reportTotalStudents = $('reportTotalStudents');
-        const reportTotalClasses = $('reportTotalClasses');
-        const reportTopRank = $('reportTopRank');
-
-        // Rank List buttons
-        const rankListPdfBtn = $('rankListPdfBtn');
-        const rankListExcelBtn = $('rankListExcelBtn');
-
-        // Exam name input
-        const examNameInput = $('examNameInput');
-        examNameInput.addEventListener('input', function() {
-            state.examName = this.value.trim() || 'JEE MAINS MODEL EXAMINATION – 2';
-            if (state.students.length > 0) renderCard();
-        });
+        const examTitleInput = $('examTitleInput');
+        const subjectsGrid = $('subjectsGrid');
+        const resetSubjectsBtn = $('resetSubjectsBtn');
 
         // ============================================================
-        //  SAMPLE EXCEL
+        //  SAMPLE EXCEL (for admit card)
         // ============================================================
         function generateSampleExcel() {
             const data = [
-                ['Student ID', 'Student Name', 'Class', 'Section', 'Mobile Number', 'Mathematics', 'Physics',
-                    'Chemistry'
-                ],
-                ['S1001', 'T. SHAMYUU', 'VIII', 'A', '145698', 85, 78, 92],
-                ['S1002', 'A. RAHUL', 'IX', 'B', '987654', 72, 68, 75],
-                ['S1003', 'S. PRIYA', 'X', 'A', '456123', 95, 88, 90],
-                ['S1004', 'M. KIRAN', 'VIII', 'C', '321654', 45, 52, 48],
-                ['S1005', 'R. ANJALI', 'IX', 'A', '789456', 65, 70, 60],
-                ['S1006', 'V. SAI', 'X', 'B', '112233', 88, 92, 85],
-                ['S1007', 'K. DEEPAK', 'VIII', 'A', '445566', 78, 82, 80],
-                ['S1008', 'N. LAKSHMI', 'IX', 'C', '778899', 58, 62, 55],
+                ['Student ID', 'Student Name', 'Class', 'Section', 'Mobile Number'],
+                ['S1001', 'T. SHAMYUU', 'VIII', 'A', '145698'],
+                ['S1002', 'A. RAHUL', 'IX', 'B', '987654'],
+                ['S1003', 'S. PRIYA', 'X', 'A', '456123'],
+                ['S1004', 'M. KIRAN', 'VIII', 'C', '321654'],
+                ['S1005', 'R. ANJALI', 'IX', 'A', '789456'],
             ];
             const ws = XLSX.utils.aoa_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Students');
-            XLSX.writeFile(wb, 'JEE_Mains_Students_Sample.xlsx');
+            XLSX.writeFile(wb, 'Admit_Card_Students_Sample.xlsx');
         }
         sampleExcelBtn.addEventListener('click', generateSampleExcel);
 
@@ -1832,7 +1727,7 @@
                         zipStatus.textContent = `✅ Loaded ${count} images.`;
                         zipStatus.className = 'zip-status success';
                         clearPhotosBtn.style.display = 'inline-flex';
-                        if (state.students.length > 0) renderCard();
+                        if (state.students.length > 0) renderAdmitCard();
                     });
                 })
                 .catch(function(err) {
@@ -1850,7 +1745,65 @@
             zipStatus.textContent = 'No ZIP uploaded. File names must match Student ID.';
             zipStatus.className = 'zip-status';
             clearPhotosBtn.style.display = 'none';
-            if (state.students.length > 0) renderCard();
+            if (state.students.length > 0) renderAdmitCard();
+        });
+
+        // ============================================================
+        //  MANUAL SUBJECTS — RENDER
+        // ============================================================
+        function renderSubjectEntries() {
+            let html = '';
+            state.subjects.forEach((sub, idx) => {
+                html += `
+                        <div class="subject-entry" data-index="${idx}">
+                            <input type="text" class="sub-name-input" value="${sub.name}" placeholder="Subject Name" />
+                            <input type="date" class="sub-date" value="${sub.date}" placeholder="Date" />
+                            <input type="text" class="sub-time" value="${sub.time}" placeholder="e.g. 02:30" />
+                            <input type="text" class="sub-invigilator" value="${sub.invigilator}" placeholder="Invigilator (Optional)" />
+                        </div>
+                    `;
+            });
+            subjectsGrid.innerHTML = html;
+
+            // Bind events
+            document.querySelectorAll('.subject-entry').forEach((entry, idx) => {
+                const nameInput = entry.querySelector('.sub-name-input');
+                const dateInput = entry.querySelector('.sub-date');
+                const timeInput = entry.querySelector('.sub-time');
+                const invigilatorInput = entry.querySelector('.sub-invigilator');
+
+                nameInput.addEventListener('input', function() {
+                    state.subjects[idx].name = this.value.toUpperCase();
+                    if (state.students.length > 0) renderAdmitCard();
+                });
+
+                dateInput.addEventListener('change', function() {
+                    state.subjects[idx].date = this.value;
+                    if (state.students.length > 0) renderAdmitCard();
+                });
+                timeInput.addEventListener('input', function() {
+                    state.subjects[idx].time = this.value;
+                    if (state.students.length > 0) renderAdmitCard();
+                });
+                invigilatorInput.addEventListener('input', function() {
+                    state.subjects[idx].invigilator = this.value;
+                });
+            });
+        }
+
+        // Reset subjects to empty
+        resetSubjectsBtn.addEventListener('click', function() {
+            state.subjects.forEach(s => { s.date = '';
+                s.time = '';
+                s.invigilator = ''; });
+            renderSubjectEntries();
+            if (state.students.length > 0) renderAdmitCard();
+        });
+
+        // Exam title input
+        examTitleInput.addEventListener('input', function() {
+            state.examTitle = this.value || 'HALF YEARLY EXAMINATION';
+            if (state.students.length > 0) renderAdmitCard();
         });
 
         // ============================================================
@@ -1897,9 +1850,6 @@
                 if (k.includes('class')) return 'class';
                 if (k.includes('section')) return 'section';
                 if (k.includes('mobile') || k.includes('phone')) return 'mobile';
-                if (k.includes('math') || k.includes('mathematics')) return 'mathematics';
-                if (k.includes('phys') || k.includes('physics')) return 'physics';
-                if (k.includes('chem') || k.includes('chemistry')) return 'chemistry';
                 return null;
             };
 
@@ -1914,12 +1864,6 @@
                 return;
             }
 
-            const hasSubject = colMap.mathematics || colMap.physics || colMap.chemistry;
-            if (!hasSubject) {
-                excelStatus.textContent = '⚠️ No subject columns found. Include: Mathematics, Physics, Chemistry.';
-                return;
-            }
-
             json.forEach(row => {
                 const name = String(row[colMap.name] || '').trim();
                 if (!name) return;
@@ -1927,39 +1871,13 @@
                 let studentId = '';
                 if (colMap.studentId) studentId = String(row[colMap.studentId] || '').trim();
 
-                const mathMarks = parseFloat(row[colMap.mathematics] !== undefined ? row[colMap.mathematics] : 0);
-                const physMarks = parseFloat(row[colMap.physics] !== undefined ? row[colMap.physics] : 0);
-                const chemMarks = parseFloat(row[colMap.chemistry] !== undefined ? row[colMap.chemistry] : 0);
-
-                const math = Math.min(Math.max(isNaN(mathMarks) ? 0 : mathMarks, 0), MAX_MARKS_PER_SUBJECT);
-                const phys = Math.min(Math.max(isNaN(physMarks) ? 0 : physMarks, 0), MAX_MARKS_PER_SUBJECT);
-                const chem = Math.min(Math.max(isNaN(chemMarks) ? 0 : chemMarks, 0), MAX_MARKS_PER_SUBJECT);
-
-                const total = math + phys + chem;
-                const percentage = (total / TOTAL_MAX_MARKS) * 100;
-                const pass = percentage >= PASS_THRESHOLD;
-
-                const cls = String(row[colMap.class] || '').trim() || '—';
-                const section = String(row[colMap.section] || '').trim() || '—';
-
                 students.push({
                     studentId: studentId || '—',
                     name: name,
-                    class: cls,
-                    section: section,
+                    class: String(row[colMap.class] || '').trim() || '—',
+                    section: String(row[colMap.section] || '').trim() || '—',
                     mobile: String(row[colMap.mobile] || '').trim() || '—',
-                    academicYear: FIXED_ACADEMIC_YEAR,
                     location: FIXED_LOCATION,
-                    mathematics: math,
-                    physics: phys,
-                    chemistry: chem,
-                    total: total,
-                    maxMarks: TOTAL_MAX_MARKS,
-                    percentage: percentage,
-                    pass: pass,
-                    generatedId: '',
-                    rank: 0,
-                    overallRank: 0,
                 });
             });
 
@@ -1971,157 +1889,8 @@
             state.students = students;
             state.currentIndex = 0;
             updateUI();
-            renderCard();
-            updateReportData();
-            populateClassDropdown();
-            updateReportStats();
-            excelStatus.textContent = `✅ Loaded ${students.length} student(s). Click "Generate Cards" to refresh.`;
-        }
-
-        // ============================================================
-        //  REPORT DATA — Generate IDs & Ranks (class-wise)
-        // ============================================================
-        function updateReportData() {
-            const students = state.students;
-            if (!students || students.length === 0) {
-                state.reportData = [];
-                return;
-            }
-
-            // Group by class
-            const classGroups = {};
-            students.forEach(s => {
-                const key = s.class || '—';
-                if (!classGroups[key]) classGroups[key] = [];
-                classGroups[key].push({ ...s });
-            });
-
-            // For each class: assign generated ID and rank
-            const result = [];
-            Object.keys(classGroups).forEach(cls => {
-                const group = classGroups[cls];
-                const sorted = [...group].sort((a, b) => b.total - a.total);
-
-                let rank = 1;
-                let prevTotal = null;
-                let rankCounter = 0;
-                sorted.forEach((s, idx) => {
-                    rankCounter++;
-                    if (prevTotal !== null && s.total < prevTotal) {
-                        rank = rankCounter;
-                    }
-                    s.rank = rank;
-                    prevTotal = s.total;
-                });
-
-                const ranked = sorted.map((s, idx) => {
-                    const serial = String(idx + 1).padStart(4, '0');
-                    const generatedId = `JY26-${serial}`;
-                    return { ...s, generatedId };
-                });
-
-                result.push(...ranked);
-            });
-
-            state.reportData = result;
-
-            // Update original students with generatedId and rank
-            const idMap = {};
-            result.forEach(r => {
-                const key = r.studentId + '|' + r.name;
-                idMap[key] = { generatedId: r.generatedId, rank: r.rank };
-            });
-            state.students.forEach(s => {
-                const key = s.studentId + '|' + s.name;
-                if (idMap[key]) {
-                    s.generatedId = idMap[key].generatedId;
-                    s.rank = idMap[key].rank;
-                }
-            });
-        }
-
-        // ============================================================
-        //  OVERALL RANK LIST (across all students)
-        // ============================================================
-        function getOverallRankList() {
-            const students = state.students;
-            if (!students || students.length === 0) return [];
-
-            // Copy and sort by total marks descending
-            const sorted = [...students].map(s => ({ ...s }));
-            sorted.sort((a, b) => b.total - a.total);
-
-            // Assign overall ranks with tie handling
-            let rank = 1;
-            let prevTotal = null;
-            let rankCounter = 0;
-            sorted.forEach((s, idx) => {
-                rankCounter++;
-                if (prevTotal !== null && s.total < prevTotal) {
-                    rank = rankCounter;
-                }
-                s.overallRank = rank;
-                prevTotal = s.total;
-            });
-
-            return sorted;
-        }
-
-        // ============================================================
-        //  POPULATE CLASS DROPDOWN
-        // ============================================================
-        function populateClassDropdown() {
-            const students = state.students;
-            if (!students || students.length === 0) {
-                classSelect.innerHTML = `<option value="__ALL__">All Classes</option>`;
-                return;
-            }
-            const classes = new Set();
-            students.forEach(s => {
-                if (s.class && s.class !== '—') classes.add(s.class);
-            });
-            const sorted = Array.from(classes).sort();
-            let html = `<option value="__ALL__">📚 All Classes (${students.length})</option>`;
-            sorted.forEach(cls => {
-                const count = students.filter(s => s.class === cls).length;
-                html += `<option value="${cls}">${cls} (${count})</option>`;
-            });
-            classSelect.innerHTML = html;
-        }
-
-        // ============================================================
-        //  UPDATE REPORT STATS
-        // ============================================================
-        function updateReportStats() {
-            const students = state.students;
-            if (!students || students.length === 0) {
-                reportTotalStudents.textContent = '0';
-                reportTotalClasses.textContent = '0';
-                reportTopRank.textContent = '—';
-                reportStatus.textContent = 'Load student data to see class-wise report options.';
-                reportStatus.className = 'report-status';
-                return;
-            }
-
-            const classes = new Set();
-            students.forEach(s => {
-                if (s.class && s.class !== '—') classes.add(s.class);
-            });
-
-            reportTotalStudents.textContent = students.length;
-            reportTotalClasses.textContent = classes.size;
-
-            let topPct = 0;
-            let topName = '—';
-            students.forEach(s => {
-                if (s.percentage > topPct) {
-                    topPct = s.percentage;
-                    topName = s.name;
-                }
-            });
-            reportTopRank.textContent = topName + ' (' + Math.round(topPct) + '%)';
-            reportStatus.textContent = `✅ ${students.length} students across ${classes.size} class(es). Select a class and click "Generate Report PDF".`;
-            reportStatus.className = 'report-status success';
+            renderAdmitCard();
+            excelStatus.textContent = `✅ Loaded ${students.length} student(s). Click "Generate Admit Cards" to refresh.`;
         }
 
         // ============================================================
@@ -2150,16 +1919,16 @@
         }
 
         // ============================================================
-        //  RENDER CARD
+        //  RENDER ADMIT CARD — COMPACT TABLE WITH SLIGHTLY INCREASED ROW HEIGHT
         // ============================================================
-        function renderCard() {
+        function renderAdmitCard() {
             const students = state.students;
             if (!students || students.length === 0) {
                 cardEl.innerHTML = `
                         <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px;">
-                            <span style="font-size:48px;">📄</span>
-                            <span>Upload Excel &amp; click <strong>"Generate Cards"</strong></span>
-                            <span style="font-size:14px; color:#aabaca;">A4 Result Card with Tabular Performance</span>
+                            <span style="font-size:48px;">🎫</span>
+                            <span>Upload Excel &amp; click <strong>"Generate Admit Cards"</strong></span>
+                            <span style="font-size:14px; color:#aabaca;">A4 Admit Card with Subject Schedule</span>
                         </div>
                     `;
                 return;
@@ -2174,47 +1943,40 @@
                 '';
 
             const teacherSigHtml = state.teacherSigDataURL ?
-                `<img src="${state.teacherSigDataURL}" alt="Teacher Signature" style="max-width:140px; max-height:60px; object-fit:contain;" />` :
+                `<img src="${state.teacherSigDataURL}" alt="Teacher Signature" style="max-width:150px; max-height:60px; object-fit:contain;" />` :
                 '<div class="sig-placeholder"></div>';
 
             const principalSigHtml = state.principalSigDataURL ?
-                `<img src="${state.principalSigDataURL}" alt="Principal Signature" style="max-width:140px; max-height:60px; object-fit:contain;" />` :
+                `<img src="${state.principalSigDataURL}" alt="Principal Signature" style="max-width:150px; max-height:60px; object-fit:contain;" />` :
                 '<div class="sig-placeholder"></div>';
 
-            const pct = Math.round(s.percentage);
-            const barWidth = Math.min(s.percentage, 100);
-
+            // Photo
             const imageKey = s.studentId.trim().toUpperCase();
             const imageData = state.imageMap ? state.imageMap[imageKey] : null;
             const photoHtml = imageData ?
                 `<img src="${imageData}" alt="Student Photo" />` :
                 `<div class="placeholder-photo">📷</div>`;
 
-            const subjectData = [
-                { name: 'Mathematics', marks: s.mathematics, max: MAX_MARKS_PER_SUBJECT },
-                { name: 'Physics', marks: s.physics, max: MAX_MARKS_PER_SUBJECT },
-                { name: 'Chemistry', marks: s.chemistry, max: MAX_MARKS_PER_SUBJECT },
-            ];
-
+            // Build schedule table rows
             let tableRows = '';
-            subjectData.forEach(sub => {
-                const subPct = sub.max > 0 ? ((sub.marks / sub.max) * 100).toFixed(1) : '0.0';
+            state.subjects.forEach((sub, i) => {
+                const dateDisplay = sub.date || '—';
+                const timeDisplay = sub.time || '—';
                 tableRows += `
                         <tr>
-                            <td class="subject-label"><span class="sub-icon">📘</span> ${sub.name}</td>
-                            <td class="marks-cell">${sub.marks}</td>
-                            <td class="max-cell">${sub.max}</td>
-                            <td class="pct-cell">${subPct}%</td>
+                            <td>${i+1}</td>
+                            <td class="subj-label">${sub.name}</td>
+                            <td>${dateDisplay}</td>
+                            <td>${timeDisplay}</td>
+                            <td><div class="invigilator-box"></div></td>
                         </tr>
                     `;
             });
 
-            const totalPct = s.percentage.toFixed(1);
-            const displayId = s.studentId;
-            const examTitle = state.examName;
+            const examTitle = state.examTitle || 'HALF YEARLY EXAMINATION';
 
             cardEl.innerHTML = `
-                <div class="jee-card">
+                <div class="admit-card">
                     <div class="top-bar"></div>
 
                     <div class="card-header">
@@ -2224,7 +1986,7 @@
                             <div class="school-sub">(IIT-JEE / NEET Foundation · Olympiads)</div>
                             <div class="school-address">Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta</div>
                             <div class="exam-title">${examTitle}</div>
-                            <div class="result-card-label">✦ RESULT CARD ✦</div>
+                            <div class="exam-sub-label">✦ ADMIT CARD ✦</div>
                         </div>
                         <div class="spacer"></div>
                     </div>
@@ -2245,7 +2007,7 @@
                             </div>
                             <div class="info-row">
                                 <div class="label">🆔 Student ID</div>
-                                <div class="value">${displayId}</div>
+                                <div class="value">${s.studentId}</div>
                             </div>
                             <div class="info-row">
                                 <div class="label">📚 Class</div>
@@ -2261,77 +2023,72 @@
                             </div>
                             <div class="info-row">
                                 <div class="label">📅 Academic Year</div>
-                                <div class="value">${s.academicYear}</div>
+                                <div class="value">${FIXED_ACADEMIC_YEAR}</div>
                             </div>
                             <div class="info-row">
                                 <div class="label">📍 Location</div>
                                 <div class="value">${s.location}</div>
                             </div>
-                            ${s.rank ? `<div class="info-row"><div class="label">🏅 Class Rank</div><div class="value">#${s.rank}</div></div>` : ''}
                         </div>
                         <div class="photo-col">
                             ${photoHtml}
                         </div>
                     </div>
 
-                    <div class="perf-table-wrap">
-                        <div class="perf-title">
-                            <span class="icon">📊</span>
-                            <span>Performance Summary</span>
-                            <span class="max-hint">Max Marks: ${TOTAL_MAX_MARKS}</span>
+                    <!-- ===== SUBJECT SCHEDULE TABLE ===== -->
+                    <div class="schedule-wrap">
+                        <div class="schedule-title">
+                            <span class="icon">📅</span>
+                            <span>Examination Schedule</span>
+                            <span style="margin-left:auto; font-size:12px; font-weight:400; color:#6a8aaa;">7 Subjects</span>
                         </div>
 
-                        <table class="perf-table">
+                        <table class="schedule-table">
                             <thead>
                                 <tr>
-                                    <th style="text-align:left; padding-left:20px;">Subject</th>
-                                    <th>Marks</th>
-                                    <th>Max Marks</th>
-                                    <th>%</th>
+                                    <th style="width:44px;">S.No</th>
+                                    <th style="text-align:left; padding-left:14px;">Subject</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Invigilator Signature</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${tableRows}
-                                <tr class="total-row">
-                                    <td class="total-label">📌 TOTAL</td>
-                                    <td class="marks-cell">${s.total}</td>
-                                    <td class="max-cell">${s.maxMarks}</td>
-                                    <td class="pct-cell">${totalPct}%</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="score-bar-wrap">
-                        <div class="score-bar">
-                            <div class="fill" style="width:${barWidth}%;"></div>
-                        </div>
-                        <div class="score-labels">
-                            <span>0</span>
-                            <span>Threshold: ${PASS_THRESHOLD}%</span>
-                            <span>${TOTAL_MAX_MARKS}</span>
-                        </div>
+                    <!-- ===== INSTRUCTIONS ===== -->
+                    <div class="instructions-wrap">
+                        <div class="inst-title">📋 INSTRUCTIONS FOR CANDIDATES</div>
+                        <ul>
+                            <li>Carry this Admit card on all examination days.</li>
+                            <li>Reach exam hall 15 minutes before the exam start.</li>
+                            <li>Use only blue or black ball pens.</li>
+                            <li>Strictly avoid unfair means. Mobile phones not allowed.</li>
+                        </ul>
                     </div>
 
-                    <div class="result-footer">
-                        <div class="left">
-                            <div class="total-label">📋 Total Marks: ${s.total} / ${s.maxMarks}</div>
-                            <div class="percentage">${totalPct}%</div>
+                    <!-- ===== WISHES ===== -->
+                    <div class="wishes-wrap">
+                        <span>✨ Wishing You All the Best ! ✨</span>
+                    </div>
+
+                    <!-- ===== SIGNATURES ===== -->
+                    <div class="sig-footer">
+                        <div class="sig-block">
+                            <div class="sig-placeholder"></div>
+                            <div class="sig-label">✍ Signature of Parent</div>
                         </div>
-                        <div class="signatures">
-                            <div class="sig-block">
-                                ${teacherSigHtml}
-                                <div class="sig-label">✍ Teacher Signature</div>
-                            </div>
-                            <div class="sig-block">
-                                ${principalSigHtml}
-                                <div class="sig-label">✍ Principal Signature</div>
-                            </div>
+                        <div class="sig-block">
+                            ${principalSigHtml}
+                            <div class="sig-label">✍ Signature of Principal</div>
                         </div>
                     </div>
 
                     <div class="card-footer-note">
-                        ★ This is a system-generated result card for ${examTitle} ★
+                        ★ This is a system-generated admit card for ${examTitle} ★
                     </div>
                 </div>
             `;
@@ -2344,7 +2101,7 @@
             if (!state.students.length) return;
             state.currentIndex = Math.max(0, Math.min(index, state.students.length - 1));
             updateUI();
-            renderCard();
+            renderAdmitCard();
         }
 
         prevStudentBtn.addEventListener('click', () => goToStudent(state.currentIndex - 1));
@@ -2367,11 +2124,8 @@
                 }
                 return;
             }
-            updateReportData();
-            renderCard();
+            renderAdmitCard();
             updateUI();
-            populateClassDropdown();
-            updateReportStats();
         });
 
         // ============================================================
@@ -2405,407 +2159,6 @@
         }
 
         // ============================================================
-        //  CLASS WISE REPORT — GENERATE PDF
-        // ============================================================
-        generateReportBtn.addEventListener('click', function() {
-            const students = state.students;
-            if (!students || students.length === 0) {
-                alert('No student data. Please upload an Excel file first.');
-                return;
-            }
-
-            const selectedClass = classSelect.value;
-            let filtered = [];
-            if (selectedClass === '__ALL__') {
-                filtered = [...state.reportData];
-            } else {
-                filtered = state.reportData.filter(s => s.class === selectedClass);
-            }
-
-            if (filtered.length === 0) {
-                alert('No students found for the selected class.');
-                return;
-            }
-
-            const btn = this;
-            const origText = btn.textContent;
-            btn.textContent = '⏳ Generating...';
-            btn.disabled = true;
-
-            try {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('l', 'mm', 'a4');
-                const pageWidth = 297;
-                const pageHeight = 210;
-                const margin = 14;
-                const usableWidth = pageWidth - 2 * margin;
-
-                const title = selectedClass === '__ALL__' ?
-                    'JEE MAINS — CLASS WISE REPORT (All Classes)' :
-                    `JEE MAINS — CLASS WISE REPORT (${selectedClass})`;
-                const schoolName = 'SRI VENKATESWARA JY SCHOOL';
-                const subTitle = 'JEE Mains Model Examination – 2 · Result Summary';
-
-                const headers = ['S.No', 'Student ID', 'Student Name', 'Class', 'Section', 'Mobile', 'Mat', 'Phy', 'Che',
-                    'Total', 'Rank'
-                ];
-
-                const sorted = [...filtered].sort((a, b) => {
-                    if (a.class !== b.class) return a.class.localeCompare(b.class);
-                    return a.rank - b.rank;
-                });
-
-                const rows = [];
-                let serial = 1;
-                let currentClass = '';
-                sorted.forEach((s, idx) => {
-                    if (s.class !== currentClass) {
-                        serial = 1;
-                        currentClass = s.class;
-                    }
-                    rows.push([
-                        String(serial),
-                        s.generatedId || s.studentId,
-                        s.name,
-                        s.class,
-                        s.section,
-                        s.mobile,
-                        String(s.mathematics),
-                        String(s.physics),
-                        String(s.chemistry),
-                        String(s.total),
-                        '#' + s.rank,
-                    ]);
-                    serial++;
-                });
-
-                const doc = pdf;
-                doc.setFontSize(18);
-                doc.setFont('helvetica', 'bold');
-                doc.text(schoolName, pageWidth / 2, 16, { align: 'center' });
-
-                doc.setFontSize(14);
-                doc.setFont('helvetica', 'normal');
-                doc.text(title, pageWidth / 2, 24, { align: 'center' });
-
-                doc.setFontSize(11);
-                doc.text(subTitle, pageWidth / 2, 30, { align: 'center' });
-
-                const now = new Date();
-                const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-                doc.setFontSize(9);
-                doc.text(`Generated: ${dateStr}`, pageWidth - margin, 36, { align: 'right' });
-
-                const colWidths = [12, 28, 44, 20, 18, 24, 16, 16, 16, 20, 18];
-                const totalColWidth = colWidths.reduce((a, b) => a + b, 0);
-                const scale = usableWidth / totalColWidth;
-                const scaledWidths = colWidths.map(w => w * scale);
-
-                let y = 42;
-                const rowHeight = 7;
-                const headerHeight = 9;
-
-                doc.setFontSize(8);
-                doc.setFont('helvetica', 'bold');
-                let x = margin;
-                headers.forEach((h, i) => {
-                    doc.rect(x, y, scaledWidths[i], headerHeight, 'S');
-                    doc.text(h, x + scaledWidths[i] / 2, y + headerHeight / 2 + 1.5, { align: 'center' });
-                    x += scaledWidths[i];
-                });
-                y += headerHeight;
-
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(7.5);
-                rows.forEach((row) => {
-                    if (y + rowHeight > pageHeight - margin) {
-                        doc.addPage();
-                        y = margin + 4;
-                        doc.setFontSize(8);
-                        doc.setFont('helvetica', 'bold');
-                        x = margin;
-                        headers.forEach((h, i) => {
-                            doc.rect(x, y, scaledWidths[i], headerHeight, 'S');
-                            doc.text(h, x + scaledWidths[i] / 2, y + headerHeight / 2 + 1.5, { align: 'center' });
-                            x += scaledWidths[i];
-                        });
-                        y += headerHeight;
-                        doc.setFont('helvetica', 'normal');
-                        doc.setFontSize(7.5);
-                    }
-
-                    x = margin;
-                    row.forEach((cell, i) => {
-                        doc.rect(x, y, scaledWidths[i], rowHeight, 'S');
-                        const align = (i === 0 || i === 1 || i === 5 || i === 9 || i === 10) ? 'center' :
-                        'left';
-                        doc.text(cell, x + (align === 'center' ? scaledWidths[i] / 2 : 2), y + rowHeight / 2 +
-                            1.5, {
-                                align: align === 'center' ? 'center' : 'left'
-                            });
-                        x += scaledWidths[i];
-                    });
-                    y += rowHeight;
-                });
-
-                doc.setFontSize(8);
-                doc.setFont('helvetica', 'italic');
-                const footerText = '★ This is a system-generated class-wise report for JEE Mains Model Examination – 2 ★';
-                doc.text(footerText, pageWidth / 2, pageHeight - 6, { align: 'center' });
-
-                doc.save('JEE_Mains_Class_Wise_Report.pdf');
-                btn.textContent = '✅ Downloaded!';
-                setTimeout(() => { btn.textContent = origText;
-                    btn.disabled = false; }, 2000);
-
-            } catch (err) {
-                console.error(err);
-                alert('Error generating report: ' + err.message);
-                btn.textContent = origText;
-                btn.disabled = false;
-            }
-        });
-
-        // ============================================================
-        //  REFRESH REPORT
-        // ============================================================
-        refreshReportBtn.addEventListener('click', function() {
-            if (state.students.length === 0) {
-                alert('No student data loaded. Please upload an Excel file.');
-                return;
-            }
-            updateReportData();
-            populateClassDropdown();
-            updateReportStats();
-            reportStatus.textContent = '✅ Refreshed. Data is up to date.';
-            reportStatus.className = 'report-status success';
-            setTimeout(() => {
-                reportStatus.textContent =
-                    `✅ ${state.students.length} students across ${new Set(state.students.map(s => s.class)).size} class(es). Select a class and click "Generate Report PDF".`;
-            }, 1500);
-        });
-
-        // ============================================================
-        //  RANK LIST — PDF
-        // ============================================================
-        rankListPdfBtn.addEventListener('click', function() {
-            const students = state.students;
-            if (!students || students.length === 0) {
-                alert('No student data. Please upload an Excel file first.');
-                return;
-            }
-
-            const ranked = getOverallRankList();
-            if (ranked.length === 0) {
-                alert('No student data available.');
-                return;
-            }
-
-            const btn = this;
-            const origText = btn.textContent;
-            btn.textContent = '⏳ Generating...';
-            btn.disabled = true;
-
-            try {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('l', 'mm', 'a4');
-                const pageWidth = 297;
-                const pageHeight = 210;
-                const margin = 14;
-                const usableWidth = pageWidth - 2 * margin;
-
-                const schoolName = 'SRI VENKATESWARA JY SCHOOL';
-                const title = 'JEE MAINS — OVERALL RANK LIST (All Students)';
-                const subTitle = `JEE Mains Model Examination – 2 · Rank Wise Summary (Total: ${ranked.length} students)`;
-
-                // Headers
-                const headers = ['Rank', 'Student Name', 'Class', 'Section', 'Student ID', 'Mobile No', 'Mat', 'Phy',
-                    'Che', 'Total'
-                ];
-
-                // Build rows
-                const rows = ranked.map(s => [
-                    '#' + s.overallRank,
-                    s.name,
-                    s.class,
-                    s.section,
-                    s.studentId,
-                    s.mobile,
-                    String(s.mathematics),
-                    String(s.physics),
-                    String(s.chemistry),
-                    String(s.total),
-                ]);
-
-                const doc = pdf;
-                doc.setFontSize(18);
-                doc.setFont('helvetica', 'bold');
-                doc.text(schoolName, pageWidth / 2, 16, { align: 'center' });
-
-                doc.setFontSize(14);
-                doc.setFont('helvetica', 'normal');
-                doc.text(title, pageWidth / 2, 24, { align: 'center' });
-
-                doc.setFontSize(11);
-                doc.text(subTitle, pageWidth / 2, 30, { align: 'center' });
-
-                const now = new Date();
-                const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-                doc.setFontSize(9);
-                doc.text(`Generated: ${dateStr}`, pageWidth - margin, 36, { align: 'right' });
-
-                // Column widths: Rank(14), Name(50), Class(20), Section(18), ID(30), Mobile(26), Mat(14), Phy(14), Che(14), Total(18)
-                const colWidths = [14, 50, 20, 18, 30, 26, 14, 14, 14, 18];
-                const totalColWidth = colWidths.reduce((a, b) => a + b, 0);
-                const scale = usableWidth / totalColWidth;
-                const scaledWidths = colWidths.map(w => w * scale);
-
-                let y = 42;
-                const rowHeight = 7;
-                const headerHeight = 9;
-
-                // Header
-                doc.setFontSize(8);
-                doc.setFont('helvetica', 'bold');
-                let x = margin;
-                headers.forEach((h, i) => {
-                    doc.rect(x, y, scaledWidths[i], headerHeight, 'S');
-                    doc.text(h, x + scaledWidths[i] / 2, y + headerHeight / 2 + 1.5, { align: 'center' });
-                    x += scaledWidths[i];
-                });
-                y += headerHeight;
-
-                // Rows
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(7.5);
-                rows.forEach((row) => {
-                    if (y + rowHeight > pageHeight - margin) {
-                        doc.addPage();
-                        y = margin + 4;
-                        doc.setFontSize(8);
-                        doc.setFont('helvetica', 'bold');
-                        x = margin;
-                        headers.forEach((h, i) => {
-                            doc.rect(x, y, scaledWidths[i], headerHeight, 'S');
-                            doc.text(h, x + scaledWidths[i] / 2, y + headerHeight / 2 + 1.5, { align: 'center' });
-                            x += scaledWidths[i];
-                        });
-                        y += headerHeight;
-                        doc.setFont('helvetica', 'normal');
-                        doc.setFontSize(7.5);
-                    }
-
-                    x = margin;
-                    row.forEach((cell, i) => {
-                        doc.rect(x, y, scaledWidths[i], rowHeight, 'S');
-                        // Center align for rank, ID, mobile, marks, total; left align for name, class, section
-                        const align = (i === 0 || i === 4 || i === 5 || i === 6 || i === 7 || i === 8 || i ===
-                            9) ? 'center' : 'left';
-                        const pad = align === 'center' ? scaledWidths[i] / 2 : 2;
-                        doc.text(cell, x + (align === 'center' ? pad : 2), y + rowHeight / 2 + 1.5, {
-                            align: align === 'center' ? 'center' : 'left'
-                        });
-                        x += scaledWidths[i];
-                    });
-                    y += rowHeight;
-                });
-
-                // Footer
-                doc.setFontSize(8);
-                doc.setFont('helvetica', 'italic');
-                const footerText = '★ Overall rank based on Total marks (300 max) · Rank List for JEE Mains Model Examination – 2 ★';
-                doc.text(footerText, pageWidth / 2, pageHeight - 6, { align: 'center' });
-
-                doc.save('JEE_Mains_Overall_Rank_List.pdf');
-                btn.textContent = '✅ Downloaded!';
-                setTimeout(() => { btn.textContent = origText;
-                    btn.disabled = false; }, 2000);
-
-            } catch (err) {
-                console.error(err);
-                alert('Error generating PDF: ' + err.message);
-                btn.textContent = origText;
-                btn.disabled = false;
-            }
-        });
-
-        // ============================================================
-        //  RANK LIST — EXCEL
-        // ============================================================
-        rankListExcelBtn.addEventListener('click', function() {
-            const students = state.students;
-            if (!students || students.length === 0) {
-                alert('No student data. Please upload an Excel file first.');
-                return;
-            }
-
-            const ranked = getOverallRankList();
-            if (ranked.length === 0) {
-                alert('No student data available.');
-                return;
-            }
-
-            const btn = this;
-            const origText = btn.textContent;
-            btn.textContent = '⏳ Generating...';
-            btn.disabled = true;
-
-            try {
-                // Build data array for Excel
-                const excelData = [
-                    ['Rank', 'Student Name', 'Class', 'Section', 'Student ID', 'Mobile No', 'Mathematics', 'Physics',
-                        'Chemistry', 'Total'
-                    ]
-                ];
-
-                ranked.forEach(s => {
-                    excelData.push([
-                        s.overallRank,
-                        s.name,
-                        s.class,
-                        s.section,
-                        s.studentId,
-                        s.mobile,
-                        s.mathematics,
-                        s.physics,
-                        s.chemistry,
-                        s.total,
-                    ]);
-                });
-
-                const ws = XLSX.utils.aoa_to_sheet(excelData);
-
-                // Set column widths
-                ws['!cols'] = [
-                    { wch: 8 }, // Rank
-                    { wch: 28 }, // Name
-                    { wch: 12 }, // Class
-                    { wch: 10 }, // Section
-                    { wch: 16 }, // Student ID
-                    { wch: 16 }, // Mobile
-                    { wch: 10 }, // Mat
-                    { wch: 10 }, // Phy
-                    { wch: 10 }, // Che
-                    { wch: 12 }, // Total
-                ];
-
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Rank List');
-                XLSX.writeFile(wb, 'JEE_Mains_Overall_Rank_List.xlsx');
-
-                btn.textContent = '✅ Downloaded!';
-                setTimeout(() => { btn.textContent = origText;
-                    btn.disabled = false; }, 2000);
-
-            } catch (err) {
-                console.error(err);
-                alert('Error generating Excel: ' + err.message);
-                btn.textContent = origText;
-                btn.disabled = false;
-            }
-        });
-
-        // ============================================================
         //  DOWNLOAD: ALL CARDS (SINGLE PDF)
         // ============================================================
         downloadPdfBtn.addEventListener('click', async function() {
@@ -2825,7 +2178,7 @@
 
                 for (let i = 0; i < state.students.length; i++) {
                     state.currentIndex = i;
-                    renderCard();
+                    renderAdmitCard();
                     updateUI();
                     await new Promise(r => setTimeout(r, 250));
                     const imgData = await captureCardAsImage();
@@ -2835,9 +2188,9 @@
                 }
 
                 state.currentIndex = 0;
-                renderCard();
+                renderAdmitCard();
                 updateUI();
-                pdf.save('JEE_Mains_Result_Cards_All.pdf');
+                pdf.save('Admit_Cards_All.pdf');
                 btn.textContent = '✅ Downloaded!';
                 setTimeout(() => { btn.textContent = origText;
                     btn.disabled = false; }, 2000);
@@ -2865,7 +2218,7 @@
             try {
                 const idx = state.currentIndex;
                 const student = state.students[idx];
-                renderCard();
+                renderAdmitCard();
                 await new Promise(r => setTimeout(r, 250));
                 const imgData = await captureCardAsImage();
                 const pdfBuffer = imageToPDF(imgData);
@@ -2873,7 +2226,7 @@
                 const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = `${safeName}_JEE_Mains_Result.pdf`;
+                link.download = `${safeName}_Admit_Card.pdf`;
                 link.click();
                 URL.revokeObjectURL(link.href);
                 btn.textContent = '✅ Done!';
@@ -2912,7 +2265,7 @@
 
                 for (let i = 0; i < total; i++) {
                     state.currentIndex = i;
-                    renderCard();
+                    renderAdmitCard();
                     updateUI();
 
                     progressStatus.textContent = `Processing ${i+1} of ${total}: ${state.students[i].name}`;
@@ -2925,7 +2278,7 @@
                     const imgData = await captureCardAsImage();
                     const pdfBuffer = imageToPDF(imgData);
                     const safeName = sanitizeFileName(state.students[i].name);
-                    zip.file(`${safeName}_JEE_Mains_Result.pdf`, pdfBuffer);
+                    zip.file(`${safeName}_Admit_Card.pdf`, pdfBuffer);
                 }
 
                 progressStatus.textContent = 'Creating ZIP file...';
@@ -2940,12 +2293,12 @@
 
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(zipBlob);
-                link.download = 'All_JEE_Mains_Result_Cards.zip';
+                link.download = 'All_Admit_Cards.zip';
                 link.click();
                 URL.revokeObjectURL(link.href);
 
                 state.currentIndex = 0;
-                renderCard();
+                renderAdmitCard();
                 updateUI();
 
                 btn.textContent = '✅ Downloaded!';
@@ -2977,10 +2330,13 @@
             state.teacherSigDataURL = null;
             state.principalSigDataURL = null;
             state.imageMap = {};
-            state.reportData = [];
             excelData = null;
-            state.examName = 'JEE MAINS MODEL EXAMINATION – 2';
-            examNameInput.value = state.examName;
+
+            // Reset subjects
+            state.subjects.forEach(s => { s.date = '';
+                s.time = '';
+                s.invigilator = ''; });
+            renderSubjectEntries();
 
             logoUpload.value = '';
             teacherSigUpload.value = '';
@@ -2998,18 +2354,14 @@
             zipStatus.className = 'zip-status';
             clearPhotosBtn.style.display = 'none';
 
-            classSelect.innerHTML = `<option value="__ALL__">All Classes</option>`;
-            reportTotalStudents.textContent = '0';
-            reportTotalClasses.textContent = '0';
-            reportTopRank.textContent = '—';
-            reportStatus.textContent = 'Load student data to see class-wise report options.';
-            reportStatus.className = 'report-status';
+            examTitleInput.value = 'HALF YEARLY EXAMINATION';
+            state.examTitle = 'HALF YEARLY EXAMINATION';
 
             cardEl.innerHTML = `
                     <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px;">
-                        <span style="font-size:48px;">📄</span>
-                        <span>Upload Excel &amp; click <strong>"Generate Cards"</strong></span>
-                        <span style="font-size:14px; color:#aabaca;">A4 Result Card with Tabular Performance</span>
+                        <span style="font-size:48px;">🎫</span>
+                        <span>Upload Excel &amp; click <strong>"Generate Admit Cards"</strong></span>
+                        <span style="font-size:14px; color:#aabaca;">A4 Admit Card with Subject Schedule</span>
                     </div>
                 `;
             studentNav.classList.remove('active');
@@ -3018,17 +2370,17 @@
         });
 
         // ============================================================
-        //  AUTO-REFRESH REPORT ON DATA CHANGE
+        //  INIT
         // ============================================================
-        console.log('🏫 JEE Mains Result Card — Tabular Performance');
+        renderSubjectEntries();
+
+        console.log('🎫 Admit Card Generator — Half Yearly Examination');
         console.log('📐 Page width: 1800px · A4 ready (794×1123px)');
-        console.log('📊 Subjects: Mathematics, Physics, Chemistry (max 100 each)');
-        console.log('📈 Total: 300 · Pass threshold: 40%');
+        console.log('📚 Subjects: Editable names · Dates · Times (e.g. 02:30)');
         console.log('📸 Upload ZIP with images named by Student ID (e.g. S1001.jpg)');
-        console.log('📊 NEW: Class-Wise Report with auto-ranking & JY26-XXXX IDs');
-        console.log('📝 Examination name is now customisable via text input.');
-        console.log('🆔 Student ID now shows the exact Excel value on the result card and navigation.');
-        console.log('🏆 NEW: Overall Rank List PDF & Excel export (all students, rank-wise)');
+        console.log('✍️ Invigilator Signature: Empty box (non-editable) in admit card');
+        console.log('📅 Academic Year: 2026 - 2027 (locked)');
+        console.log('📋 School Seal removed. Table row height slightly increased for readability.');
     </script>
 
 </body>

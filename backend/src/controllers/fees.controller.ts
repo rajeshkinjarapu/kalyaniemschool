@@ -5,6 +5,7 @@ import { prisma } from '../utils/prisma';
 import { successResponse, paginatedResponse } from '../utils/response';
 import PDFDocument from 'pdfkit';
 import * as XLSX from 'xlsx';
+import { clearDashboardCache } from './dashboard.controller';
 
 export const bulkImportFees = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   if (!req.file) return next(createError('No file uploaded', 400));
@@ -135,39 +136,94 @@ export const getPayments = async (req: AuthRequest, res: Response): Promise<void
 };
 
 export const createPayment = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
-  const { studentId, feeStructureId, amountPaid, method, remarks, utrNumber, receiptUrl } = req.body;
+  const { studentId, feeStructureId, amountPaid, method, remarks, utrNumber, receiptUrl, payments } = req.body;
 
   const student = await prisma.student.findUnique({ where: { id: studentId } });
   if (!student) return next(createError('Student not found', 404));
 
-  const structure = await prisma.feeStructure.findUnique({ where: { id: feeStructureId } });
-  if (!structure) return next(createError('Fee structure not found', 404));
+  const baseReceiptNo = 'JY' + Math.floor(10000000 + Math.random() * 90000000).toString();
 
-  // Calculate total paid so far
-  const previousPayments = await prisma.feePayment.aggregate({
-    where: { studentId, feeStructureId },
-    _sum: { amountPaid: true },
-  });
-  const totalPaid = (previousPayments._sum.amountPaid || 0) + amountPaid;
-  const status = totalPaid >= structure.amount ? 'PAID' : 'PARTIAL';
+  const paymentList = payments && Array.isArray(payments) && payments.length > 0 
+    ? payments 
+    : [{ feeStructureId, amountPaid }];
 
-  const payment = await prisma.feePayment.create({
-    data: { 
-      studentId, 
-      feeStructureId, 
-      amountPaid, 
-      method: method || 'CASH', 
-      status: status as any, 
-      remarks,
-      utrNumber: utrNumber || null,
-      receiptUrl: receiptUrl || null
-    },
-    include: {
-      student: { include: { user: { select: { name: true } } } },
-      feeStructure: { select: { name: true, term: true } },
-    },
+  if (paymentList.length === 0 || !paymentList[0].feeStructureId) {
+    return next(createError('No fee structures selected', 400));
+  }
+
+  const createdPayments = await prisma.$transaction(async (tx) => {
+    const results = [];
+    let idx = 1;
+    for (const p of paymentList) {
+      const structure = await tx.feeStructure.findUnique({ where: { id: p.feeStructureId } });
+      if (!structure) continue;
+      
+      const previousPayments = await tx.feePayment.aggregate({
+        where: { studentId, feeStructureId: p.feeStructureId },
+        _sum: { amountPaid: true },
+      });
+      const totalPaid = (previousPayments._sum.amountPaid || 0) + Number(p.amountPaid);
+      const status = totalPaid >= structure.amount ? 'PAID' : 'PARTIAL';
+      
+      const payment = await tx.feePayment.create({
+        data: { 
+          studentId, 
+          feeStructureId: p.feeStructureId, 
+          amountPaid: Number(p.amountPaid), 
+          method: method || 'CASH', 
+          status: status as any, 
+          remarks,
+          utrNumber: utrNumber || null,
+          receiptUrl: receiptUrl || null,
+          receiptNo: paymentList.length > 1 ? `${baseReceiptNo}-${idx}` : baseReceiptNo
+        },
+        include: {
+          student: { include: { user: { select: { name: true } } } },
+          feeStructure: { select: { name: true, term: true } },
+        },
+      });
+      results.push(payment);
+      idx++;
+    }
+    return results;
   });
-  successResponse(res, payment, 'Payment recorded', 201);
+
+  clearDashboardCache();
+  successResponse(res, createdPayments.length === 1 ? createdPayments[0] : createdPayments, 'Payment(s) recorded', 201);
+};
+
+export const deleteFeePayment = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  const id = req.params.id as string;
+  const payment = await prisma.feePayment.findUnique({ where: { id } });
+  if (!payment) return next(createError('Fee payment not found', 404));
+
+  await prisma.feePayment.delete({ where: { id } });
+  clearDashboardCache();
+  successResponse(res, null, 'Fee payment deleted successfully');
+};
+
+export const updateFeePayment = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const id = req.params.id as string;
+    const { amountPaid, method, remarks } = req.body;
+    
+    const payment = await prisma.feePayment.findUnique({ where: { id } });
+    if (!payment) return next(createError('Fee payment not found', 404));
+
+    const updatedPayment = await prisma.feePayment.update({
+      where: { id },
+      data: {
+        amountPaid: amountPaid ? Number(amountPaid) : payment.amountPaid,
+        method: method || payment.method,
+        remarks: remarks !== undefined ? remarks : payment.remarks
+      }
+    });
+
+    clearDashboardCache();
+    successResponse(res, updatedPayment, 'Fee payment updated successfully');
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getStudentFeeStatus = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
@@ -191,16 +247,26 @@ export const getStudentFeeStatus = async (req: AuthRequest, res: Response, next:
         where: { studentId, feeStructureId: structure.id },
         orderBy: { paymentDate: 'desc' },
       });
+      
+      const discountRecord = await prisma.feeDiscount.findUnique({
+        where: { studentId_feeStructureId: { studentId, feeStructureId: structure.id } }
+      });
+      const discount = discountRecord ? discountRecord.amount : 0;
+      
       const amountPaid = payments.reduce((s, p) => s + p.amountPaid, 0);
-      const amountDue = structure.amount - amountPaid;
+      const effectiveAmount = structure.amount - discount;
+      const amountDue = effectiveAmount - amountPaid;
       const latestPayment = payments[0];
       let status = 'PENDING';
-      if (amountPaid >= structure.amount) status = 'PAID';
+      if (amountPaid >= effectiveAmount) status = 'PAID';
       else if (amountPaid > 0) status = 'PARTIAL';
       else if (structure.dueDate < new Date()) status = 'OVERDUE';
 
       return {
         feeStructure: structure,
+        originalAmount: structure.amount,
+        discount,
+        effectiveAmount,
         amountDue: Math.max(0, amountDue),
         amountPaid,
         status,
@@ -210,6 +276,37 @@ export const getStudentFeeStatus = async (req: AuthRequest, res: Response, next:
   );
 
   successResponse(res, result, 'Fee status fetched');
+};
+
+export const applyFeeDiscount = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { studentId, feeStructureId, discountAmount, remarks } = req.body;
+    
+    if (discountAmount === undefined || discountAmount === null) {
+      return next(createError('Discount amount is required', 400));
+    }
+
+    const discount = await prisma.feeDiscount.upsert({
+      where: {
+        studentId_feeStructureId: { studentId, feeStructureId }
+      },
+      update: {
+        amount: Number(discountAmount),
+        remarks
+      },
+      create: {
+        studentId,
+        feeStructureId,
+        amount: Number(discountAmount),
+        remarks
+      }
+    });
+
+    clearDashboardCache();
+    successResponse(res, discount, 'Fee discount applied successfully');
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getOverdue = async (_req: AuthRequest, res: Response): Promise<void> => {

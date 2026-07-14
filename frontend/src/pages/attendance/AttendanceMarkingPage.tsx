@@ -86,7 +86,7 @@ export const AttendanceMarkingPage: React.FC = () => {
       const initialRecords: { [studentId: string]: string } = {};
       studentList.forEach((s: any) => {
         const record = attendanceList.find((a: any) => a.studentId === s.id);
-        initialRecords[s.id] = record ? record.status : 'PRESENT';
+        initialRecords[s.id] = record?.status || 'PRESENT';
       });
       setRecords(initialRecords);
     } catch (e) {

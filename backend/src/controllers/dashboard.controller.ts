@@ -7,6 +7,10 @@ import { Role, Gender, AttendanceStatus } from '../types/enums';
 // Simple in-memory cache to speed up the dashboard
 const cache: { [key: string]: { data: any; expiry: number } } = {};
 
+export const clearDashboardCache = () => {
+  Object.keys(cache).forEach(key => delete cache[key]);
+};
+
 export const getAdminDashboard = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const cacheKey = 'admin_dashboard';

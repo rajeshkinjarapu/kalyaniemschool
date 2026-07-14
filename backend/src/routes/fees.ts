@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { authenticate, authorize } from '../middlewares/auth';
 import {
   getStructures, createStructure, updateStructure, deleteStructure,
-  getPayments, createPayment, getStudentFeeStatus, getOverdue, downloadInvoice,
+  getPayments, createPayment, updateFeePayment, getStudentFeeStatus, getOverdue, downloadInvoice, deleteFeePayment, applyFeeDiscount
 } from '../controllers/fees.controller';
 
 const router = Router();
@@ -22,6 +22,9 @@ router.post('/structures/bulk-import', authorize('SUPER_ADMIN', 'ADMIN'), upload
 // Payments
 router.get('/payments', authorize('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT'), getPayments);
 router.post('/payments', authorize('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT'), createPayment);
+router.put('/payments/:id', authorize('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT'), updateFeePayment);
+router.delete('/payments/:id', authorize('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT'), deleteFeePayment);
+router.post('/discounts', authorize('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT'), applyFeeDiscount);
 router.get('/payments/:paymentId/invoice', downloadInvoice);
 
 // Student fee status

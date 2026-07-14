@@ -5,10 +5,12 @@ import { Badge } from '../../components/UI/Badge';
 import { useAuth } from '../../hooks/useAuth';
 import {
   Plus, Edit3, Trash2, ClipboardList, BookOpen, Layers, CheckSquare,
-  Clock, Award, FileText, Settings, Play, ShieldAlert, HelpCircle, Save, X, Calendar
+  Clock, Award, FileText, Settings, Play, ShieldAlert, HelpCircle, Save, X, Calendar, ExternalLink
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link, useSearchParams } from 'react-router-dom';
+import * as XLSX from 'xlsx';
+import { SlipTestsTab } from './SlipTestsTab';
 
 export const ExamListPage: React.FC = () => {
   const { user } = useAuth();
@@ -21,7 +23,7 @@ export const ExamListPage: React.FC = () => {
   const tabParam = searchParams.get('tab');
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<'examination' | 'exam-plan' | 'question-group' | 'question-bank' | 'add-online-exam' | 'online-exams' | 'written-exam' | 'admit-card' | 'results' | 'progress-card' | 'settings' | ''>('');
+  const [activeTab, setActiveTab] = useState<'examination' | 'exam-plan' | 'question-group' | 'question-bank' | 'add-online-exam' | 'online-exams' | 'written-exam' | 'admit-card' | 'results' | 'progress-card' | 'settings' | 'slip-tests' | ''>('');
 
   useEffect(() => {
     if (tabParam) {
@@ -49,6 +51,11 @@ export const ExamListPage: React.FC = () => {
   const [examTerm, setExamTerm] = useState('Term 1');
   const [examDate, setExamDate] = useState(new Date().toISOString().split('T')[0]);
   const [examMaxMarks, setExamMaxMarks] = useState(100);
+  
+  // Excel Upload States
+  const [showExcelModal, setShowExcelModal] = useState(false);
+  const [excelFile, setExcelFile] = useState<File | null>(null);
+  const [excelExamId, setExcelExamId] = useState('');
 
   const fetchExams = async () => {
     try {
@@ -79,6 +86,55 @@ export const ExamListPage: React.FC = () => {
       fetchExams();
     } catch (err: any) {
       toast.error(err.message || 'Error creating exam');
+    }
+  };
+
+  // -------------------------------------------------------------
+  // EXCEL UPLOAD Logic
+  // -------------------------------------------------------------
+  const downloadSampleExcel = () => {
+    const ws = XLSX.utils.json_to_sheet([
+      { "Student ID": "STU123", "Subject Code": "MATH101", "Marks Obtained": 85, "Remarks": "Good" },
+      { "Student ID": "STU124", "Subject Code": "MATH101", "Marks Obtained": 90, "Remarks": "Excellent" }
+    ]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Marks");
+    XLSX.writeFile(wb, "Sample_Marks_Upload.xlsx");
+  };
+
+  const handleExcelUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!excelFile || !excelExamId) {
+      toast.error('Please select an exam and a file');
+      return;
+    }
+    try {
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        const data = evt.target?.result;
+        const workbook = XLSX.read(data, { type: 'binary' });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+        
+        // Map excel columns to backend payload
+        const mappedMarks = sheet.map((row: any) => ({
+          studentId: row['Student ID'] || row['studentId'] || row['Student Id'],
+          subjectId: row['Subject Code'] || row['subjectId'] || row['Subject Id'], // assuming the backend can resolve by code or id? Wait, backend needs subjectId. The user can enter Subject ID.
+          marksObtained: Number(row['Marks Obtained'] || row['marksObtained'] || row['Marks']),
+          remarks: row['Remarks'] || row['remarks'] || ''
+        }));
+
+        await api.post('/api/marks/bulk', {
+          examId: excelExamId,
+          marks: mappedMarks
+        });
+        toast.success('Excel marks uploaded successfully!');
+        setShowExcelModal(false);
+        setExcelFile(null);
+      };
+      reader.readAsBinaryString(excelFile);
+    } catch (err) {
+      toast.error('Error uploading excel file');
     }
   };
 
@@ -401,11 +457,61 @@ export const ExamListPage: React.FC = () => {
     }
   };
 
+  // -------------------------------------------------------------
+  // QUESTION PAPERS Tab States & Logic (Upload/Download)
+  // -------------------------------------------------------------
+  const [questionPapers, setQuestionPapers] = useState<any[]>([]);
+  const [showQpModal, setShowQpModal] = useState(false);
+  const [qpTitle, setQpTitle] = useState('');
+  const [qpClassId, setQpClassId] = useState('');
+  const [qpSubjectId, setQpSubjectId] = useState('');
+  const [qpFileUrl, setQpFileUrl] = useState('');
+
+  const fetchQuestionPapers = async () => {
+    try {
+      const res: any = await api.get('/api/question-papers');
+      setQuestionPapers(res.data || []);
+    } catch {
+      toast.error('Failed to load question papers');
+    }
+  };
+
+  const handleCreateQp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await api.post('/api/question-papers', {
+        title: qpTitle,
+        classId: qpClassId,
+        subjectId: qpSubjectId,
+        fileUrl: qpFileUrl
+      });
+      toast.success('Question paper uploaded successfully');
+      setShowQpModal(false);
+      setQpTitle('');
+      setQpFileUrl('');
+      fetchQuestionPapers();
+    } catch {
+      toast.error('Error uploading question paper');
+    }
+  };
+
+  const handleDeleteQp = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this question paper?')) return;
+    try {
+      await api.delete(`/api/question-papers/${id}`);
+      toast.success('Question paper deleted');
+      fetchQuestionPapers();
+    } catch {
+      toast.error('Error deleting question paper');
+    }
+  };
+
   useEffect(() => {
     fetchBaseFilters();
     fetchExams();
     fetchQuestionGroups();
     fetchOnlineExams();
+    fetchQuestionPapers();
   }, []);
 
   // Fetch plans when selected exam changes
@@ -612,78 +718,79 @@ export const ExamListPage: React.FC = () => {
             <span>Examinations Suite</span>
           </h3>
           <p className="text-xs text-gray-500 mt-1">Select a module below to manage exams, grading, and online tests.</p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          <button onClick={() => setShowExamModal(true)} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300`}>
-            <Layers className="w-7 h-7" />
-            <span className="text-[11px] font-extrabold uppercase tracking-wide">Create Exam</span>
+           {!activeTab && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+          <button onClick={() => setActiveTab('examination')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <Plus className="w-8 h-8" />
+            <span className="text-xs font-black uppercase tracking-widest text-center">Create Exam</span>
           </button>
           
-          <button onClick={() => setActiveTab('exam-plan')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'exam-plan' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
-            <Calendar className="w-7 h-7" />
-            <span className="text-[11px] font-extrabold uppercase tracking-wide">Exam Plan</span>
+          <button onClick={() => setActiveTab('exam-plan')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg hover:shadow-purple-500/30 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <Calendar className="w-8 h-8" />
+            <span className="text-xs font-black uppercase tracking-widest text-center">Exam Plan</span>
           </button>
           
-          <button onClick={() => setActiveTab('written-exam')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'written-exam' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
-            <CheckSquare className="w-7 h-7" />
-            <span className="text-[11px] font-extrabold uppercase tracking-wide">Marks Upload</span>
+          <button onClick={() => setActiveTab('written-exam')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <Edit3 className="w-8 h-8" />
+            <span className="text-xs font-black uppercase tracking-widest text-center">Marks Upload</span>
           </button>
-
-          <button onClick={() => setActiveTab('admit-card')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'admit-card' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
-            <FileText className="w-7 h-7" />
-            <span className="text-[11px] font-extrabold uppercase tracking-wide">Admit Card</span>
+          
+          <button onClick={() => setActiveTab('admit-card')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg hover:shadow-amber-500/30 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <FileText className="w-8 h-8" />
+            <span className="text-xs font-black uppercase tracking-widest text-center">Admit Card</span>
           </button>
-
-          <button onClick={() => setActiveTab('results')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'results' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
-            <Award className="w-7 h-7" />
-            <span className="text-[11px] font-extrabold uppercase tracking-wide">Results</span>
+          
+          <button onClick={() => setActiveTab('results')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-lg hover:shadow-blue-500/30 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <Award className="w-8 h-8" />
+            <span className="text-xs font-black uppercase tracking-widest text-center">Results</span>
           </button>
-
-          <button onClick={() => setActiveTab('progress-card')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'progress-card' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
-            <Award className="w-7 h-7" />
-            <span className="text-[11px] font-extrabold uppercase tracking-wide">Progress Card</span>
+          
+          <button onClick={() => setActiveTab('progress-card')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-lg hover:shadow-rose-500/30 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <Award className="w-8 h-8" />
+            <span className="text-xs font-black uppercase tracking-widest text-center">Progress Card</span>
           </button>
 
           {isAdminOrTeacher && (
             <>
-              <button onClick={() => setActiveTab('question-group')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'question-group' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
-                <BookOpen className="w-7 h-7" />
-                <span className="text-[11px] font-extrabold uppercase tracking-wide text-center">Question Group</span>
+              <button onClick={() => setActiveTab('question-group')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-lg hover:shadow-slate-500/30 hover:-translate-y-1">
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <BookOpen className="w-8 h-8" />
+                <span className="text-xs font-black uppercase tracking-widest text-center">Question Group</span>
               </button>
-              <button onClick={() => setActiveTab('question-bank')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'question-bank' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
-                <BookOpen className="w-7 h-7" />
-                <span className="text-[11px] font-extrabold uppercase tracking-wide text-center">Question Papers</span>
+              
+              <button onClick={() => setActiveTab('question-bank')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-slate-600 to-gray-800 text-white shadow-lg hover:shadow-slate-500/30 hover:-translate-y-1">
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <Layers className="w-8 h-8" />
+                <span className="text-xs font-black uppercase tracking-widest text-center">Question Papers</span>
               </button>
-              <button onClick={() => setActiveTab('add-online-exam')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'add-online-exam' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
-                <Plus className="w-7 h-7" />
-                <span className="text-[11px] font-extrabold uppercase tracking-wide text-center">Add Online Exam</span>
+              
+              <button onClick={() => setActiveTab('add-online-exam')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-lg hover:shadow-violet-500/30 hover:-translate-y-1">
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <Plus className="w-8 h-8" />
+                <span className="text-xs font-black uppercase tracking-widest text-center">Add Online Exam</span>
               </button>
             </>
           )}
 
-          <button onClick={() => setActiveTab('online-exams')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'online-exams' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
-            <Clock className="w-7 h-7" />
-            <span className="text-[11px] font-extrabold uppercase tracking-wide">Slip Tests</span>
+          <button onClick={() => setActiveTab('slip-tests')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-cyan-600 to-sky-700 text-white shadow-lg hover:shadow-cyan-500/30 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <Clock className="w-8 h-8" />
+            <span className="text-xs font-black uppercase tracking-widest text-center">Slip Tests</span>
           </button>
 
-          <button onClick={() => setActiveTab('settings')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${activeTab === 'settings' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'border-gray-150 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-gray-500 hover:text-gray-900 hover:border-gray-300'}`}>
-            <Settings className="w-7 h-7" />
-            <span className="text-[11px] font-extrabold uppercase tracking-wide">Settings</span>
+          <button onClick={() => setActiveTab('settings')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-gray-500 to-gray-600 text-white shadow-lg hover:shadow-gray-500/30 hover:-translate-y-1">
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <Settings className="w-8 h-8" />
+            <span className="text-xs font-black uppercase tracking-widest text-center">Settings</span>
           </button>
         </div>
-
-        {isAdminOrTeacher && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
-            <Link
-              to="/exams/paper-generator"
-              className="flex items-center justify-center w-full gap-2 px-4 py-3 rounded-xl font-black transition-all text-white bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg uppercase tracking-widest text-xs"
-            >
-              <Award className="w-5 h-5" />
-              JEE Mains Paper Generator
-            </Link>
-          </div>
-        )}
-      </div>
+      )}   </div>
 
       {/* Create Exam Modal */}
       {showExamModal && (
@@ -846,7 +953,117 @@ export const ExamListPage: React.FC = () => {
         </div>
       )}
 
-      {/* ══ TAB 3: QUESTION GROUP ══ */}
+      {/* ══ TAB 3: MARKS UPLOAD (written-exam) ══ */}
+      {activeTab === 'written-exam' && (
+        <div className="card p-6 space-y-6">
+          <div className="flex justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-150 dark:border-gray-800">
+            <span className="text-xs font-extrabold uppercase text-gray-400">Marks Upload / Results Entry</span>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {exams.map(exam => (
+              <div key={exam.id} className="border border-gray-200 dark:border-gray-800 rounded-xl p-5 space-y-4 hover:border-indigo-500 transition-colors bg-gray-50/50 dark:bg-gray-800/30">
+                <div>
+                  <h4 className="font-bold text-gray-900 dark:text-white text-lg">{exam.name}</h4>
+                  <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mt-1">{exam.class?.name} - {exam.class?.section}</p>
+                </div>
+                <div className="flex gap-3">
+                  <Link to={`/exams/${exam.id}/entry`} className="btn-primary flex-1 text-center text-xs py-2.5">
+                    Manual Entry
+                  </Link>
+                  <button onClick={() => { setExcelExamId(exam.id); setShowExcelModal(true); }} className="btn-secondary flex-1 text-xs py-2.5 bg-green-50 text-green-600 hover:bg-green-100 border-green-200 dark:bg-green-900/20 dark:border-green-800 dark:hover:bg-green-900/40">
+                    Excel Upload
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {showExcelModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
+              <div className="card w-full max-w-md p-6 space-y-5">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-bold">Upload Marks Excel</h3>
+                  <button onClick={() => setShowExcelModal(false)} className="text-gray-400 hover:text-black dark:hover:text-white"><X className="w-5 h-5" /></button>
+                </div>
+                
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                  <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-2">Instructions:</p>
+                  <ul className="text-xs text-blue-600/80 dark:text-blue-400/80 list-disc pl-4 space-y-1">
+                    <li>Download the sample Excel file.</li>
+                    <li>Fill in the 'Student ID', 'Subject ID', 'Marks Obtained' columns.</li>
+                    <li>Upload the filled file back here.</li>
+                  </ul>
+                  <button onClick={downloadSampleExcel} className="mt-3 text-xs font-bold bg-white dark:bg-gray-800 px-3 py-1.5 rounded-md shadow-sm border border-blue-100 dark:border-blue-800 text-blue-600 hover:bg-blue-50 w-full text-center">
+                    Download Sample Excel
+                  </button>
+                </div>
+
+                <form onSubmit={handleExcelUpload} className="space-y-4">
+                  <div>
+                    <label className="label">Select Excel File</label>
+                    <input type="file" accept=".xlsx, .xls" required onChange={e => setExcelFile(e.target.files?.[0] || null)} className="input p-2" />
+                  </div>
+                  <div className="flex gap-3 justify-end pt-2">
+                    <button type="button" onClick={() => setShowExcelModal(false)} className="btn-secondary text-sm">Cancel</button>
+                    <button type="submit" className="btn-primary text-sm bg-green-500 hover:bg-green-600">Upload Data</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ══ TAB 4: ADMIT CARD ══ */}
+      {activeTab === 'admit-card' && (
+        <div className="card p-2 h-[80vh] overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+          <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800 mb-2">
+            <div>
+              <h3 className="font-bold text-gray-900 dark:text-white">Admit Card Generator</h3>
+              <p className="text-xs text-gray-500">Standalone tool using Admit Cards.html</p>
+            </div>
+            <a href="/Admit Cards.html" target="_blank" className="btn-primary text-xs flex items-center gap-2">
+              <ExternalLink className="w-4 h-4" /> Open Full Screen
+            </a>
+          </div>
+          <iframe src="/Admit Cards.html" className="w-full h-full border-0 rounded-b-lg"></iframe>
+        </div>
+      )}
+
+      {/* ══ TAB 5: PROGRESS CARD ══ */}
+      {activeTab === 'progress-card' && (
+        <div className="card p-2 h-[80vh] overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+          <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800 mb-2">
+            <div>
+              <h3 className="font-bold text-gray-900 dark:text-white">Progress Card Generator</h3>
+              <p className="text-xs text-gray-500">Standalone tool using JEE Mains Result card with Reports.html</p>
+            </div>
+            <a href="/JEE Mains Result card with Reports.html" target="_blank" className="btn-primary text-xs flex items-center gap-2">
+              <ExternalLink className="w-4 h-4" /> Open Full Screen
+            </a>
+          </div>
+          <iframe src="/JEE Mains Result card with Reports.html" className="w-full h-full border-0 rounded-b-lg"></iframe>
+        </div>
+      )}
+
+      {/* ══ TAB 6: SLIP TESTS ══ */}
+      {activeTab === 'online-exams' && (
+        <div className="card p-2 h-[80vh] overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+          <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800 mb-2">
+            <div>
+              <h3 className="font-bold text-gray-900 dark:text-white">Slip Test Result Card</h3>
+              <p className="text-xs text-gray-500">Standalone tool using Slip Test Result Card.html</p>
+            </div>
+            <a href="/Slip Test Result Card.html" target="_blank" className="btn-primary text-xs flex items-center gap-2">
+              <ExternalLink className="w-4 h-4" /> Open Full Screen
+            </a>
+          </div>
+          <iframe src="/Slip Test Result Card.html" className="w-full h-full border-0 rounded-b-lg"></iframe>
+        </div>
+      )}
+
+      {/* ══ TAB 7: QUESTION GROUP ══ */}
       {activeTab === 'question-group' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-150 dark:border-gray-800">
@@ -1122,7 +1339,94 @@ export const ExamListPage: React.FC = () => {
         </div>
       )}
 
-      {/* ══ TAB 6: ONLINE EXAMS LIST ══ */}
+      {/* ══ TAB 8: QUESTION PAPERS (UPLOAD/DOWNLOAD) ══ */}
+      {activeTab === 'question-papers' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-150 dark:border-gray-800">
+            <span className="text-xs font-extrabold uppercase text-gray-400">Manage Question Papers</span>
+            {(isAdmin || isTeacher) && (
+              <button onClick={() => setShowQpModal(true)} className="btn-primary flex items-center gap-2 text-xs font-bold">
+                <Plus className="w-4 h-4" /> Upload Paper
+              </button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {questionPapers.map(qp => (
+              <div key={qp.id} className="card p-6 space-y-4 hover:shadow-md relative group border-t-4 border-emerald-500">
+                <div>
+                  <h4 className="font-bold text-base text-gray-900 dark:text-white">{qp.title}</h4>
+                  <p className="text-[11px] text-gray-400 mt-1">Class: {qp.class?.name}-{qp.class?.section} | Subject: {qp.subject?.name}</p>
+                </div>
+                
+                <div className="flex gap-2 pt-2">
+                  <a href={qp.fileUrl} target="_blank" rel="noreferrer" className="btn-primary flex-1 text-center text-xs flex items-center justify-center gap-2">
+                    <ExternalLink className="w-4 h-4" /> View/Download
+                  </a>
+                  {(isAdmin || isTeacher) && (
+                    <button onClick={() => handleDeleteQp(qp.id)} className="p-2 border border-red-200 dark:border-red-900/40 text-red-500 hover:bg-red-50 rounded-xl cursor-pointer">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+            {questionPapers.length === 0 && (
+              <div className="col-span-full py-12 text-center text-gray-400">
+                No question papers uploaded yet.
+              </div>
+            )}
+          </div>
+
+          {showQpModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
+              <div className="card w-full max-w-md p-6 space-y-5">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-bold">Upload Question Paper</h3>
+                  <button onClick={() => setShowQpModal(false)} className="text-gray-400 hover:text-black dark:hover:text-white"><X className="w-5 h-5" /></button>
+                </div>
+                <form onSubmit={handleCreateQp} className="space-y-4">
+                  <div>
+                    <label className="label">Title</label>
+                    <input type="text" required placeholder="e.g. Mid Term Physics Paper" value={qpTitle} onChange={e => setQpTitle(e.target.value)} className="input" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="label">Class</label>
+                      <select required value={qpClassId} onChange={e => setQpClassId(e.target.value)} className="input">
+                        <option value="">Select...</option>
+                        {classes.map(c => <option key={c.id} value={c.id}>{c.name}-{c.section}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="label">Subject</label>
+                      <select required value={qpSubjectId} onChange={e => setQpSubjectId(e.target.value)} className="input">
+                        <option value="">Select...</option>
+                        {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="label">File URL (PDF/Word)</label>
+                    <input type="url" required placeholder="https://link-to-file.pdf" value={qpFileUrl} onChange={e => setQpFileUrl(e.target.value)} className="input" />
+                  </div>
+                  <div className="flex gap-3 justify-end pt-2">
+                    <button type="button" onClick={() => setShowQpModal(false)} className="btn-secondary text-sm">Cancel</button>
+                    <button type="submit" className="btn-primary text-sm">Upload Paper</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ══ TAB 10: SLIP TESTS ══ */}
+      {activeTab === 'slip-tests' && (
+        <SlipTestsTab />
+      )}
+
+      {/* ══ TAB 9: ONLINE EXAMS LIST ══ */}
       {activeTab === 'online-exams' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1244,10 +1548,14 @@ export const ExamListPage: React.FC = () => {
 
       {/* ══ NEW TABS (PLACEHOLDERS) ══ */}
       {activeTab === 'admit-card' && (
-        <div className="bg-white dark:bg-gray-900 p-12 text-center rounded-xl border border-gray-150 dark:border-gray-800 space-y-4">
-          <FileText className="w-12 h-12 text-gray-300 mx-auto" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Admit Card Generation</h3>
-          <p className="text-sm text-gray-500">Design and generate student admit cards (Coming Soon).</p>
+        <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-150 dark:border-gray-800" style={{ height: 'calc(100vh - 180px)', minHeight: '600px' }}>
+          <div className="bg-indigo-50 dark:bg-indigo-900/20 p-3 border-b border-indigo-100 dark:border-indigo-800/50 flex justify-between items-center">
+            <span className="text-xs font-bold text-indigo-700 dark:text-indigo-400">Admit Card Generator Tool</span>
+            <a href="/Admit%20Cards.html" target="_blank" rel="noreferrer" className="text-xs font-bold bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">
+              Open in Full Screen <ExternalLink className="w-3 h-3 inline ml-1" />
+            </a>
+          </div>
+          <iframe src="/Admit%20Cards.html" className="w-full h-full border-0" title="Admit Cards Generator" />
         </div>
       )}
       
@@ -1260,10 +1568,14 @@ export const ExamListPage: React.FC = () => {
       )}
 
       {activeTab === 'progress-card' && (
-        <div className="bg-white dark:bg-gray-900 p-12 text-center rounded-xl border border-gray-150 dark:border-gray-800 space-y-4">
-          <Award className="w-12 h-12 text-gray-300 mx-auto" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Progress Cards</h3>
-          <p className="text-sm text-gray-500">Generate and print terminal progress report cards (Coming Soon).</p>
+        <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-150 dark:border-gray-800" style={{ height: 'calc(100vh - 180px)', minHeight: '600px' }}>
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 border-b border-blue-100 dark:border-blue-800/50 flex justify-between items-center">
+            <span className="text-xs font-bold text-blue-700 dark:text-blue-400">Progress Cards & Reports Generator</span>
+            <a href="/JEE%20Mains%20Result%20card%20with%20Reports.html" target="_blank" rel="noreferrer" className="text-xs font-bold bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors">
+              Open in Full Screen <ExternalLink className="w-3 h-3 inline ml-1" />
+            </a>
+          </div>
+          <iframe src="/JEE%20Mains%20Result%20card%20with%20Reports.html" className="w-full h-full border-0" title="Progress Cards Generator" />
         </div>
       )}
     </div>
