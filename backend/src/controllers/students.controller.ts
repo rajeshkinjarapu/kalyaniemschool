@@ -268,7 +268,7 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
           },
         });
 
-        await prisma.student.create({
+        const newStudent = await prisma.student.create({
           data: {
             userId: user.id,
             rollNo,
@@ -282,6 +282,50 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
             penNumber: penNumber ? String(penNumber) : null,
           },
         });
+        
+        // Fee details creation
+        const admissionFee = row['Admission fee'] || row['Admission Fee'] || null;
+        const tuitionFee = row['Tution fee'] || row['Tution Fee'] || row['Tuition fee'] || row['Tuition Fee'] || null;
+        const booksFee = row['Books fee'] || row['Books Fee'] || null;
+        
+        const feeStructuresToCreate = [];
+        const dueDate = new Date(); // Default due date to today
+        
+        if (admissionFee && !isNaN(parseFloat(admissionFee))) {
+          feeStructuresToCreate.push({
+            studentId: newStudent.id,
+            term: 'Term 1',
+            name: 'Admission Fee',
+            amount: parseFloat(admissionFee),
+            dueDate
+          });
+        }
+        
+        if (tuitionFee && !isNaN(parseFloat(tuitionFee))) {
+          feeStructuresToCreate.push({
+            studentId: newStudent.id,
+            term: 'Term 1',
+            name: 'Tuition Fee',
+            amount: parseFloat(tuitionFee),
+            dueDate
+          });
+        }
+        
+        if (booksFee && !isNaN(parseFloat(booksFee))) {
+          feeStructuresToCreate.push({
+            studentId: newStudent.id,
+            term: 'Term 1',
+            name: 'Books Fee',
+            amount: parseFloat(booksFee),
+            dueDate
+          });
+        }
+        
+        if (feeStructuresToCreate.length > 0) {
+          await prisma.feeStructure.createMany({
+            data: feeStructuresToCreate
+          });
+        }
         
         currentStudentCount++;
         success++;
