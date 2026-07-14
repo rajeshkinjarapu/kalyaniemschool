@@ -1548,10 +1548,14 @@ export const ExamListPage: React.FC = () => {
 
       {/* ══ NEW TABS (PLACEHOLDERS) ══ */}
       {activeTab === 'admit-card' && (
-        <div className="bg-white dark:bg-gray-900 p-12 text-center rounded-xl border border-gray-150 dark:border-gray-800 space-y-4">
-          <FileText className="w-12 h-12 text-gray-300 mx-auto" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Admit Card Generation</h3>
-          <p className="text-sm text-gray-500">Design and generate student admit cards (Coming Soon).</p>
+        <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-150 dark:border-gray-800" style={{ height: 'calc(100vh - 180px)', minHeight: '600px' }}>
+          <div className="bg-indigo-50 dark:bg-indigo-900/20 p-3 border-b border-indigo-100 dark:border-indigo-800/50 flex justify-between items-center">
+            <span className="text-xs font-bold text-indigo-700 dark:text-indigo-400">Admit Card Generator Tool</span>
+            <a href="/Admit%20Cards.html" target="_blank" rel="noreferrer" className="text-xs font-bold bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">
+              Open in Full Screen <ExternalLink className="w-3 h-3 inline ml-1" />
+            </a>
+          </div>
+          <iframe src="/Admit%20Cards.html" className="w-full h-full border-0" title="Admit Cards Generator" />
         </div>
       )}
       
@@ -1564,10 +1568,14 @@ export const ExamListPage: React.FC = () => {
       )}
 
       {activeTab === 'progress-card' && (
-        <div className="bg-white dark:bg-gray-900 p-12 text-center rounded-xl border border-gray-150 dark:border-gray-800 space-y-4">
-          <Award className="w-12 h-12 text-gray-300 mx-auto" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Progress Cards</h3>
-          <p className="text-sm text-gray-500">Generate and print terminal progress report cards (Coming Soon).</p>
+        <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-150 dark:border-gray-800" style={{ height: 'calc(100vh - 180px)', minHeight: '600px' }}>
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 border-b border-blue-100 dark:border-blue-800/50 flex justify-between items-center">
+            <span className="text-xs font-bold text-blue-700 dark:text-blue-400">Progress Cards & Reports Generator</span>
+            <a href="/JEE%20Mains%20Result%20card%20with%20Reports.html" target="_blank" rel="noreferrer" className="text-xs font-bold bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors">
+              Open in Full Screen <ExternalLink className="w-3 h-3 inline ml-1" />
+            </a>
+          </div>
+          <iframe src="/JEE%20Mains%20Result%20card%20with%20Reports.html" className="w-full h-full border-0" title="Progress Cards Generator" />
         </div>
       )}
     </div>
