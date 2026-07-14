@@ -16,13 +16,27 @@ export const StudentProfilePage: React.FC = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const [student, setStudent] = useState<any>(null);
+  const [feeStructures, setFeeStructures] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  
+  // Payment Modal States
+  const [showModal, setShowModal] = useState(false);
+  const [selectedFees, setSelectedFees] = useState<{ feeStructureId: string; amountPaid: number }[]>([]);
+  const [method, setMethod] = useState('CASH');
+  const [remarks, setRemarks] = useState('');
+  const [utrNumber, setUtrNumber] = useState('');
+  const [receiptUrl, setReceiptUrl] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchStudentProfile = async () => {
     try {
-      const res: any = await api.get(`/api/students/${id}`);
-      setStudent(res.data);
+      const [studentRes, structRes]: any = await Promise.all([
+        api.get(`/api/students/${id}`),
+        api.get('/api/fees/structures'),
+      ]);
+      setStudent(studentRes.data);
+      setFeeStructures(structRes.data);
     } catch (e) {
       console.error(e);
     } finally {
@@ -31,6 +45,7 @@ export const StudentProfilePage: React.FC = () => {
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // ... logic remains
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -40,30 +55,89 @@ export const StudentProfilePage: React.FC = () => {
     setUploading(true);
     const loadingToast = toast.loading('Uploading photo...');
     try {
-      // 1. Upload the image to backend
       const uploadRes: any = await api.post('/api/uploads/image', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-
       const uploadedUrl = uploadRes.data.url || uploadRes.data.data?.url;
       if (!uploadedUrl) throw new Error('Upload returned no URL');
-
-      // 2. Save the uploaded URL to the student database
       await api.put(`/api/students/${student.id}`, {
         name: student.user.name,
         photoUrl: uploadedUrl,
       });
-
       toast.success('Photo updated successfully!', { id: loadingToast });
-      // 3. Refresh profile details
       fetchStudentProfile();
     } catch (err: any) {
       toast.error(err.response?.data?.message || err.message || 'Failed to upload photo', { id: loadingToast });
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsSubmitting(true);
+    const uploadToast = toast.loading('Uploading payment receipt...');
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res: any = await api.post('/api/uploads/document', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setReceiptUrl(res.data.url || res.data.data?.url);
+      toast.success('Receipt uploaded!', { id: uploadToast });
+    } catch (err) {
+      toast.error('Failed to upload receipt', { id: uploadToast });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handlePaymentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedFees.length === 0) return toast.error('Please select at least one fee structure to pay.');
+    if (method === 'UPI' && !utrNumber) return toast.error('Please enter UTR number');
+    
+    setIsSubmitting(true);
+    try {
+      await api.post('/api/fees/payments/bulk', {
+        studentId: student.id,
+        payments: selectedFees,
+        method,
+        remarks,
+        receiptNo: utrNumber || undefined,
+        receiptUrl: receiptUrl || undefined,
+      });
+      
+      toast.success('Payment recorded successfully!');
+      setShowModal(false);
+      setSelectedFees([]);
+      setRemarks('');
+      setUtrNumber('');
+      setReceiptUrl('');
+      fetchStudentProfile();
+    } catch (error: any) {
+      toast.error(error.message || 'Error recording payment');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeletePayment = async (paymentId: string) => {
+    if (!window.confirm('Are you sure you want to delete this payment record? This action cannot be undone.')) return;
+    const t = toast.loading('Deleting payment...');
+    try {
+      await api.delete(`/api/fees/payments/${paymentId}`);
+      toast.success('Payment deleted successfully', { id: t });
+      fetchStudentProfile();
+    } catch {
+      toast.error('Failed to delete payment', { id: t });
+    }
+  };
+
+  const handlePrintReceipt = (payment: any) => {
+    // Basic print trick for now - ideally we should use FeeReceiptPrint
+    window.print();
   };
 
   useEffect(() => {
@@ -87,13 +161,13 @@ export const StudentProfilePage: React.FC = () => {
             <ArrowLeft className="w-4 h-4" /> Back to Students
           </Link>
           <div className="flex items-center gap-3">
-            <Link
-              to={`/fee-payment?studentId=${student.id}`}
+            <button
+              onClick={() => setShowModal(true)}
               className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 hover:scale-102 transition-all"
             >
               <CreditCard className="w-4 h-4" />
               <span>Pay Fee</span>
-            </Link>
+            </button>
             <button
               onClick={() => window.print()}
               className="btn-primary flex items-center gap-2 text-xs font-bold shadow-md hover:scale-102 transition-all"
@@ -289,6 +363,76 @@ export const StudentProfilePage: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Fee Ledger Section */}
+        <div className="card p-6 space-y-6">
+          <div className="flex justify-between items-center border-b pb-2.5">
+            <h3 className="font-extrabold text-lg text-gray-950 dark:text-white flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-indigo-500" />
+              <span>Fee Ledger & Payments</span>
+            </h3>
+            <button
+              onClick={() => setShowModal(true)}
+              className="btn-primary text-xs flex items-center gap-2"
+            >
+              Collect Payment
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300">Applicable Fees</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {feeStructures
+                .filter((s) => s.studentId === student.id || s.classId === student.classId)
+                .map((s) => {
+                  const paidSoFar = student.feePayments?.filter((p: any) => p.feeStructureId === s.id).reduce((sum: number, p: any) => sum + p.amountPaid, 0) || 0;
+                  const pending = Math.max(0, s.amount - paidSoFar);
+                  return (
+                    <div key={s.id} className="p-4 bg-gray-50 dark:bg-gray-800/40 rounded-xl border border-gray-150 dark:border-gray-700">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="font-bold text-gray-900 dark:text-white">{s.name}</span>
+                        <span className="text-xs font-bold text-indigo-600">₹{s.amount}</span>
+                      </div>
+                      <div className="flex justify-between text-xs mt-3 border-t border-gray-200 dark:border-gray-700 pt-2">
+                        <span className="text-gray-500">Paid: <span className="font-bold text-emerald-600">₹{paidSoFar}</span></span>
+                        <span className="text-gray-500">Pending: <span className="font-bold text-rose-600">₹{pending}</span></span>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+
+            <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 mt-6">Transaction History</h4>
+            <div className="overflow-x-auto border border-gray-150 dark:border-gray-700 rounded-xl">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-gray-50 dark:bg-gray-800/40 text-gray-500 font-semibold border-b border-gray-200 dark:border-gray-700">
+                  <tr>
+                    <th className="px-4 py-3">Fee Structure</th>
+                    <th className="px-4 py-3">Amount</th>
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3">Method</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                  {student.feePayments?.length === 0 ? (
+                    <tr><td colSpan={4} className="px-4 py-6 text-center text-gray-400">No payments found.</td></tr>
+                  ) : (
+                    student.feePayments?.map((p: any) => (
+                      <tr key={p.id}>
+                        <td className="px-4 py-3">{p.feeStructure?.name}</td>
+                        <td className="px-4 py-3 font-bold text-emerald-600">₹{p.amountPaid}</td>
+                        <td className="px-4 py-3 text-gray-500">{new Date(p.createdAt).toLocaleDateString()}</td>
+                        <td className="px-4 py-3">
+                          <Badge variant={p.method === 'UPI' ? 'danger' : 'info'}>{p.method}</Badge>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ============================================================
@@ -453,6 +597,145 @@ export const StudentProfilePage: React.FC = () => {
       </div>
 
     </div>
+
+      {/* Record Payment Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-xs print:hidden">
+          <div className="fixed inset-0" onClick={() => setShowModal(false)} />
+          <div className="relative card w-full max-w-md p-6 space-y-5 animate-scale-in z-10 bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Record Tuition Payment</h3>
+              <p className="text-xs text-gray-450 mt-1">Collecting for {student.user.name}</p>
+            </div>
+
+            <form onSubmit={handlePaymentSubmit} className="space-y-4">
+              <div>
+                <label className="label mb-2">Select Fee Components & Amount</label>
+                <div className="space-y-2 border border-gray-200 dark:border-gray-800 rounded-xl p-3 bg-gray-50 dark:bg-gray-800/20 max-h-48 overflow-y-auto">
+                  {(() => {
+                    const availableStructures = feeStructures.filter((s) => s.studentId === student.id || s.classId === student.classId);
+                    const allPaid = availableStructures.every(s => {
+                      const paidSoFar = student.feePayments?.filter((p: any) => p.feeStructureId === s.id).reduce((sum: number, p: any) => sum + p.amountPaid, 0) || 0;
+                      return Math.max(0, s.amount - paidSoFar) <= 0;
+                    });
+
+                    return (
+                      <>
+                        {availableStructures.map((s) => {
+                          const paidSoFar = student.feePayments?.filter((p: any) => p.feeStructureId === s.id).reduce((sum: number, p: any) => sum + p.amountPaid, 0) || 0;
+                          const pendingAmount = Math.max(0, s.amount - paidSoFar);
+                          if (pendingAmount <= 0) return null;
+
+                          const isSelected = selectedFees.find(f => f.feeStructureId === s.id);
+
+                          return (
+                            <div key={s.id} className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700 rounded-lg">
+                              <div className="flex items-center gap-3">
+                                <input
+                                  type="checkbox"
+                                  className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                                  checked={!!isSelected}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setSelectedFees([...selectedFees, { feeStructureId: s.id, amountPaid: pendingAmount }]);
+                                    } else {
+                                      setSelectedFees(selectedFees.filter(f => f.feeStructureId !== s.id));
+                                    }
+                                  }}
+                                />
+                                <div>
+                                  <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{s.name}</p>
+                                  <p className="text-[10px] text-gray-500">Pending: ₹{pendingAmount}</p>
+                                </div>
+                              </div>
+                              {isSelected && (
+                                <div className="flex items-center gap-1">
+                                  <span className="text-xs text-gray-500">₹</span>
+                                  <input
+                                    type="number"
+                                    className="w-20 px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 outline-none"
+                                    value={isSelected.amountPaid}
+                                    onChange={(e) => {
+                                      setSelectedFees(selectedFees.map(f => f.feeStructureId === s.id ? { ...f, amountPaid: Number(e.target.value) } : f));
+                                    }}
+                                    max={pendingAmount}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                        
+                        {allPaid && (
+                          <p className="text-xs text-emerald-600 font-bold text-center py-2">No pending fees found for this student!</p>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+                
+                {selectedFees.length > 0 && (
+                  <div className="mt-3 flex justify-between items-center p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800/30">
+                    <span className="text-xs font-bold text-indigo-900 dark:text-indigo-300">Total Amount to Pay</span>
+                    <span className="text-lg font-black text-indigo-600 dark:text-indigo-400">₹{selectedFees.reduce((sum, f) => sum + f.amountPaid, 0).toLocaleString()}</span>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="label">Payment Method</label>
+                <select value={method} onChange={(e) => setMethod(e.target.value)} className="input text-xs">
+                  <option value="CASH">Cash</option>
+                  <option value="ONLINE">Online Transfer</option>
+                  <option value="BANK_TRANSFER">Bank Deposit</option>
+                  <option value="CHEQUE">Cheque</option>
+                  <option value="UPI">UPI / QR Code</option>
+                </select>
+              </div>
+
+              {method === 'UPI' && (
+                <div className="space-y-4 border-l-2 border-primary-500 pl-3.5 my-2">
+                  <div>
+                    <label className="label">UPI UTR Reference Number</label>
+                    <input
+                      type="text"
+                      required
+                      value={utrNumber}
+                      onChange={(e) => setUtrNumber(e.target.value)}
+                      className="input text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Upload Payment Receipt (Optional)</label>
+                    <input
+                      type="file"
+                      accept="image/*,application/pdf"
+                      onChange={handleFileChange}
+                      className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="label">Remarks</label>
+                <input
+                  type="text"
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                  className="input text-xs"
+                />
+              </div>
+
+              <div className="flex gap-3 justify-end pt-2">
+                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary text-sm">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="btn-primary text-sm">Record Payment</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
