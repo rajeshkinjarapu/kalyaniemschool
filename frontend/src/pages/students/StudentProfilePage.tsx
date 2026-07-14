@@ -148,7 +148,8 @@ export const StudentProfilePage: React.FC = () => {
   if (!student) return <div className="text-center py-12">Student profile not found.</div>;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 print:space-y-4 print:max-w-full print:p-0">
+    <>
+      <div className="max-w-4xl mx-auto space-y-6 print:space-y-4 print:max-w-full print:p-0">
       
       {/* ================= SCREEN-ONLY VIEW (Hidden in print) ================= */}
       <div className="space-y-6 print:hidden">
