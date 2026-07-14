@@ -10,7 +10,7 @@ interface FeeReceiptPrintProps {
 export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoolName = 'JY SCHOOL' }) => {
   if (!payment) return null;
 
-  const receiptNumber = React.useMemo(() => {
+  const receiptNumber = payment.receiptNo || React.useMemo(() => {
     return 'JY26' + Math.floor(10000000 + Math.random() * 90000000);
   }, [payment.id]);
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { Badge } from '../../components/UI/Badge';
-import { Plus, FileDown } from 'lucide-react';
+import { Plus, FileDown, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -16,6 +16,7 @@ export const FeePaymentsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [printPayment, setPrintPayment] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form states
   const [studentId, setStudentId] = useState('');
@@ -72,6 +73,7 @@ export const FeePaymentsPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     if (method === 'UPI' && !utrNumber) {
       toast.error('UTR Reference Number is required for UPI payments.');
       return;
@@ -80,6 +82,7 @@ export const FeePaymentsPage: React.FC = () => {
       toast.error('Please upload the transaction receipt screenshot.');
       return;
     }
+    setIsSubmitting(true);
     try {
       await api.post('/api/fees/payments', {
         studentId,
@@ -101,6 +104,20 @@ export const FeePaymentsPage: React.FC = () => {
       fetchData();
     } catch (error: any) {
       toast.error(error.message || 'Error recording payment');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeletePayment = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this payment record? This action cannot be undone.')) return;
+    const t = toast.loading('Deleting payment...');
+    try {
+      await api.delete(`/api/fees/payments/${id}`);
+      setPayments(payments.filter(p => p.id !== id));
+      toast.success('Payment deleted successfully', { id: t });
+    } catch {
+      toast.error('Failed to delete payment', { id: t });
     }
   };
 
@@ -219,7 +236,7 @@ export const FeePaymentsPage: React.FC = () => {
                     <Badge variant={p.method === 'UPI' ? 'danger' : 'info'}>{p.method}</Badge>
                   </td>
                   <td className="px-6 py-4 font-mono text-xs text-gray-400 opacity-70 truncate max-w-[120px]">{p.receiptNo}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
                     <button
                       onClick={() => handlePrintReceipt(p.id)}
                       className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 cursor-pointer"
@@ -227,6 +244,15 @@ export const FeePaymentsPage: React.FC = () => {
                     >
                       <FileDown className="w-4 h-4" />
                     </button>
+                    {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT') && (
+                      <button
+                        onClick={() => handleDeletePayment(p.id)}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
+                        title="Delete Payment"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
