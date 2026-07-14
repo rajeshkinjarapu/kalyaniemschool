@@ -27,7 +27,7 @@
 
         body {
             font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
-            background: radial-gradient(circle at 10% 20%, rgb(240, 245, 255) 0%, rgb(228, 235, 248) 90%);
+            background: #eef2f7;
             padding: 30px 20px;
             display: flex;
             flex-direction: column;
@@ -38,11 +38,10 @@
         .app-wrapper {
             max-width: 1800px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.98);
+            background: #ffffff;
             border-radius: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 25px 70px -15px rgba(26, 42, 74, 0.08), 0 0 50px -10px rgba(99, 102, 241, 0.04);
-            padding: 36px 40px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.08);
+            padding: 32px 40px 44px;
         }
 
         /* ---- HEADER ---- */
@@ -128,30 +127,28 @@
         }
 
         .upload-section {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 20px;
-            padding: 24px 28px;
-            border: 1px solid #e2e8f0;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.01), 0 4px 12px rgba(0,0,0,0.02);
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 22px 26px 26px;
+            border: 1px solid #e6edf4;
         }
 
         .upload-section h3 {
-            font-size: 16px;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 20px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #0b1a33;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             gap: 10px;
-            letter-spacing: -0.2px;
         }
 
         .upload-section h3 .badge-soft {
             font-size: 11px;
             font-weight: 600;
-            background: #e2e8f0;
-            color: #334155;
-            padding: 2px 12px;
+            background: #e6edf4;
+            color: #2a4a6a;
+            padding: 1px 12px;
             border-radius: 30px;
         }
 
@@ -203,23 +200,23 @@
 
         .divider-light {
             border: none;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #e6edf4;
             margin: 14px 0;
         }
 
         .zip-status {
             font-size: 13px;
-            color: #475569;
+            color: #4a6a8a;
             margin-top: 4px;
             padding: 4px 0;
         }
         .zip-status .success {
-            color: #10b981;
-            font-weight: 600;
+            color: #1a7a4a;
+            font-weight: 500;
         }
         .zip-status .error {
-            color: #ef4444;
-            font-weight: 600;
+            color: #b13a3a;
+            font-weight: 500;
         }
 
         /* ---- BUTTONS ---- */
@@ -228,18 +225,16 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 10px 24px;
-            border-radius: 12px;
+            padding: 9px 22px;
+            border-radius: 10px;
             border: none;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 14px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             white-space: nowrap;
             font-family: inherit;
             line-height: 1.4;
-            background: #e2e8f0;
-            color: #1e293b;
         }
 
         .btn:disabled {
@@ -248,77 +243,88 @@
             transform: none !important;
         }
 
-        .btn:hover:not(:disabled) {
-            background: #cbd5e1;
-            transform: translateY(-2px);
-        }
-
         .btn-primary {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            background: #c0392b;
             color: #fff;
-            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
         }
         .btn-primary:hover:not(:disabled) {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            background: #a93226;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 8px 24px rgba(192, 57, 43, 0.30);
         }
 
         .btn-success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #1a7a4a;
             color: #fff;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
         }
         .btn-success:hover:not(:disabled) {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            background: #0f5f3a;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 8px 24px rgba(26, 122, 74, 0.30);
         }
 
         .btn-info {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: #1a5a8a;
             color: #fff;
-            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
         }
         .btn-info:hover:not(:disabled) {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            background: #0f3f6a;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 8px 24px rgba(26, 90, 138, 0.30);
         }
 
         .btn-gold {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            background: #d4a017;
             color: #fff;
-            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
         }
         .btn-gold:hover:not(:disabled) {
-            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            background: #b8890f;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+            box-shadow: 0 8px 24px rgba(212, 160, 23, 0.30);
         }
 
         .btn-outline {
             background: transparent;
-            border: 2px solid #ef4444;
-            color: #ef4444;
+            border: 1.5px solid #c0392b;
+            color: #c0392b;
         }
         .btn-outline:hover:not(:disabled) {
-            background: rgba(239, 68, 68, 0.05);
+            background: #fef3f1;
             transform: translateY(-2px);
         }
 
         .btn-outline-dark {
             background: transparent;
-            border: 2px solid #475569;
-            color: #475569;
+            border: 1.5px solid #1a3a5a;
+            color: #1a3a5a;
         }
         .btn-outline-dark:hover:not(:disabled) {
-            background: rgba(71, 85, 105, 0.05);
+            background: #f0f4f8;
             transform: translateY(-2px);
         }
 
+        .btn-purple {
+            background: #6c3483;
+            color: #fff;
+        }
+        .btn-purple:hover:not(:disabled) {
+            background: #512e5f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(108, 52, 131, 0.30);
+        }
+
+        .btn-teal {
+            background: #0e6655;
+            color: #fff;
+        }
+        .btn-teal:hover:not(:disabled) {
+            background: #0a4a3e;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(14, 102, 85, 0.30);
+        }
+
         .btn-sm {
-            padding: 6px 16px;
+            padding: 5px 16px;
             font-size: 13px;
             border-radius: 8px;
         }
@@ -336,15 +342,18 @@
             gap: 14px;
             margin-top: 18px;
             padding-top: 18px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #e6edf4;
         }
 
         .text-muted {
-            color: #64748b;
+            color: #6a8aaa;
             font-size: 13px;
         }
         .mt-8 {
             margin-top: 8px;
+        }
+        .mt-12 {
+            margin-top: 12px;
         }
         .flex-wrap {
             display: flex;
@@ -371,10 +380,10 @@
             align-items: center;
             gap: 16px;
             flex-wrap: wrap;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            padding: 12px 24px;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            padding: 10px 22px;
+            border-radius: 14px;
+            border: 1px solid #e6edf4;
             margin-bottom: 22px;
         }
 
@@ -387,40 +396,40 @@
             align-items: center;
             gap: 6px;
             font-size: 14px;
-            color: #1e293b;
+            color: #1a3a5a;
             white-space: nowrap;
         }
 
         .student-nav .nav-item .label {
             font-weight: 400;
-            color: #64748b;
+            color: #6a8aaa;
         }
 
         .student-nav .nav-item .value {
             font-weight: 600;
-            color: #0f172a;
+            color: #0b1a33;
         }
 
         .student-nav .badge-class {
-            background: #0f172a;
+            background: #0b1a33;
             color: #fff;
-            padding: 4px 16px;
+            padding: 2px 16px;
             border-radius: 30px;
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 600;
             white-space: nowrap;
         }
 
         .student-nav .nav-divider {
-            color: #cbd5e1;
+            color: #c8d6e4;
             font-weight: 300;
         }
 
         .student-nav .nav-progress {
             margin-left: auto;
             font-size: 14px;
-            color: #475569;
-            font-weight: 600;
+            color: #4a6a8a;
+            font-weight: 500;
             white-space: nowrap;
         }
 
@@ -428,14 +437,10 @@
         .card-container {
             display: flex;
             justify-content: center;
-            background: #0f172a;
-            background-image: radial-gradient(rgba(51, 65, 85, 0.3) 1px, transparent 0), radial-gradient(rgba(51, 65, 85, 0.3) 1px, transparent 0);
-            background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
-            padding: 40px 30px;
-            border-radius: 24px;
-            margin: 12px 0 24px;
-            box-shadow: inset 0 4px 20px rgba(0,0,0,0.4);
+            background: #eef2f7;
+            padding: 34px 24px;
+            border-radius: 18px;
+            margin: 6px 0 22px;
             overflow: auto;
         }
 
@@ -446,7 +451,7 @@
             background: #ffffff;
             padding: 0;
             border-radius: 12px;
-            box-shadow: 0 12px 48px rgba(0,0,0,0.25);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.10);
             flex-shrink: 0;
             overflow: hidden;
         }
@@ -500,9 +505,11 @@
             padding: 0 8px;
         }
 
+        /* ---- SCHOOL NAME BOLD, REST NORMAL ---- */
         .jee-card .card-header .title-wrap .school-name {
             font-size: 28px;
             font-weight: 900;
+            /* BOLD */
             color: #0b1a33;
             letter-spacing: 1.5px;
             font-family: 'Times New Roman', 'Georgia', serif;
@@ -512,7 +519,8 @@
 
         .jee-card .card-header .title-wrap .school-sub {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 400;
+            /* NORMAL */
             color: #1a4a7a;
             letter-spacing: 0.8px;
             margin: 2px 0;
@@ -522,6 +530,7 @@
         .jee-card .card-header .title-wrap .school-address {
             font-size: 13px;
             font-weight: 400;
+            /* NORMAL */
             color: #5a7a8a;
             letter-spacing: 0.3px;
             margin-top: 2px;
@@ -530,7 +539,8 @@
 
         .jee-card .card-header .title-wrap .exam-title {
             font-size: 22px;
-            font-weight: 800;
+            font-weight: 400;
+            /* NORMAL */
             color: #0b1a33;
             letter-spacing: 2px;
             margin: 6px 0 0;
@@ -540,7 +550,8 @@
 
         .jee-card .card-header .title-wrap .result-card-label {
             font-size: 18px;
-            font-weight: 700;
+            font-weight: 400;
+            /* NORMAL */
             color: #d4a017;
             letter-spacing: 4px;
             margin-top: 2px;
@@ -790,43 +801,6 @@
         .perf-table tbody .total-row .pct-cell {
             font-size: 17px;
             color: #1a7a4a;
-        }
-
-        /* Result row */
-        .perf-table tbody .result-row td {
-            background: #fefcf9 !important;
-            font-weight: 700;
-            font-size: 16px;
-            padding: 10px 16px;
-            border-top: 2px solid #d4a017;
-        }
-
-        .perf-table tbody .result-row .result-label {
-            text-align: left;
-            padding-left: 20px;
-            color: #0b1a33;
-            font-weight: 800;
-        }
-
-        .perf-table tbody .result-row .result-badge {
-            display: inline-block;
-            padding: 3px 28px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 18px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .perf-table tbody .result-row .result-badge.pass {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .perf-table tbody .result-row .result-badge.fail {
-            background: #f8d7da;
-            color: #721c24;
         }
 
         /* ---- Score Bar (below table) ---- */
@@ -1134,6 +1108,23 @@
             color: #6a8aaa;
         }
 
+        /* ---- RANK LIST BUTTONS (new) ---- */
+        .rank-list-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px 18px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid #e6edf4;
+        }
+        .rank-list-actions .label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1a3a5a;
+            white-space: nowrap;
+        }
+
         /* ============================================================
                RESPONSIVE
                ============================================================ */
@@ -1163,6 +1154,13 @@
             .report-controls .field-group select {
                 min-width: 120px;
                 flex: 1;
+            }
+            .rank-list-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .rank-list-actions .label {
+                text-align: center;
             }
         }
 
@@ -1257,10 +1255,6 @@
             .perf-table tbody .total-row .marks-cell {
                 font-size: 15px;
             }
-            .perf-table tbody .result-row .result-badge {
-                font-size: 14px;
-                padding: 2px 18px;
-            }
 
             .jee-card .score-bar-wrap {
                 margin: 4px 12px 2px 12px;
@@ -1344,10 +1338,6 @@
             .perf-table tbody .total-row .marks-cell {
                 font-size: 13px;
             }
-            .perf-table tbody .result-row .result-badge {
-                font-size: 12px;
-                padding: 2px 14px;
-            }
             .jee-card .student-info .photo-col img {
                 width: 70px;
                 height: 84px;
@@ -1382,6 +1372,13 @@
             }
             .report-controls .field-group select {
                 min-width: unset;
+            }
+            .rank-list-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .rank-list-actions .btn {
+                justify-content: center;
             }
         }
 
@@ -1482,7 +1479,7 @@
 
         <div class="sub-head">
             <span>📋 Generate result cards · 100 marks per subject · Total 300</span>
-            <span class="hint">🔹 A4 ready · Pass 40% · Table view</span>
+            <span class="hint">🔹 A4 ready · Table view</span>
         </div>
 
         <!-- ========== CONTROLS ========== -->
@@ -1532,19 +1529,16 @@
 
                 <hr class="divider-light" />
 
-                <!-- DB Fetch -->
-                <div style="margin-bottom:18px;">
-                    <h3 style="margin-bottom:12px;">🔌 Fetch from Database <span class="badge-soft" style="background:#10b981; color:#fff;">LIVE</span></h3>
-                    <div class="file-row" style="margin-bottom:10px;">
-                        <label style="min-width:70px; font-weight:600; font-size:13px; color:#1a3a5a;">Class</label>
-                        <select id="dbClassSelect" style="padding:8px 12px; border-radius:10px; border:1.5px solid #dce4ed; flex:1; font-size:13px; font-weight:500; outline:none; background:#fff; cursor:pointer;"></select>
+                <!-- Exam Name (Manual typing) -->
+                <div style="margin-top:12px;">
+                    <h3 style="margin-bottom:8px;">📝 Examination Name</h3>
+                    <div class="file-row">
+                        <label style="min-width:80px;">Name</label>
+                        <div class="file-input-wrapper">
+                            <input type="text" id="examNameInput" value="JEE MAINS MODEL EXAMINATION – 2" style="flex:1; padding:8px 12px; border:1.5px solid #dce4ed; border-radius:8px; font-size:14px; font-weight:400; color:#0b1a33; background:#fff; min-width:120px;" />
+                        </div>
                     </div>
-                    <div class="file-row" style="margin-bottom:12px;">
-                        <label style="min-width:70px; font-weight:600; font-size:13px; color:#1a3a5a;">Exam</label>
-                        <select id="dbExamSelect" style="padding:8px 12px; border-radius:10px; border:1.5px solid #dce4ed; flex:1; font-size:13px; font-weight:500; outline:none; background:#fff; cursor:pointer;"></select>
-                    </div>
-                    <button class="btn btn-sm btn-primary" id="fetchDbBtn" style="width:100%; border-radius:10px;">📥 Load Marks</button>
-                    <div id="dbStatus" class="text-muted mt-8" style="font-size:12px; color:#64748b; font-weight:500; text-align:center;">Select options and load data.</div>
+                    <div style="font-size:12px; color:#6a8aaa; margin-top:4px;">Type any examination title (appears on the card)</div>
                 </div>
 
                 <hr class="divider-light" />
@@ -1583,7 +1577,7 @@
                         <button class="btn btn-outline" id="resetBtn">⟲ Reset</button>
                     </div>
                     <div class="text-muted mt-8" style="font-size:13px;">
-                        ✅ Pass threshold: <strong>40%</strong> (120/300) &bull; Individual PDFs named by student
+                        ✅ Total: 300 marks &bull; Individual PDFs named by student
                     </div>
                 </div>
 
@@ -1598,7 +1592,7 @@
             </div>
         </div>
 
-        <!-- ========== CLASS WISE REPORT — NEW ========== -->
+        <!-- ========== CLASS WISE REPORT ========== -->
         <div class="report-section" id="reportSection">
             <h3>📊 Class‑Wise Report <span class="badge-soft">NEW</span></h3>
             <div class="report-controls">
@@ -1616,6 +1610,14 @@
                 <span class="stat-item"><span class="label">📚 Total Students:</span> <span class="num" id="reportTotalStudents">0</span></span>
                 <span class="stat-item"><span class="label">📖 Classes:</span> <span class="num" id="reportTotalClasses">0</span></span>
                 <span class="stat-item"><span class="label">🏅 Top Rank (All):</span> <span class="num" id="reportTopRank">—</span></span>
+            </div>
+
+            <!-- ===== NEW: Rank List Actions ===== -->
+            <div class="rank-list-actions">
+                <span class="label">🏆 Rank List (All Students):</span>
+                <button class="btn btn-purple" id="rankListPdfBtn">📄 PDF (Rank List)</button>
+                <button class="btn btn-teal" id="rankListExcelBtn">📊 Excel (Rank List)</button>
+                <span style="font-size:12px; color:#6a8aaa; margin-left:4px;">Overall rank based on Total marks</span>
             </div>
         </div>
 
@@ -1673,6 +1675,7 @@
             teacherSigDataURL: null,
             principalSigDataURL: null,
             imageMap: {},
+            examName: 'JEE MAINS MODEL EXAMINATION – 2',
             reportData: [],
         };
 
@@ -1729,8 +1732,19 @@
         const reportTotalClasses = $('reportTotalClasses');
         const reportTopRank = $('reportTopRank');
 
+        // Rank List buttons
+        const rankListPdfBtn = $('rankListPdfBtn');
+        const rankListExcelBtn = $('rankListExcelBtn');
+
+        // Exam name input
+        const examNameInput = $('examNameInput');
+        examNameInput.addEventListener('input', function() {
+            state.examName = this.value.trim() || 'JEE MAINS MODEL EXAMINATION – 2';
+            if (state.students.length > 0) renderCard();
+        });
+
         // ============================================================
-        //  SAMPLE EXCEL (100 marks per subject)
+        //  SAMPLE EXCEL
         // ============================================================
         function generateSampleExcel() {
             const data = [
@@ -1870,7 +1884,7 @@
         });
 
         // ============================================================
-        //  PARSE STUDENTS — fixed to use original ID as primary
+        //  PARSE STUDENTS
         // ============================================================
         function parseStudentsFromExcel(json) {
             const students = [];
@@ -1906,18 +1920,12 @@
                 return;
             }
 
-            json.forEach((row, idx) => {
+            json.forEach(row => {
                 const name = String(row[colMap.name] || '').trim();
                 if (!name) return;
 
                 let studentId = '';
-                if (colMap.studentId) {
-                    studentId = String(row[colMap.studentId] || '').trim();
-                }
-                // If studentId is empty or '—', generate a temporary one
-                if (!studentId || studentId === '—' || studentId === '') {
-                    studentId = `S${String(idx + 1).padStart(4, '0')}`;
-                }
+                if (colMap.studentId) studentId = String(row[colMap.studentId] || '').trim();
 
                 const mathMarks = parseFloat(row[colMap.mathematics] !== undefined ? row[colMap.mathematics] : 0);
                 const physMarks = parseFloat(row[colMap.physics] !== undefined ? row[colMap.physics] : 0);
@@ -1935,7 +1943,7 @@
                 const section = String(row[colMap.section] || '').trim() || '—';
 
                 students.push({
-                    studentId: studentId,
+                    studentId: studentId || '—',
                     name: name,
                     class: cls,
                     section: section,
@@ -1949,8 +1957,9 @@
                     maxMarks: TOTAL_MAX_MARKS,
                     percentage: percentage,
                     pass: pass,
-                    generatedId: '', // will be set in updateReportData (used internally)
+                    generatedId: '',
                     rank: 0,
+                    overallRank: 0,
                 });
             });
 
@@ -1961,16 +1970,16 @@
 
             state.students = students;
             state.currentIndex = 0;
-            updateReportData(); // generates IDs & ranks
             updateUI();
             renderCard();
+            updateReportData();
             populateClassDropdown();
             updateReportStats();
             excelStatus.textContent = `✅ Loaded ${students.length} student(s). Click "Generate Cards" to refresh.`;
         }
 
         // ============================================================
-        //  REPORT DATA — Generate IDs & Ranks (internal, not shown on card)
+        //  REPORT DATA — Generate IDs & Ranks (class-wise)
         // ============================================================
         function updateReportData() {
             const students = state.students;
@@ -1981,12 +1990,13 @@
 
             // Group by class
             const classGroups = {};
-            students.forEach((s, idx) => {
+            students.forEach(s => {
                 const key = s.class || '—';
                 if (!classGroups[key]) classGroups[key] = [];
-                classGroups[key].push({ ...s, _origIdx: idx });
+                classGroups[key].push({ ...s });
             });
 
+            // For each class: assign generated ID and rank
             const result = [];
             Object.keys(classGroups).forEach(cls => {
                 const group = classGroups[cls];
@@ -2004,34 +2014,57 @@
                     prevTotal = s.total;
                 });
 
-                // Assign generated IDs (only for internal use, not displayed)
-                sorted.forEach((s, idx) => {
+                const ranked = sorted.map((s, idx) => {
                     const serial = String(idx + 1).padStart(4, '0');
-                    s.generatedId = `JY26-${serial}`;
+                    const generatedId = `JY26-${serial}`;
+                    return { ...s, generatedId };
                 });
 
-                result.push(...sorted);
+                result.push(...ranked);
             });
 
             state.reportData = result;
 
-            // ---- Update original students with generatedId & rank (internal) ----
+            // Update original students with generatedId and rank
             const idMap = {};
             result.forEach(r => {
-                const key = (r.name + '|' + (r.class || '—')).toUpperCase();
+                const key = r.studentId + '|' + r.name;
                 idMap[key] = { generatedId: r.generatedId, rank: r.rank };
             });
-
-            state.students.forEach((s, idx) => {
-                const key = (s.name + '|' + (s.class || '—')).toUpperCase();
+            state.students.forEach(s => {
+                const key = s.studentId + '|' + s.name;
                 if (idMap[key]) {
                     s.generatedId = idMap[key].generatedId;
                     s.rank = idMap[key].rank;
-                } else {
-                    s.generatedId = '';
-                    s.rank = 0;
                 }
             });
+        }
+
+        // ============================================================
+        //  OVERALL RANK LIST (across all students)
+        // ============================================================
+        function getOverallRankList() {
+            const students = state.students;
+            if (!students || students.length === 0) return [];
+
+            // Copy and sort by total marks descending
+            const sorted = [...students].map(s => ({ ...s }));
+            sorted.sort((a, b) => b.total - a.total);
+
+            // Assign overall ranks with tie handling
+            let rank = 1;
+            let prevTotal = null;
+            let rankCounter = 0;
+            sorted.forEach((s, idx) => {
+                rankCounter++;
+                if (prevTotal !== null && s.total < prevTotal) {
+                    rank = rankCounter;
+                }
+                s.overallRank = rank;
+                prevTotal = s.total;
+            });
+
+            return sorted;
         }
 
         // ============================================================
@@ -2106,9 +2139,8 @@
             const s = state.students[idx];
             if (s) {
                 currentStudentName.textContent = s.name;
-                // Show original Student ID only
-                currentStudentID.textContent = s.studentId || '—';
-                currentStudentClass.textContent = s.class + (s.section && s.section !== '—' ? ' - ' + s.section : '');
+                currentStudentID.textContent = s.studentId;
+                currentStudentClass.textContent = s.class + (s.section ? ' - ' + s.section : '');
                 currentStudentMobile.textContent = s.mobile;
                 currentStudentLocation.textContent = FIXED_LOCATION;
                 studentNavIndex.textContent = (idx + 1) + ' / ' + count;
@@ -2118,7 +2150,7 @@
         }
 
         // ============================================================
-        //  RENDER CARD — display original Student ID only
+        //  RENDER CARD
         // ============================================================
         function renderCard() {
             const students = state.students;
@@ -2149,29 +2181,15 @@
                 `<img src="${state.principalSigDataURL}" alt="Principal Signature" style="max-width:140px; max-height:60px; object-fit:contain;" />` :
                 '<div class="sig-placeholder"></div>';
 
-            const resultClass = s.pass ? 'pass' : 'fail';
-            const resultText = s.pass ? '✅ PASS' : '❌ FAIL';
             const pct = Math.round(s.percentage);
             const barWidth = Math.min(s.percentage, 100);
 
-            // Photo
             const imageKey = s.studentId.trim().toUpperCase();
-            const imageData = (state.imageMap && state.imageMap[imageKey]) || s.photoUrl;
-            let photoHtml = '';
-            if (imageData) {
-                let backendUrl = 'http://localhost:5000';
-                if (window.location.hostname !== 'localhost') {
-                    backendUrl = window.location.protocol + '//' + window.location.hostname + ':5000';
-                }
-                const finalSrc = (imageData.startsWith('http') || imageData.startsWith('data:')) 
-                    ? imageData 
-                    : (backendUrl + (imageData.startsWith('/') ? '' : '/') + imageData);
-                photoHtml = `<img src="${finalSrc}" alt="Student Photo" />`;
-            } else {
-                photoHtml = `<div class="placeholder-photo">📷</div>`;
-            }
+            const imageData = state.imageMap ? state.imageMap[imageKey] : null;
+            const photoHtml = imageData ?
+                `<img src="${imageData}" alt="Student Photo" />` :
+                `<div class="placeholder-photo">📷</div>`;
 
-            // Build table rows for subjects
             const subjectData = [
                 { name: 'Mathematics', marks: s.mathematics, max: MAX_MARKS_PER_SUBJECT },
                 { name: 'Physics', marks: s.physics, max: MAX_MARKS_PER_SUBJECT },
@@ -2192,6 +2210,8 @@
             });
 
             const totalPct = s.percentage.toFixed(1);
+            const displayId = s.studentId;
+            const examTitle = state.examName;
 
             cardEl.innerHTML = `
                 <div class="jee-card">
@@ -2203,7 +2223,7 @@
                             <div class="school-name">SRI VENKATESWARA JY SCHOOL</div>
                             <div class="school-sub">(IIT-JEE / NEET Foundation · Olympiads)</div>
                             <div class="school-address">Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta</div>
-                            <div class="exam-title">JEE MAINS MODEL EXAMINATION – 2</div>
+                            <div class="exam-title">${examTitle}</div>
                             <div class="result-card-label">✦ RESULT CARD ✦</div>
                         </div>
                         <div class="spacer"></div>
@@ -2225,7 +2245,7 @@
                             </div>
                             <div class="info-row">
                                 <div class="label">🆔 Student ID</div>
-                                <div class="value">${s.studentId || '—'}</div>
+                                <div class="value">${displayId}</div>
                             </div>
                             <div class="info-row">
                                 <div class="label">📚 Class</div>
@@ -2254,7 +2274,6 @@
                         </div>
                     </div>
 
-                    <!-- ===== PERFORMANCE TABLE ===== -->
                     <div class="perf-table-wrap">
                         <div class="perf-title">
                             <span class="icon">📊</span>
@@ -2279,24 +2298,17 @@
                                     <td class="max-cell">${s.maxMarks}</td>
                                     <td class="pct-cell">${totalPct}%</td>
                                 </tr>
-                                <tr class="result-row">
-                                    <td class="result-label">🎯 Result</td>
-                                    <td colspan="3">
-                                        <span class="result-badge ${resultClass}">${resultText}</span>
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Score Bar -->
                     <div class="score-bar-wrap">
                         <div class="score-bar">
                             <div class="fill" style="width:${barWidth}%;"></div>
                         </div>
                         <div class="score-labels">
                             <span>0</span>
-                            <span>${s.pass ? '✅ Pass (' + PASS_THRESHOLD + '%)' : '❌ Below ' + PASS_THRESHOLD + '%'}</span>
+                            <span>Threshold: ${PASS_THRESHOLD}%</span>
                             <span>${TOTAL_MAX_MARKS}</span>
                         </div>
                     </div>
@@ -2319,7 +2331,7 @@
                     </div>
 
                     <div class="card-footer-note">
-                        ★ This is a system-generated result card for JEE Mains Model Examination – 2 ★
+                        ★ This is a system-generated result card for ${examTitle} ★
                     </div>
                 </div>
             `;
@@ -2446,16 +2458,14 @@
                 const rows = [];
                 let serial = 1;
                 let currentClass = '';
-                sorted.forEach((s) => {
+                sorted.forEach((s, idx) => {
                     if (s.class !== currentClass) {
                         serial = 1;
                         currentClass = s.class;
                     }
-                    // In the report, we show the original Student ID (or fallback)
-                    const displayId = s.studentId || s.generatedId || '—';
                     rows.push([
                         String(serial),
-                        displayId,
+                        s.generatedId || s.studentId,
                         s.name,
                         s.class,
                         s.section,
@@ -2486,7 +2496,7 @@
                 doc.setFontSize(9);
                 doc.text(`Generated: ${dateStr}`, pageWidth - margin, 36, { align: 'right' });
 
-                const colWidths = [12, 32, 44, 20, 18, 24, 16, 16, 16, 20, 18];
+                const colWidths = [12, 28, 44, 20, 18, 24, 16, 16, 16, 20, 18];
                 const totalColWidth = colWidths.reduce((a, b) => a + b, 0);
                 const scale = usableWidth / totalColWidth;
                 const scaledWidths = colWidths.map(w => w * scale);
@@ -2528,7 +2538,7 @@
                     row.forEach((cell, i) => {
                         doc.rect(x, y, scaledWidths[i], rowHeight, 'S');
                         const align = (i === 0 || i === 1 || i === 5 || i === 9 || i === 10) ? 'center' :
-                            'left';
+                        'left';
                         doc.text(cell, x + (align === 'center' ? scaledWidths[i] / 2 : 2), y + rowHeight / 2 +
                             1.5, {
                                 align: align === 'center' ? 'center' : 'left'
@@ -2573,6 +2583,226 @@
                 reportStatus.textContent =
                     `✅ ${state.students.length} students across ${new Set(state.students.map(s => s.class)).size} class(es). Select a class and click "Generate Report PDF".`;
             }, 1500);
+        });
+
+        // ============================================================
+        //  RANK LIST — PDF
+        // ============================================================
+        rankListPdfBtn.addEventListener('click', function() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                alert('No student data. Please upload an Excel file first.');
+                return;
+            }
+
+            const ranked = getOverallRankList();
+            if (ranked.length === 0) {
+                alert('No student data available.');
+                return;
+            }
+
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Generating...';
+            btn.disabled = true;
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('l', 'mm', 'a4');
+                const pageWidth = 297;
+                const pageHeight = 210;
+                const margin = 14;
+                const usableWidth = pageWidth - 2 * margin;
+
+                const schoolName = 'SRI VENKATESWARA JY SCHOOL';
+                const title = 'JEE MAINS — OVERALL RANK LIST (All Students)';
+                const subTitle = `JEE Mains Model Examination – 2 · Rank Wise Summary (Total: ${ranked.length} students)`;
+
+                // Headers
+                const headers = ['Rank', 'Student Name', 'Class', 'Section', 'Student ID', 'Mobile No', 'Mat', 'Phy',
+                    'Che', 'Total'
+                ];
+
+                // Build rows
+                const rows = ranked.map(s => [
+                    '#' + s.overallRank,
+                    s.name,
+                    s.class,
+                    s.section,
+                    s.studentId,
+                    s.mobile,
+                    String(s.mathematics),
+                    String(s.physics),
+                    String(s.chemistry),
+                    String(s.total),
+                ]);
+
+                const doc = pdf;
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.text(schoolName, pageWidth / 2, 16, { align: 'center' });
+
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'normal');
+                doc.text(title, pageWidth / 2, 24, { align: 'center' });
+
+                doc.setFontSize(11);
+                doc.text(subTitle, pageWidth / 2, 30, { align: 'center' });
+
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                doc.setFontSize(9);
+                doc.text(`Generated: ${dateStr}`, pageWidth - margin, 36, { align: 'right' });
+
+                // Column widths: Rank(14), Name(50), Class(20), Section(18), ID(30), Mobile(26), Mat(14), Phy(14), Che(14), Total(18)
+                const colWidths = [14, 50, 20, 18, 30, 26, 14, 14, 14, 18];
+                const totalColWidth = colWidths.reduce((a, b) => a + b, 0);
+                const scale = usableWidth / totalColWidth;
+                const scaledWidths = colWidths.map(w => w * scale);
+
+                let y = 42;
+                const rowHeight = 7;
+                const headerHeight = 9;
+
+                // Header
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'bold');
+                let x = margin;
+                headers.forEach((h, i) => {
+                    doc.rect(x, y, scaledWidths[i], headerHeight, 'S');
+                    doc.text(h, x + scaledWidths[i] / 2, y + headerHeight / 2 + 1.5, { align: 'center' });
+                    x += scaledWidths[i];
+                });
+                y += headerHeight;
+
+                // Rows
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(7.5);
+                rows.forEach((row) => {
+                    if (y + rowHeight > pageHeight - margin) {
+                        doc.addPage();
+                        y = margin + 4;
+                        doc.setFontSize(8);
+                        doc.setFont('helvetica', 'bold');
+                        x = margin;
+                        headers.forEach((h, i) => {
+                            doc.rect(x, y, scaledWidths[i], headerHeight, 'S');
+                            doc.text(h, x + scaledWidths[i] / 2, y + headerHeight / 2 + 1.5, { align: 'center' });
+                            x += scaledWidths[i];
+                        });
+                        y += headerHeight;
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(7.5);
+                    }
+
+                    x = margin;
+                    row.forEach((cell, i) => {
+                        doc.rect(x, y, scaledWidths[i], rowHeight, 'S');
+                        // Center align for rank, ID, mobile, marks, total; left align for name, class, section
+                        const align = (i === 0 || i === 4 || i === 5 || i === 6 || i === 7 || i === 8 || i ===
+                            9) ? 'center' : 'left';
+                        const pad = align === 'center' ? scaledWidths[i] / 2 : 2;
+                        doc.text(cell, x + (align === 'center' ? pad : 2), y + rowHeight / 2 + 1.5, {
+                            align: align === 'center' ? 'center' : 'left'
+                        });
+                        x += scaledWidths[i];
+                    });
+                    y += rowHeight;
+                });
+
+                // Footer
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'italic');
+                const footerText = '★ Overall rank based on Total marks (300 max) · Rank List for JEE Mains Model Examination – 2 ★';
+                doc.text(footerText, pageWidth / 2, pageHeight - 6, { align: 'center' });
+
+                doc.save('JEE_Mains_Overall_Rank_List.pdf');
+                btn.textContent = '✅ Downloaded!';
+                setTimeout(() => { btn.textContent = origText;
+                    btn.disabled = false; }, 2000);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error generating PDF: ' + err.message);
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        //  RANK LIST — EXCEL
+        // ============================================================
+        rankListExcelBtn.addEventListener('click', function() {
+            const students = state.students;
+            if (!students || students.length === 0) {
+                alert('No student data. Please upload an Excel file first.');
+                return;
+            }
+
+            const ranked = getOverallRankList();
+            if (ranked.length === 0) {
+                alert('No student data available.');
+                return;
+            }
+
+            const btn = this;
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Generating...';
+            btn.disabled = true;
+
+            try {
+                // Build data array for Excel
+                const excelData = [
+                    ['Rank', 'Student Name', 'Class', 'Section', 'Student ID', 'Mobile No', 'Mathematics', 'Physics',
+                        'Chemistry', 'Total'
+                    ]
+                ];
+
+                ranked.forEach(s => {
+                    excelData.push([
+                        s.overallRank,
+                        s.name,
+                        s.class,
+                        s.section,
+                        s.studentId,
+                        s.mobile,
+                        s.mathematics,
+                        s.physics,
+                        s.chemistry,
+                        s.total,
+                    ]);
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+                // Set column widths
+                ws['!cols'] = [
+                    { wch: 8 }, // Rank
+                    { wch: 28 }, // Name
+                    { wch: 12 }, // Class
+                    { wch: 10 }, // Section
+                    { wch: 16 }, // Student ID
+                    { wch: 16 }, // Mobile
+                    { wch: 10 }, // Mat
+                    { wch: 10 }, // Phy
+                    { wch: 10 }, // Che
+                    { wch: 12 }, // Total
+                ];
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Rank List');
+                XLSX.writeFile(wb, 'JEE_Mains_Overall_Rank_List.xlsx');
+
+                btn.textContent = '✅ Downloaded!';
+                setTimeout(() => { btn.textContent = origText;
+                    btn.disabled = false; }, 2000);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error generating Excel: ' + err.message);
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
         });
 
         // ============================================================
@@ -2749,6 +2979,8 @@
             state.imageMap = {};
             state.reportData = [];
             excelData = null;
+            state.examName = 'JEE MAINS MODEL EXAMINATION – 2';
+            examNameInput.value = state.examName;
 
             logoUpload.value = '';
             teacherSigUpload.value = '';
@@ -2786,141 +3018,17 @@
         });
 
         // ============================================================
-        //  DATABASE INTEGRATION
+        //  AUTO-REFRESH REPORT ON DATA CHANGE
         // ============================================================
-        async function initDb() {
-            const token = localStorage.getItem('accessToken');
-            if (!token) {
-                console.warn('Authorization token not found in localStorage.');
-                return;
-            }
-            try {
-                const classRes = await fetch('/api/classes', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const classJson = await classRes.json();
-                const classes = classJson.data || classJson || [];
-
-                const examRes = await fetch('/api/exams', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const examJson = await examRes.json();
-                const exams = examJson.data || examJson || [];
-
-                const dbClassSelect = $('dbClassSelect');
-                const dbExamSelect = $('dbExamSelect');
-
-                if (dbClassSelect) {
-                    dbClassSelect.innerHTML = classes.map(c => `<option value="${c.id}">${c.name}-${c.section}</option>`).join('');
-                }
-                if (dbExamSelect) {
-                    dbExamSelect.innerHTML = exams.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
-                }
-            } catch (err) {
-                console.error('Failed to load DB filters:', err);
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', initDb);
-
-        $('fetchDbBtn').addEventListener('click', async function() {
-            const classId = $('dbClassSelect').value;
-            const examId = $('dbExamSelect').value;
-            if (!classId || !examId) {
-                alert('Please select both Class and Exam.');
-                return;
-            }
-
-            const btn = this;
-            const origText = btn.textContent;
-            btn.textContent = '⏳ Loading...';
-            btn.disabled = true;
-
-            const dbStatus = $('dbStatus');
-            dbStatus.textContent = 'Syncing...';
-
-            try {
-                const token = localStorage.getItem('accessToken');
-                if (!token) throw new Error('Authorization token not found.');
-
-                const studentsRes = await fetch(`/api/students?classId=${classId}&limit=1000`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const studentsJson = await studentsRes.json();
-                const dbStudents = studentsJson.data || studentsJson || [];
-
-                const marksRes = await fetch(`/api/marks/exam/${examId}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const marksJson = await marksRes.json();
-                const dbMarks = marksJson.data || marksJson || [];
-
-                const processed = [];
-                dbStudents.forEach(student => {
-                    const studentMarks = dbMarks.filter(m => m.studentId === student.id);
-
-                    const mathMark = studentMarks.find(m => m.subject.name.toLowerCase().includes('math'));
-                    const physicsMark = studentMarks.find(m => m.subject.name.toLowerCase().includes('phys'));
-                    const chemistryMark = studentMarks.find(m => m.subject.name.toLowerCase().includes('chem'));
-
-                    const maths = mathMark ? mathMark.marksObtained : 0;
-                    const physics = physicsMark ? physicsMark.marksObtained : 0;
-                    const chemistry = chemistryMark ? chemistryMark.marksObtained : 0;
-
-                    const total = maths + physics + chemistry;
-                    const maxMarks = 300;
-                    const percentage = (total / maxMarks) * 100;
-                    const pass = percentage >= 40;
-
-                    processed.push({
-                        studentId: student.rollNo,
-                        name: student.user.name,
-                        class: student.class ? student.class.name : '—',
-                        section: student.class ? student.class.section : '—',
-                        mobile: student.user.phone || '—',
-                        academicYear: student.class ? student.class.academicYear : '2026 - 2027',
-                        location: student.address || 'Narasannapeta',
-                        mathematics: maths,
-                        physics: physics,
-                        chemistry: chemistry,
-                        total: total,
-                        maxMarks: maxMarks,
-                        percentage: percentage,
-                        pass: pass,
-                        photoUrl: student.user.photoUrl
-                    });
-                });
-
-                state.students = processed;
-                state.currentIndex = 0;
-                updateReportData();
-                renderCard();
-                updateUI();
-                populateClassDropdown();
-                updateReportStats();
-
-                dbStatus.textContent = `✅ Successfully loaded ${processed.length} students' marks!`;
-                btn.textContent = '✅ Loaded!';
-                setTimeout(() => {
-                    btn.textContent = origText;
-                    btn.disabled = false;
-                }, 2000);
-            } catch (err) {
-                console.error(err);
-                dbStatus.textContent = '❌ Failed to load marks.';
-                btn.textContent = origText;
-                btn.disabled = false;
-                alert('Failed: ' + err.message);
-            }
-        });
-
-        console.log('🏫 JEE Mains Result Card — Tabular Performance (Enhanced)');
+        console.log('🏫 JEE Mains Result Card — Tabular Performance');
         console.log('📐 Page width: 1800px · A4 ready (794×1123px)');
         console.log('📊 Subjects: Mathematics, Physics, Chemistry (max 100 each)');
-        console.log('📈 Total: 300 · Pass: 40% (120/300)');
+        console.log('📈 Total: 300 · Pass threshold: 40%');
         console.log('📸 Upload ZIP with images named by Student ID (e.g. S1001.jpg)');
         console.log('📊 NEW: Class-Wise Report with auto-ranking & JY26-XXXX IDs');
-        console.log('🆔 ENHANCED: Student ID displayed as badge with original ID fallback');
+        console.log('📝 Examination name is now customisable via text input.');
+        console.log('🆔 Student ID now shows the exact Excel value on the result card and navigation.');
+        console.log('🏆 NEW: Overall Rank List PDF & Excel export (all students, rank-wise)');
     </script>
 
 </body>

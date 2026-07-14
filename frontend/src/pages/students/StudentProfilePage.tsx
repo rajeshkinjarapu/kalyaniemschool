@@ -39,11 +39,13 @@ export const StudentProfilePage: React.FC = () => {
   const fetchStudentProfile = async () => {
     try {
       const [studentRes, structRes]: any = await Promise.all([
-        api.get(`/api/students/${id}`),
-        api.get('/api/fees/structures'),
+        api.get(`/api/students/${id}?_t=${Date.now()}`),
+        api.get(`/api/fees/structures?_t=${Date.now()}`),
       ]);
-      setStudent(studentRes.data);
-      setFeeStructures(structRes.data);
+      const studentData = studentRes?.data?.data || studentRes?.data || studentRes;
+      const structData = structRes?.data?.data || structRes?.data || structRes || [];
+      setStudent(studentData);
+      setFeeStructures(structData);
     } catch (e) {
       console.error(e);
     } finally {
@@ -171,7 +173,7 @@ export const StudentProfilePage: React.FC = () => {
       await api.post(`/api/fees/discounts`, {
         studentId: student.id,
         feeStructureId: discountFee.id,
-        discountAmount: discountAmount
+        discountAmount: discountFee.amount - discountAmount
       });
       toast.success('Fee discounted successfully!');
       setShowDiscountModal(false);
@@ -455,9 +457,9 @@ export const StudentProfilePage: React.FC = () => {
                           {s.name}
                           {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
                             <button
-                              onClick={() => { setDiscountFee(s); setDiscountAmount(discount); setShowDiscountModal(true); }}
+                              onClick={() => { setDiscountFee(s); setDiscountAmount(effectiveAmount); setShowDiscountModal(true); }}
                               className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
-                              title="Edit Fee (Apply Discount)"
+                              title="Edit Fee Amount"
                             >
                               <Edit2 className="w-3.5 h-3.5" />
                             </button>
@@ -922,7 +924,7 @@ export const StudentProfilePage: React.FC = () => {
               </div>
 
               <div>
-                <label className="label">Concession / Discount Amount (₹)</label>
+                <label className="label">New Fee Amount (₹)</label>
                 <input
                   type="number"
                   min="0"
@@ -933,7 +935,8 @@ export const StudentProfilePage: React.FC = () => {
                   className="input text-xs"
                 />
                 <p className="text-[10px] text-gray-400 mt-1.5 ml-1">
-                  Net Fee to pay: <strong className="text-indigo-600 dark:text-indigo-400">₹{Math.max(0, discountFee.amount - discountAmount)}</strong>
+                  Original fee was: <strong className="text-gray-600">₹{discountFee.amount}</strong>. 
+                  (Discount applied: ₹{Math.max(0, discountFee.amount - discountAmount)})
                 </p>
               </div>
 

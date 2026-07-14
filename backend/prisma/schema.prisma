@@ -115,7 +115,6 @@ model Class {
   exams            Exam[]
   timetables       Timetable[]
   feeStructures    FeeStructure[]
-  announcements    Announcement[]
   onlineExams      OnlineExam[]
   questionPapers   QuestionPaper[]
   slipTests        SlipTest[]
