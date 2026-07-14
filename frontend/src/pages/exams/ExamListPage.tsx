@@ -953,8 +953,6 @@ export const ExamListPage: React.FC = () => {
         </div>
       )}
 
-      )}
-
       {/* ══ TAB 3: MARKS UPLOAD (written-exam) ══ */}
       {activeTab === 'written-exam' && (
         <div className="card p-6 space-y-6">
