@@ -78,7 +78,7 @@ export const FeePaymentsPage: React.FC = () => {
       setPayments(payRes.data || payRes || []);
       setStudents(studRes.data.data || studRes.data || []);
       setStructures(structRes.data || structRes || []);
-      setClasses(classRes.data || classRes || []);
+      setClasses(classRes.data?.data || classRes.data || classRes || []);
     } catch (e) {
       toast.error('Failed to load transaction records');
     } finally {
