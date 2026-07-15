@@ -22,7 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const token = localStorage.getItem('accessToken');
       if (token) {
         const response = await getMe();
-        setUser(response.data);
+        setUser(response.data || response);
       }
     } catch (error) {
       console.error('Fetch user error:', error);

@@ -9,6 +9,13 @@ export const api = axios.create({
   },
 });
 
+const unwrapResponseData = (payload: any) => {
+  if (payload && typeof payload === 'object' && 'data' in payload && payload.success !== undefined) {
+    return payload.data;
+  }
+  return payload;
+};
+
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
@@ -21,7 +28,10 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    const unwrappedData = unwrapResponseData(response.data);
+    return { ...response, data: unwrappedData };
+  },
   async (error) => {
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -45,7 +55,9 @@ api.interceptors.response.use(
         return Promise.reject(err);
       }
     }
-    return Promise.reject(error.response?.data || error);
+
+    const errorPayload = unwrapResponseData(error.response?.data);
+    return Promise.reject({ ...error, response: { ...error.response, data: errorPayload } });
   }
 );
 export default api;

@@ -27,10 +27,21 @@ export const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     if (!user) return;
-    const r = user.role.toLowerCase();
+
+    const roleMap: Record<string, string> = {
+      super_admin: 'admin',
+      admin: 'admin',
+      teacher: 'teacher',
+      student: 'student',
+      parent: 'parent',
+      accountant: 'accountant',
+    };
+
+    const endpoint = roleMap[user.role?.toLowerCase()] || 'admin';
+
     api
-      .get(`/api/dashboard/${r === 'super_admin' ? 'admin' : r}`)
-      .then((res: any) => setData(res.data))
+      .get(`/api/dashboard/${endpoint}`)
+      .then((res: any) => setData(res.data || res))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [user]);

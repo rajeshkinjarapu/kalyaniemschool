@@ -47,7 +47,8 @@ export const LoginPage: React.FC = () => {
       toast.success(`Welcome back, ${user.name}!`);
       navigate(from, { replace: true });
     } catch (error: any) {
-      toast.error(error.message || 'Login failed. Please check your credentials.');
+      const message = error?.response?.data?.message || error?.message || 'Login failed. Please check your credentials.';
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
