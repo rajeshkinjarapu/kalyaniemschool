@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import api from '../../api/axios';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { Badge } from '../../components/UI/Badge';
-import { Plus, FileDown, Trash2 } from 'lucide-react';
+import { Plus, FileDown, Trash2, Search, X, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -26,6 +26,41 @@ export const FeePaymentsPage: React.FC = () => {
   const [utrNumber, setUtrNumber] = useState('');
   const [receiptUrl, setReceiptUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+
+  // Smart student selector states
+  const [filterClass, setFilterClass] = useState('');
+  const [filterSection, setFilterSection] = useState('');
+  const [searchName, setSearchName] = useState('');
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [showStudentDropdown, setShowStudentDropdown] = useState(false);
+
+  // Derived unique classes and sections from loaded students
+  const uniqueClasses = useMemo(() => {
+    const classMap = new Map<string, { id: string; name: string }>(); 
+    students.forEach(s => {
+      if (s.class) classMap.set(s.class.name, { id: s.class.id, name: s.class.name });
+    });
+    return Array.from(classMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [students]);
+
+  const uniqueSections = useMemo(() => {
+    const sections = new Set<string>();
+    students
+      .filter(s => !filterClass || s.class?.name === filterClass)
+      .forEach(s => { if (s.class?.section) sections.add(s.class.section); });
+    return Array.from(sections).sort();
+  }, [students, filterClass]);
+
+  const filteredStudents = useMemo(() => {
+    return students.filter(s => {
+      const matchClass = !filterClass || s.class?.name === filterClass;
+      const matchSection = !filterSection || s.class?.section === filterSection;
+      const matchName = !searchName || 
+        s.user?.name?.toLowerCase().includes(searchName.toLowerCase()) ||
+        s.rollNo?.toLowerCase().includes(searchName.toLowerCase());
+      return matchClass && matchSection && matchName;
+    });
+  }, [students, filterClass, filterSection, searchName]);
 
   const fetchData = async () => {
     try {
@@ -273,23 +308,108 @@ export const FeePaymentsPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="label">Student</label>
-                <select
-                  value={studentId}
-                  onChange={(e) => {
-                    setStudentId(e.target.value);
-                    setSelectedFees([]);
-                  }}
-                  className="input text-xs"
-                >
-                  <option value="">Select Student</option>
-                  {students.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.user.name} ({s.rollNo})
-                    </option>
-                  ))}
-                </select>
+              {/* ── Smart Student Selector ── */}
+              <div className="space-y-3">
+                <label className="label font-bold">Select Student</label>
+
+                {/* Row 1: Class + Section */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Class</label>
+                    <select
+                      value={filterClass}
+                      onChange={(e) => { setFilterClass(e.target.value); setFilterSection(''); setSelectedStudent(null); setStudentId(''); setSelectedFees([]); }}
+                      className="w-full px-3 py-2 text-xs border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-400 font-semibold"
+                    >
+                      <option value="">All Classes</option>
+                      {uniqueClasses.map(c => (
+                        <option key={c.id} value={c.name}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Section</label>
+                    <select
+                      value={filterSection}
+                      onChange={(e) => { setFilterSection(e.target.value); setSelectedStudent(null); setStudentId(''); setSelectedFees([]); }}
+                      className="w-full px-3 py-2 text-xs border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-400 font-semibold"
+                    >
+                      <option value="">All Sections</option>
+                      {uniqueSections.map(sec => (
+                        <option key={sec} value={sec}>{sec}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Row 2: Search box with live dropdown */}
+                <div className="relative">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Search by Name or Roll No</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Type student name..."
+                      value={searchName}
+                      onFocus={() => setShowStudentDropdown(true)}
+                      onChange={(e) => { setSearchName(e.target.value); setShowStudentDropdown(true); }}
+                      className="w-full pl-8 pr-8 py-2 text-xs border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-400 font-medium"
+                    />
+                    {searchName && (
+                      <button type="button" onClick={() => { setSearchName(''); setSelectedStudent(null); setStudentId(''); setSelectedFees([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Dropdown results */}
+                  {showStudentDropdown && (searchName || filterClass || filterSection) && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">
+                      {filteredStudents.length === 0 ? (
+                        <div className="px-4 py-3 text-xs text-gray-400 text-center">No students found</div>
+                      ) : (
+                        filteredStudents.slice(0, 20).map(s => (
+                          <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedStudent(s);
+                              setStudentId(s.id);
+                              setSearchName(s.user.name);
+                              setSelectedFees([]);
+                              setShowStudentDropdown(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 text-left transition-colors"
+                          >
+                            <div className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
+                              <span className="text-[10px] font-black text-indigo-600">{s.user.name?.[0]?.toUpperCase()}</span>
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-gray-900 dark:text-white">{s.user.name}</p>
+                              <p className="text-[10px] text-gray-400">{s.rollNo} • {s.class ? `${s.class.name}-${s.class.section}` : 'No class'}</p>
+                            </div>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Selected student badge */}
+                {selectedStudent && (
+                  <div className="flex items-center gap-3 p-3 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800/40 rounded-xl">
+                    <div className="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0">
+                      <span className="text-sm font-black text-white">{selectedStudent.user.name?.[0]?.toUpperCase()}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100 truncate">{selectedStudent.user.name}</p>
+                      <p className="text-[10px] text-indigo-500">{selectedStudent.rollNo} • {selectedStudent.class ? `${selectedStudent.class.name}-${selectedStudent.class.section}` : 'No class'}</p>
+                    </div>
+                    <button type="button" onClick={() => { setSelectedStudent(null); setStudentId(''); setSearchName(''); setSelectedFees([]); }} className="text-indigo-400 hover:text-indigo-600">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
 
               {studentId && (
