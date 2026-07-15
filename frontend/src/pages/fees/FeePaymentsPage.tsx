@@ -36,28 +36,21 @@ export const FeePaymentsPage: React.FC = () => {
   const [showStudentDropdown, setShowStudentDropdown] = useState(false);
 
   // Derived unique classes and sections from loaded class configuration
-  const uniqueClasses = useMemo(() => {
-    return classes
-      .map(c => ({
-        id: c.id,
-        name: c.name,
-        section: c.section,
-        label: `${c.name}-${c.section}`,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label));
+  const uniqueClassNames = useMemo(() => {
+    return Array.from(new Set(classes.map(c => c.name))).sort((a, b) => a.localeCompare(b));
   }, [classes]);
 
   const uniqueSections = useMemo(() => {
     const sections = new Set<string>();
     classes
-      .filter(c => !filterClass || `${c.name}-${c.section}` === filterClass)
+      .filter(c => !filterClass || c.name === filterClass)
       .forEach(c => { if (c.section) sections.add(c.section); });
     return Array.from(sections).sort();
   }, [classes, filterClass]);
 
   const filteredStudents = useMemo(() => {
     return students.filter(s => {
-      const matchClass = !filterClass || `${s.class?.name}-${s.class?.section}` === filterClass;
+      const matchClass = !filterClass || s.class?.name === filterClass;
       const matchSection = !filterSection || s.class?.section === filterSection;
       const matchName = !searchName || 
         s.user?.name?.toLowerCase().includes(searchName.toLowerCase()) ||
@@ -71,9 +64,9 @@ export const FeePaymentsPage: React.FC = () => {
       const isStudent = user?.role === 'STUDENT';
       const [payRes, studRes, structRes, classRes]: any = await Promise.all([
         isStudent ? api.get(`/api/fees/payments?studentId=${user.id}`) : api.get('/api/fees/payments'),
-        isStudent ? Promise.resolve({ data: [] }) : api.get('/api/students'),
+        isStudent ? Promise.resolve({ data: [] }) : api.get('/api/students?limit=1000'),
         isStudent ? Promise.resolve({ data: [] }) : api.get('/api/fees/structures'),
-        isStudent ? Promise.resolve({ data: [] }) : api.get('/api/classes'),
+        isStudent ? Promise.resolve({ data: [] }) : api.get('/api/classes?page=1&limit=100'),
       ]);
       setPayments(payRes.data || payRes || []);
       setStudents(studRes.data.data || studRes.data || []);
@@ -328,8 +321,8 @@ export const FeePaymentsPage: React.FC = () => {
                       className="w-full px-3 py-2 text-xs border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-400 font-semibold"
                     >
                       <option value="">All Classes</option>
-                      {uniqueClasses.map(c => (
-                        <option key={c.id} value={c.label}>{c.label}</option>
+                      {uniqueClassNames.map((name) => (
+                        <option key={name} value={name}>{name}</option>
                       ))}
                     </select>
                   </div>
