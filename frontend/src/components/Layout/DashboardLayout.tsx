@@ -23,6 +23,7 @@ export const DashboardLayout: React.FC = () => {
     if (pathname.startsWith('/settings')) return 'School Settings';
     if (pathname.startsWith('/profile')) return 'My Profile';
     if (pathname.startsWith('/leave')) return 'Leave Management';
+    if (pathname.startsWith('/gate-pass')) return 'Gate Pass';
     if (pathname.startsWith('/roles')) return 'Roles & Permissions';
     return 'JY SCHOOL';
   };

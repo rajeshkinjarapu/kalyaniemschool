@@ -37,6 +37,7 @@ import eventRoutes from './routes/events';
 import examsExtendedRoutes from './routes/examsExtended';
 import formRoutes from './routes/forms';
 import latexRoutes from './routes/latex';
+import gatePassRoutes from './routes/gatePass';
 
 const app = express();
 const httpServer = createServer(app);
@@ -85,6 +86,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/exams-extended', examsExtendedRoutes);
 app.use('/api/forms', formRoutes);
 app.use('/api/latex', latexRoutes);
+app.use('/api/gate-pass', gatePassRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

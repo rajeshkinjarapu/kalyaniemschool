@@ -51,6 +51,7 @@ const RolesPage = lazy(() => import('../pages/settings/RolesPage'));
 const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'));
 const LeaveTypePage = lazy(() => import('../pages/leave/LeaveTypePage'));
 const LeaveRequestLogPage = lazy(() => import('../pages/leave/LeaveRequestLogPage'));
+const GatePassPage = lazy(() => import('../pages/gate-pass/GatePassPage'));
 
 const AttendanceWrapper = () => {
   const { user } = useAuth();
@@ -296,6 +297,14 @@ export const router = createBrowserRouter([
       {
         path: 'leave/request-log',
         element: withSuspense(<LeaveRequestLogPage />),
+      },
+      {
+        path: 'gate-pass',
+        element: withSuspense(
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']}>
+            <GatePassPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

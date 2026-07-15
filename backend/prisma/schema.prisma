@@ -40,6 +40,9 @@ model User {
   // JEE Paper Generator Relations
   latexQuestions   Question[]
   latexPapers      Paper[]
+
+  gatePassRequests GatePass[] @relation("GatePassRequests")
+  approvedGatePasses GatePass[] @relation("ApprovedGatePasses")
 }
 
 model Student {
@@ -69,6 +72,7 @@ model Student {
   feeStructures         FeeStructure[]
   feeDiscounts          FeeDiscount[]
   onlineExamSubmissions OnlineExamSubmission[]
+  gatePasses            GatePass[]
 
   @@index([classId])
 }
@@ -332,6 +336,32 @@ model Event {
   allDay      Boolean  @default(false)
   targetRoles String   // Stored as comma-separated string e.g. "STUDENT,TEACHER"
   createdAt   DateTime @default(now())
+}
+
+model GatePass {
+  id             String    @id @default(uuid())
+  requesterId    String
+  requester      User      @relation("GatePassRequests", fields: [requesterId], references: [id])
+  studentId      String?
+  student        Student?  @relation(fields: [studentId], references: [id])
+  requestType    String    @default("STUDENT") // STUDENT, TEACHER
+  reason         String
+  destination    String?
+  exitTime       String?
+  returnTime     String?
+  notes          String?
+  requestedDate  DateTime  @default(now())
+  status         String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  approvedById   String?
+  approvedBy     User?     @relation("ApprovedGatePasses", fields: [approvedById], references: [id])
+  approvedAt     DateTime?
+  rejectionReason String?
+  slipNumber     String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([requesterId])
+  @@index([studentId])
 }
 
 model SchoolSettings {
