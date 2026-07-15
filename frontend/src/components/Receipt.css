@@ -1,0 +1,158 @@
+:root {
+  --page-width: 210mm;
+  --page-height: 297mm;
+  --page-margin: 10mm; /* if printer supports, otherwise browser margins apply */
+  --card-radius: 6px;
+  --muted: #6b7280;
+  --accent: #111827;
+  --border: #e5e7eb;
+}
+
+* { box-sizing: border-box; }
+
+.receipt-a4 {
+  width: var(--page-width);
+  min-height: var(--page-height);
+  margin: 0 auto;
+  padding: var(--page-margin) 0;
+  background: #fff;
+}
+
+.receipt-inner {
+  width: calc(var(--page-width) - (2 * var(--page-margin)));
+  margin: 0 auto;
+}
+
+.receipt-copy {
+  padding: 10mm;
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  margin-bottom: 8mm;
+  background: #fff;
+  display: block;
+  page-break-inside: avoid;
+}
+
+.receipt-header {
+  display: grid;
+  grid-template-columns: 48px 1fr 100px;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.receipt-header .logo img {
+  width: 48px; height: 48px; object-fit: contain;
+}
+.school-info h1 {
+  font-size: 14pt;
+  letter-spacing: 3px;
+  margin: 0;
+}
+.school-info .address {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 9pt;
+}
+.copy-badge {
+  justify-self: end;
+  background: #111827;
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.receipt-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.card {
+  border: 1px solid var(--border);
+  padding: 8px;
+  border-radius: 6px;
+  background: #fafafa;
+}
+.card h3 {
+  margin: 0 0 6px 0;
+  font-size: 10.5pt;
+}
+
+.payment-breakdown .card { margin-top: 4mm; }
+.breakdown-table { width: 100%; border-collapse: collapse; font-size: 10pt; }
+.breakdown-table td { padding: 6px 4px; border-bottom: 1px dashed var(--border); }
+.breakdown-table tr.total td { font-weight: 700; border-top: 1px solid var(--border); background: #fff; }
+
+.receipt-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 10pt;
+  color: var(--muted);
+}
+.signature {
+  width: 160px;
+  border-top: 1px dotted var(--border);
+  text-align: center;
+  padding-top: 6px;
+  color: #111827;
+}
+
+.cut-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4mm 0;
+  position: relative;
+}
+.cut-line::before {
+  content: "";
+  position: absolute;
+  left: var(--page-margin);
+  right: var(--page-margin);
+  height: 1px;
+  border-top: 1px dashed #9ca3af;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+.cut-line .scissor {
+  z-index: 1;
+  background: #fff;
+  padding: 2px 6px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 6px;
+}
+.cut-line .cut-text {
+  font-size: 9px;
+  color: #6b7280;
+  margin-left: 6px;
+  z-index: 1;
+}
+
+.bold { font-weight: 700; }
+.light { color: var(--muted); font-size: 9.5pt; }
+.amount { text-align: right; font-weight: 700; }
+
+@page {
+  size: A4;
+  margin: 10mm;
+}
+@media print {
+  html, body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    background: #fff;
+  }
+  body { -webkit-print-color-adjust: exact; }
+  .receipt-a4 { box-shadow: none; margin: 0; }
+  .no-print, .app-nav, .app-sidebar { display: none !important; }
+  .receipt-copy { page-break-inside: avoid; }
+}
