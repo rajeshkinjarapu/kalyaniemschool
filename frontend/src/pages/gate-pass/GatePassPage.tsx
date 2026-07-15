@@ -21,12 +21,19 @@ interface GatePassItem {
   rejectionReason?: string;
 }
 
+interface StudentOption {
+  id: string;
+  rollNo?: string;
+  user?: { name: string };
+}
+
 const GatePassPage: React.FC = () => {
   const { user } = useAuth();
   const [items, setItems] = useState<GatePassItem[]>([]);
+  const [students, setStudents] = useState<StudentOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [schoolName, setSchoolName] = useState('JY SCHOOL');
-  const [form, setForm] = useState({ reason: '', destination: '', exitTime: '', returnTime: '', notes: '', requestType: user?.role === 'TEACHER' ? 'TEACHER' : 'STUDENT' });
+  const [form, setForm] = useState({ reason: '', destination: '', exitTime: '', returnTime: '', notes: '', studentId: '', requestType: user?.role === 'TEACHER' ? 'TEACHER' : 'STUDENT' });
   const [selected, setSelected] = useState<GatePassItem | null>(null);
 
   const canApprove = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN';
@@ -48,14 +55,27 @@ const GatePassPage: React.FC = () => {
     api.get('/api/settings').then((response: any) => {
       if (response?.data?.schoolName) setSchoolName(response.data.schoolName);
     }).catch(() => {});
-  }, []);
+
+    if (canApprove) {
+      api.get('/api/students?limit=100').then((response: any) => {
+        const list = Array.isArray(response?.data) ? response.data : [];
+        setStudents(list);
+      }).catch(() => {});
+    }
+  }, [canApprove]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (canApprove && !form.studentId) {
+      toast.error('Please select a student before issuing a gate pass');
+      return;
+    }
+
     try {
-      await api.post('/api/gate-pass', form);
-      toast.success('Gate pass requested');
-      setForm({ reason: '', destination: '', exitTime: '', returnTime: '', notes: '', requestType: user?.role === 'TEACHER' ? 'TEACHER' : 'STUDENT' });
+      await api.post('/api/gate-pass', { ...form, studentId: form.studentId || undefined });
+      toast.success(canApprove ? 'Gate pass issued to student' : 'Gate pass requested');
+      setForm({ reason: '', destination: '', exitTime: '', returnTime: '', notes: '', studentId: '', requestType: user?.role === 'TEACHER' ? 'TEACHER' : 'STUDENT' });
       load();
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Unable to submit request');
@@ -96,19 +116,27 @@ const GatePassPage: React.FC = () => {
         </div>
       </div>
 
-      {!canApprove && (
-        <form onSubmit={submit} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 text-slate-700 font-semibold"><PlusCircle className="h-4 w-4" /> New Request</div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <input className="rounded-xl border border-slate-200 p-3" placeholder="Reason" value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} required />
-            <input className="rounded-xl border border-slate-200 p-3" placeholder="Destination" value={form.destination} onChange={(e) => setForm({ ...form, destination: e.target.value })} />
-            <input className="rounded-xl border border-slate-200 p-3" placeholder="Exit time" value={form.exitTime} onChange={(e) => setForm({ ...form, exitTime: e.target.value })} />
-            <input className="rounded-xl border border-slate-200 p-3" placeholder="Return time" value={form.returnTime} onChange={(e) => setForm({ ...form, returnTime: e.target.value })} />
-          </div>
-          <textarea className="w-full rounded-xl border border-slate-200 p-3" placeholder="Notes" rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
-          <button className="rounded-xl bg-indigo-600 px-4 py-2 text-white font-semibold" type="submit">Submit Request</button>
-        </form>
-      )}
+      <form onSubmit={submit} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+        <div className="flex items-center gap-2 text-slate-700 font-semibold"><PlusCircle className="h-4 w-4" /> {canApprove ? 'Issue Gate Pass to Student' : 'New Request'}</div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {canApprove && (
+            <select className="rounded-xl border border-slate-200 p-3" value={form.studentId} onChange={(e) => setForm({ ...form, studentId: e.target.value })} required>
+              <option value="">Select student</option>
+              {students.map((student) => (
+                <option key={student.id} value={student.id}>
+                  {student.user?.name || 'Unknown student'}{student.rollNo ? ` (${student.rollNo})` : ''}
+                </option>
+              ))}
+            </select>
+          )}
+          <input className="rounded-xl border border-slate-200 p-3" placeholder="Reason" value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} required />
+          <input className="rounded-xl border border-slate-200 p-3" placeholder="Destination" value={form.destination} onChange={(e) => setForm({ ...form, destination: e.target.value })} />
+          <input className="rounded-xl border border-slate-200 p-3" placeholder="Exit time" value={form.exitTime} onChange={(e) => setForm({ ...form, exitTime: e.target.value })} />
+          <input className="rounded-xl border border-slate-200 p-3" placeholder="Return time" value={form.returnTime} onChange={(e) => setForm({ ...form, returnTime: e.target.value })} />
+        </div>
+        <textarea className="w-full rounded-xl border border-slate-200 p-3" placeholder="Notes" rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+        <button className="rounded-xl bg-indigo-600 px-4 py-2 text-white font-semibold" type="submit">{canApprove ? 'Issue Gate Pass' : 'Submit Request'}</button>
+      </form>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
