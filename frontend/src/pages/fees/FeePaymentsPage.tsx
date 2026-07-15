@@ -36,24 +36,32 @@ export const FeePaymentsPage: React.FC = () => {
 
   // Derived unique classes and sections from loaded students
   const uniqueClasses = useMemo(() => {
-    const classMap = new Map<string, { id: string; name: string }>(); 
+    const classMap = new Map<string, { id: string; label: string; name: string; section: string }>();
     students.forEach(s => {
-      if (s.class) classMap.set(s.class.name, { id: s.class.id, name: s.class.name });
+      if (s.class) {
+        const key = `${s.class.name}-${s.class.section}`;
+        classMap.set(key, {
+          id: s.class.id,
+          name: s.class.name,
+          section: s.class.section,
+          label: `${s.class.name}-${s.class.section}`,
+        });
+      }
     });
-    return Array.from(classMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+    return Array.from(classMap.values()).sort((a, b) => a.label.localeCompare(b.label));
   }, [students]);
 
   const uniqueSections = useMemo(() => {
     const sections = new Set<string>();
     students
-      .filter(s => !filterClass || s.class?.name === filterClass)
+      .filter(s => !filterClass || `${s.class?.name}-${s.class?.section}` === filterClass)
       .forEach(s => { if (s.class?.section) sections.add(s.class.section); });
     return Array.from(sections).sort();
   }, [students, filterClass]);
 
   const filteredStudents = useMemo(() => {
     return students.filter(s => {
-      const matchClass = !filterClass || s.class?.name === filterClass;
+      const matchClass = !filterClass || `${s.class?.name}-${s.class?.section}` === filterClass;
       const matchSection = !filterSection || s.class?.section === filterSection;
       const matchName = !searchName || 
         s.user?.name?.toLowerCase().includes(searchName.toLowerCase()) ||
@@ -323,7 +331,7 @@ export const FeePaymentsPage: React.FC = () => {
                     >
                       <option value="">All Classes</option>
                       {uniqueClasses.map(c => (
-                        <option key={c.id} value={c.name}>{c.name}</option>
+                        <option key={c.id} value={c.label}>{c.label}</option>
                       ))}
                     </select>
                   </div>
