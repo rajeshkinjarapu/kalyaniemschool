@@ -152,14 +152,13 @@ export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoo
   );
 
   return (
-    <div className="hidden print:flex flex-col fixed top-0 left-0 right-0 bottom-0 bg-white z-[9999] w-full h-[297mm] text-black print:overflow-hidden print:!m-0 print:!p-0 font-sans">
-      
+    <div className="hidden print:flex flex-col items-center bg-white z-[9999] print:!m-0 print:!p-0 print:w-[210mm] print:h-[297mm] text-black font-sans overflow-hidden">
       {/* Top Half - Student Copy */}
-      <div className="h-[148mm] relative box-border">
+      <div className="h-[148.5mm] w-full relative box-border overflow-hidden">
         <ReceiptHalf type="STUDENT COPY" />
-        
+
         {/* Cutting Line */}
-        <div className="absolute bottom-0 left-8 right-8 border-b-2 border-dashed border-slate-400 flex items-center justify-center translate-y-1/2 z-50">
+        <div className="absolute bottom-0 left-6 right-6 border-b-2 border-dashed border-slate-400 flex items-center justify-center translate-y-1/2 z-50">
           <div className="bg-white px-3 flex items-center gap-2 text-slate-400">
             <Scissors className="w-4 h-4" />
             <span className="text-[10px] font-bold uppercase tracking-widest">Cut Here</span>
@@ -169,10 +168,9 @@ export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoo
       </div>
 
       {/* Bottom Half - Office Copy */}
-      <div className="h-[148mm] relative box-border mt-[1mm]">
+      <div className="h-[148.5mm] w-full relative box-border overflow-hidden">
         <ReceiptHalf type="OFFICE COPY" />
       </div>
-
     </div>
   );
 };
