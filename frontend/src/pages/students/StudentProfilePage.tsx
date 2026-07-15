@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import { 
   ArrowLeft, Mail, Phone, Printer, User2, Calendar, 
   Droplet, ClipboardCheck, Users, Fingerprint, 
-  Hash, MapPin, Sparkles, GraduationCap, Camera, CreditCard, FileDown, Trash2, Edit2
+  Hash, MapPin, Sparkles, GraduationCap, Camera, CreditCard, FileDown, Trash2, Edit2, Wallet
 } from 'lucide-react';
 import { FeeReceiptPrint } from '../../components/fees/FeeReceiptPrint';
 
@@ -105,6 +105,7 @@ export const StudentProfilePage: React.FC = () => {
 
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return; // Prevent double-clicks
     if (selectedFees.length === 0) return toast.error('Please select at least one fee structure to pay.');
     if (method === 'UPI' && !utrNumber) return toast.error('Please enter UTR number');
 

@@ -25,8 +25,8 @@ export const getAll = async (req: AuthRequest, res: Response): Promise<void> => 
   if (gender) where.gender = gender;
   if (search) {
     where.OR = [
-      { user: { name: { contains: search } } },
-      { rollNo: { contains: search } },
+      { user: { name: { contains: search, mode: 'insensitive' } } },
+      { rollNo: { contains: search, mode: 'insensitive' } },
     ];
   }
 

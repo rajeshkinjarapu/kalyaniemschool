@@ -162,14 +162,25 @@ export const createPayment = async (req: AuthRequest, res: Response, next: NextF
         where: { studentId, feeStructureId: p.feeStructureId },
         _sum: { amountPaid: true },
       });
-      const totalPaid = (previousPayments._sum.amountPaid || 0) + Number(p.amountPaid);
+      const alreadyPaid = previousPayments._sum.amountPaid || 0;
+      
+      // GUARD: Skip if already fully paid to prevent duplicate payments
+      if (alreadyPaid >= structure.amount) {
+        continue;
+      }
+
+      // Cap the payment at the remaining amount
+      const remaining = structure.amount - alreadyPaid;
+      const actualAmount = Math.min(Number(p.amountPaid), remaining);
+
+      const totalPaid = alreadyPaid + actualAmount;
       const status = totalPaid >= structure.amount ? 'PAID' : 'PARTIAL';
       
       const payment = await tx.feePayment.create({
         data: { 
           studentId, 
           feeStructureId: p.feeStructureId, 
-          amountPaid: Number(p.amountPaid), 
+          amountPaid: actualAmount, 
           method: method || 'CASH', 
           status: status as any, 
           remarks,
@@ -187,6 +198,10 @@ export const createPayment = async (req: AuthRequest, res: Response, next: NextF
     }
     return results;
   });
+
+  if (createdPayments.length === 0) {
+    return next(createError('All selected fees are already fully paid', 400));
+  }
 
   clearDashboardCache();
   successResponse(res, createdPayments.length === 1 ? createdPayments[0] : createdPayments, 'Payment(s) recorded', 201);

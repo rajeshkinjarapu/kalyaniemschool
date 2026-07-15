@@ -471,9 +471,11 @@ export const ExamListPage: React.FC = () => {
   const fetchQuestionPapers = async () => {
     try {
       const res: any = await api.get('/api/question-papers');
-      setQuestionPapers(res.data || []);
+      // axios interceptor returns response.data directly, so res is already the array
+      setQuestionPapers(Array.isArray(res) ? res : (res?.data || []));
     } catch {
-      toast.error('Failed to load question papers');
+      // Silently fail - question papers are optional, don't block the page with a toast
+      setQuestionPapers([]);
     }
   };
 
