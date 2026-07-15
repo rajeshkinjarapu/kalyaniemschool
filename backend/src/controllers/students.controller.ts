@@ -39,7 +39,6 @@ export const getAll = async (req: AuthRequest, res: Response): Promise<void> => 
       include: {
         user: { select: { id: true, name: true, email: true, phone: true, photoUrl: true, isActive: true } },
         class: { select: { id: true, name: true, section: true } },
-        parent: { include: { user: { select: { name: true, phone: true, email: true } } } },
       },
     }),
     prisma.student.count({ where }),
@@ -55,7 +54,6 @@ export const getById = async (req: AuthRequest, res: Response, next: NextFunctio
     include: {
       user: { select: { id: true, name: true, email: true, phone: true, photoUrl: true, isActive: true, createdAt: true } },
       class: true,
-      parent: { include: { user: { select: { name: true, phone: true, email: true } } } },
       marks: { include: { exam: true, subject: true }, orderBy: { createdAt: 'desc' } },
       feePayments: { include: { feeStructure: true }, orderBy: { createdAt: 'desc' } },
       feeDiscounts: true,
@@ -66,7 +64,7 @@ export const getById = async (req: AuthRequest, res: Response, next: NextFunctio
 };
 
 export const create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { name, password, phone, photoUrl, classId, dob, gender, address, bloodGroup, parentId, studentId, fatherName, motherName, aadharNo, penNumber } = req.body;
+  const { name, password, phone, photoUrl, classId, dob, gender, address, bloodGroup, studentId, fatherName, motherName, aadharNo, penNumber } = req.body;
 
   const count = await prisma.student.count();
   const rollNo = studentId?.trim() || generateRollNo(count + 1);
@@ -93,7 +91,6 @@ export const create = async (req: Request, res: Response, next: NextFunction): P
       gender: gender || null,
       address: address || null,
       bloodGroup: bloodGroup || null,
-      parentId: parentId || null,
       fatherName: fatherName || null,
       motherName: motherName || null,
       aadharNo: aadharNo || null,
@@ -110,7 +107,7 @@ export const create = async (req: Request, res: Response, next: NextFunction): P
 
 export const update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const id = req.params.id as string;
-  const { name, phone, photoUrl, classId, dob, gender, address, bloodGroup, parentId, studentId, fatherName, motherName, aadharNo, penNumber } = req.body;
+  const { name, phone, photoUrl, classId, dob, gender, address, bloodGroup, studentId, fatherName, motherName, aadharNo, penNumber } = req.body;
 
   const student = await prisma.student.findUnique({ where: { id }, include: { user: true } });
   if (!student) return next(createError('Student not found', 404));
@@ -144,7 +141,6 @@ export const update = async (req: Request, res: Response, next: NextFunction): P
       gender: gender || undefined,
       address: address || undefined,
       bloodGroup: bloodGroup || undefined,
-      parentId: parentId !== undefined ? parentId || null : undefined,
       fatherName: fatherName !== undefined ? fatherName || null : undefined,
       motherName: motherName !== undefined ? motherName || null : undefined,
       aadharNo: aadharNo !== undefined ? aadharNo || null : undefined,
@@ -389,7 +385,6 @@ export const getMyProfile = async (req: AuthRequest, res: Response, next: NextFu
     include: {
       user: { select: { id: true, name: true, email: true, phone: true, photoUrl: true } },
       class: true,
-      parent: { include: { user: { select: { name: true, phone: true, email: true } } } },
     },
   });
   if (!student) return next(createError('Student profile not found', 404));

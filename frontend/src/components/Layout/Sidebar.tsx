@@ -13,7 +13,7 @@ interface SidebarProps { isOpen: boolean; setIsOpen: (v: boolean) => void; }
 
 const roleLabels: Record<string, string> = {
   SUPER_ADMIN: 'Super Admin', ADMIN: 'Admin', TEACHER: 'Teacher',
-  STUDENT: 'Student', PARENT: 'Parent', ACCOUNTANT: 'Accountant',
+  STUDENT: 'Student', ACCOUNTANT: 'Accountant',
 };
 
 // Each nav item gets a specific vivid color
@@ -94,13 +94,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       { to: '/exams',     label: 'My Grades',     icon: ClipboardList },
       { to: '/attendance',label: 'Attendance',    icon: CalendarCheck },
       { to: '/timetable', label: 'Timetable',     icon: Calendar      },
-      { to: '/finance',   label: 'My Fees',       icon: CreditCard    },
-      { to: '/gate-pass', label: 'Gate Pass', icon: FileText },
-      { to: '/announcements', label: 'Announcements', icon: Megaphone },
-      { to: '/messages',  label: 'Messages',      icon: MessageSquare },
-    ];
-    if (role === 'PARENT') return [...base,
-      { to: '/attendance',label: 'Attendance',    icon: CalendarCheck },
       { to: '/finance',   label: 'My Fees',       icon: CreditCard    },
       { to: '/gate-pass', label: 'Gate Pass', icon: FileText },
       { to: '/announcements', label: 'Announcements', icon: Megaphone },

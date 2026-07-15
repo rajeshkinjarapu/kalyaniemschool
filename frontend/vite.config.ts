@@ -28,5 +28,8 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    outDir: 'dist',
+  },
   server: { proxy: { '/api': 'http://localhost:5000', '/uploads': 'http://localhost:5000' } },
 })

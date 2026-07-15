@@ -20,7 +20,7 @@ import { bulkImportFees } from '../controllers/fees.controller';
 router.post('/structures/bulk-import', authorize('SUPER_ADMIN', 'ADMIN'), upload.single('file'), bulkImportFees);
 
 // Payments
-router.get('/payments', authorize('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT', 'STUDENT', 'PARENT'), getPayments);
+router.get('/payments', authorize('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT', 'STUDENT'), getPayments);
 router.post('/payments', authorize('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT'), createPayment);
 router.put('/payments/:id', authorize('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT'), updateFeePayment);
 router.delete('/payments/:id', authorize('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT'), deleteFeePayment);

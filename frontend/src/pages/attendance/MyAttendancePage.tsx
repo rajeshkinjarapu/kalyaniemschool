@@ -19,10 +19,6 @@ export const MyAttendancePage: React.FC = () => {
           // fetch student profile to get studentId
           const res = await api.get('/api/auth/me');
           studentId = res.data?.student?.id;
-        } else if (user?.role === 'PARENT') {
-          // fetch parent profile to get studentId (assuming 1st child for now)
-          const res = await api.get('/api/auth/me');
-          studentId = res.data?.parent?.children?.[0]?.id;
         }
 
         if (!studentId) {

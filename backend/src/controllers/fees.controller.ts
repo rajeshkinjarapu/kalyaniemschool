@@ -119,16 +119,6 @@ export const getPayments = async (req: AuthRequest, res: Response): Promise<void
       return;
     }
     where.studentId = student.id;
-  } else if (req.user?.role === Role.PARENT) {
-    const parent = await prisma.parent.findUnique({
-      where: { userId: req.user.id },
-      include: { children: true },
-    });
-    if (!parent?.children?.length) {
-      paginatedResponse(res, [], 0, page, limit, 'Payments fetched');
-      return;
-    }
-    where.studentId = { in: parent.children.map((child) => child.id) };
   }
   if (status) where.status = status;
   if (classId) where.feeStructure = { classId };

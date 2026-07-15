@@ -46,7 +46,7 @@ export const create = async (req: AuthRequest, res: Response, next: NextFunction
         startDate: new Date(startDate),
         endDate: endDate ? new Date(endDate) : null,
         allDay: allDay || false,
-        targetRoles: targetRoles || [Role.STUDENT, Role.TEACHER, Role.PARENT]
+        targetRoles: targetRoles || [Role.STUDENT, Role.TEACHER]
       }
     });
 

@@ -207,9 +207,6 @@ export const getStudentsReport = async (req: Request, res: Response, next: NextF
       include: {
         user: { select: { name: true, email: true, phone: true } },
         class: true,
-        parent: {
-          include: { user: { select: { name: true, phone: true } } }
-        }
       }
     });
 
@@ -226,8 +223,8 @@ export const getStudentsReport = async (req: Request, res: Response, next: NextF
       'DOB': s.dob ? s.dob.toISOString().split('T')[0] : 'N/A',
       'Gender': s.gender || 'N/A',
       'Admission Date': s.admissionDate.toISOString().split('T')[0],
-      'Guardian Name': s.parent ? s.parent.user.name : 'N/A',
-      'Guardian Phone': s.parent ? s.parent.user.phone : 'N/A',
+      'Guardian Name': s.fatherName || 'N/A',
+      'Guardian Phone': s.user.phone || 'N/A',
       'Address': s.address || 'N/A',
       'Medical Info': s.medicalInfo || 'None'
     }));
@@ -558,7 +555,6 @@ export const getStudentsReportPdf = async (req: Request, res: Response, next: Ne
       include: {
         user: { select: { name: true, phone: true } },
         class: true,
-        parent: { include: { user: { select: { name: true, phone: true } } } }
       }
     });
 
@@ -610,8 +606,8 @@ export const getStudentsReportPdf = async (req: Request, res: Response, next: Ne
       doc.text(s.rollNo, 50, currentY + 5, { width: 85 });
       doc.font('Helvetica-Bold').text(s.user.name, 140, currentY + 5, { width: 120 });
       doc.font('Helvetica').text(s.class ? `${s.class.name}-${s.class.section}` : 'N/A', 265, currentY + 5, { width: 55 });
-      doc.text(s.parent ? s.parent.user.name : 'N/A', 325, currentY + 5, { width: 115 });
-      doc.text(s.parent ? s.parent.user.phone || 'N/A' : 'N/A', 445, currentY + 5, { width: 100 });
+      doc.text(s.fatherName || 'N/A', 325, currentY + 5, { width: 115 });
+      doc.text(s.user.phone || 'N/A', 445, currentY + 5, { width: 100 });
 
       doc.moveTo(40, currentY + 18).lineTo(555, currentY + 18).stroke('#f1f5f9');
       currentY += 18;

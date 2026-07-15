@@ -55,7 +55,7 @@ const GatePassPage = lazy(() => import('../pages/gate-pass/GatePassPage'));
 
 const AttendanceWrapper = () => {
   const { user } = useAuth();
-  if (user?.role === 'STUDENT' || user?.role === 'PARENT') {
+  if (user?.role === 'STUDENT') {
     return <MyAttendancePage />;
   }
   return <AttendanceMarkingPage />;
@@ -301,7 +301,7 @@ export const router = createBrowserRouter([
       {
         path: 'gate-pass',
         element: withSuspense(
-          <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT']}>
             <GatePassPage />
           </ProtectedRoute>
         ),

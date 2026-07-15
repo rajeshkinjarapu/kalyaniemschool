@@ -99,7 +99,6 @@ const GatePassPage: React.FC = () => {
 
   const roleLabel = useMemo(() => {
     if (user?.role === 'STUDENT') return 'Student';
-    if (user?.role === 'PARENT') return 'Parent';
     if (user?.role === 'TEACHER') return 'Teacher';
     return 'Admin';
   }, [user?.role]);

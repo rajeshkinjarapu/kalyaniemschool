@@ -15,7 +15,7 @@ export const AnnouncementsPage: React.FC = () => {
   // Form states
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [targetRoles, setTargetRoles] = useState<string[]>(['STUDENT', 'TEACHER', 'PARENT']);
+  const [targetRoles, setTargetRoles] = useState<string[]>(['STUDENT', 'TEACHER']);
 
   const fetchAnnouncements = async () => {
     try {
@@ -175,7 +175,7 @@ export const AnnouncementsPage: React.FC = () => {
               <div>
                 <label className="label">Target Audience Roles</label>
                 <div className="flex gap-4 text-xs font-semibold pt-1">
-                  {['STUDENT', 'TEACHER', 'PARENT'].map((role) => (
+                  {['STUDENT', 'TEACHER'].map((role) => (
                     <label key={role} className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"

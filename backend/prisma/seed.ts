@@ -22,7 +22,6 @@ async function main() {
     prisma.subject.deleteMany(),
     prisma.student.deleteMany(),
     prisma.teacher.deleteMany(),
-    prisma.parent.deleteMany(),
     prisma.class.deleteMany(),
     prisma.schoolSettings.deleteMany(),
     prisma.event.deleteMany(),
@@ -165,29 +164,6 @@ async function main() {
   await prisma.classSubjectTeacher.create({ data: { classId: grade9B.id, subjectId: subjectMath9.id, teacherId: teacher.id } });
   await prisma.classSubjectTeacher.create({ data: { classId: grade9B.id, subjectId: subjectEng9.id, teacherId: teacher2.id } });
   console.log('✅ Teacher assignments created');
-
-  // 10. Create Parent User + Parent Record
-  const parentPassword = await bcrypt.hash('Parent@123', 12);
-  const parentUser = await prisma.user.create({
-    data: {
-      name: 'Suresh Verma',
-      email: 'suresh.verma@gmail.com',
-      password: parentPassword,
-      role: Role.PARENT,
-      phone: '+91-9000000004',
-      isActive: true,
-    },
-  });
-
-  const parent = await prisma.parent.create({
-    data: {
-      userId: parentUser.id,
-      occupation: 'Business',
-      relation: 'Father',
-    },
-  });
-  console.log('✅ Parent created:', parentUser.email);
-
   // 11. Create Student User + Student Record (Alice)
   const studentPassword = await bcrypt.hash('Student@123', 12);
   const studentUser = await prisma.user.create({
@@ -211,7 +187,6 @@ async function main() {
       admissionDate: new Date('2024-06-01'),
       address: '45 Rose Street, Knowledge City',
       bloodGroup: 'B+',
-      parentId: parent.id,
     },
   });
   console.log('✅ Student (Alice) created:', studentUser.email);
@@ -479,8 +454,8 @@ async function main() {
   await prisma.announcement.create({
     data: {
       title: 'Welcome to Academic Year 2024-2025',
-      content: 'We are excited to welcome all students, teachers, and parents to the new academic year. Please check the timetable and fee schedule for your class.',
-      targetRoles: 'STUDENT,PARENT,TEACHER',
+      content: 'We are excited to welcome all students and teachers to the new academic year. Please check the timetable and fee schedule for your class.',
+      targetRoles: 'STUDENT,TEACHER',
       createdById: adminUser.id,
       isActive: true,
     },
@@ -490,7 +465,7 @@ async function main() {
     data: {
       title: 'Mid-Term Examination Schedule Released',
       content: 'The Mid-Term Examination for Term 1 will be held from September 15 to September 22, 2024. Please check the detailed schedule on the notice board.',
-      targetRoles: 'STUDENT,PARENT',
+      targetRoles: 'STUDENT',
       createdById: adminUser.id,
       isActive: true,
       expiresAt: new Date('2024-09-30'),
@@ -505,50 +480,9 @@ async function main() {
       createdById: adminUser.id,
       isActive: true,
     },
-  });
+  });  console.log('✅ Announcements created');
 
-  await prisma.announcement.create({
-    data: {
-      title: 'Fee Payment Reminder',
-      content: 'Term 1 fees are due by July 31, 2024. Parents are requested to clear pending dues to avoid late fee charges.',
-      targetRoles: 'PARENT',
-      createdById: adminUser.id,
-      isActive: true,
-    },
-  });
-  console.log('✅ Announcements created');
-
-  // 20. Messages between teacher and parent
-  await prisma.message.create({
-    data: {
-      senderId: parentUser.id,
-      receiverId: teacherUser.id,
-      content: 'Hello Mr. Rajesh, I wanted to ask about Alice\'s performance in Mathematics this term.',
-      readStatus: 'READ',
-      sentAt: new Date(Date.now() - 2 * 86400000),
-    },
-  });
-
-  await prisma.message.create({
-    data: {
-      senderId: teacherUser.id,
-      receiverId: parentUser.id,
-      content: 'Hello Mr. Verma! Alice is doing exceptionally well. She scored 92 in the mid-term. Keep encouraging her!',
-      readStatus: 'READ',
-      sentAt: new Date(Date.now() - 2 * 86400000 + 3600000),
-    },
-  });
-
-  await prisma.message.create({
-    data: {
-      senderId: parentUser.id,
-      receiverId: teacherUser.id,
-      content: 'Thank you so much! That is wonderful news. Is there anything we should focus on at home?',
-      readStatus: 'UNREAD',
-      sentAt: new Date(Date.now() - 86400000),
-    },
-  });
-
+  // 20. Messages between users
   await prisma.message.create({
     data: {
       senderId: adminUser.id,
@@ -560,7 +494,6 @@ async function main() {
   });
   console.log('✅ Messages created');
 
-  // 21. Events
   await prisma.event.create({
     data: {
       title: 'Annual Sports Day',
@@ -568,18 +501,18 @@ async function main() {
       startDate: new Date('2024-10-15T08:00:00Z'),
       endDate: new Date('2024-10-15T17:00:00Z'),
       allDay: true,
-      targetRoles: 'STUDENT,TEACHER,PARENT',
+      targetRoles: 'STUDENT,TEACHER',
     },
   });
 
   await prisma.event.create({
     data: {
-      title: 'Parent-Teacher Meeting',
-      description: 'Monthly parent-teacher meeting to discuss student progress.',
+      title: 'Staff Planning Meeting',
+      description: 'Monthly planning meeting to discuss school affairs.',
       startDate: new Date('2024-08-30T10:00:00Z'),
       endDate: new Date('2024-08-30T13:00:00Z'),
       allDay: false,
-      targetRoles: 'PARENT,TEACHER',
+      targetRoles: 'TEACHER',
     },
   });
 
@@ -611,11 +544,10 @@ async function main() {
   console.log('   Admin:   admin@rajacademy.com    / Admin@123    (SUPER_ADMIN)');
   console.log('   Teacher: rajesh.kumar@rajacademy.com / Teacher@123  (TEACHER)');
   console.log('   Teacher: priya.sharma@rajacademy.com / Teacher@123  (TEACHER)');
-  console.log('   Parent:  suresh.verma@gmail.com    / Parent@123   (PARENT)');
   console.log('   Student: alice.verma@student.rajacademy.com / Student@123 (STUDENT)');
   console.log('   Student: bob.singh@student.rajacademy.com   / Student@123 (STUDENT)');
   console.log('   Student: carol.patel@student.rajacademy.com / Student@123 (STUDENT)');
-  console.log('===========================\n');
+  console.log('===========================');
 }
 
 main()

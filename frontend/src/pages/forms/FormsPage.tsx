@@ -63,7 +63,7 @@ export const FormsPage: React.FC = () => {
     { id: '1', label: 'Full Name', type: 'text', required: true }
   ]);
 
-  const ROLES = ['ALL', 'STUDENT', 'TEACHER', 'PARENT', 'ACCOUNTANT'];
+  const ROLES = ['ALL', 'STUDENT', 'TEACHER', 'ACCOUNTANT'];
 
   const fetchForms = async () => {
     setLoading(true);

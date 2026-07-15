@@ -56,7 +56,6 @@ export const DashboardPage: React.FC = () => {
       {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && <AdminView data={data} />}
       {user?.role === 'TEACHER' && <TeacherView data={data} />}
       {user?.role === 'STUDENT' && <StudentView data={data} />}
-      {user?.role === 'PARENT' && <ParentView data={data} />}
     </div>
   );
 };
@@ -70,8 +69,7 @@ const WelcomeBanner: React.FC<{ name: string; role: string }> = ({ name, role })
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
   const roleLabel: Record<string, string> = {
-    SUPER_ADMIN: 'Super Administrator', ADMIN: 'Administrator',
-    TEACHER: 'Teacher', STUDENT: 'Student', PARENT: 'Parent', ACCOUNTANT: 'Accountant',
+    TEACHER: 'Teacher', STUDENT: 'Student', ACCOUNTANT: 'Accountant',
   };
   return (
     <div className="relative overflow-hidden rounded-[2rem]" style={{
@@ -630,116 +628,5 @@ const StudentView: React.FC<{ data: any }> = ({ data }) => {
     </div>
   );
 };
-
-/* ── Parent View ────────────────────────────────────────── */
-const ParentView: React.FC<{ data: any }> = ({ data }) => (
-  <div className="space-y-7">
-    <div>
-      <div className="flex items-center gap-3 mb-5">
-        <div className="p-2 rounded-xl bg-indigo-50"><Users className="w-5 h-5 text-indigo-600" /></div>
-        <div>
-          <h2 className="text-lg font-black text-slate-900">My Children</h2>
-          <p className="text-xs text-slate-400 font-medium">Academic overview and performance</p>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {data.children?.map((child: any) => {
-          const pct = child.attendancePercentage || 0;
-          const ac = pct >= 80 ? '#10b981' : pct >= 60 ? '#f59e0b' : '#f43f5e';
-          const feeOk = child.feeStatus?.status === 'PAID';
-          return (
-            <div key={child.id} className="rounded-2xl overflow-hidden"
-              style={{ border: '1px solid rgba(226,232,240,0.8)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
-              <div className="p-5 flex items-center gap-4" style={{ background: 'linear-gradient(135deg,#1e1b4b 0%,#312e81 100%)' }}>
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black text-white shrink-0"
-                  style={{ background: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.2)' }}>
-                  {child.name.charAt(0)}
-                </div>
-                <div>
-                  <h3 className="text-base font-black text-white leading-tight">{child.name}</h3>
-                  <div className="flex gap-2 mt-1.5">
-                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-400/30 text-indigo-200">Roll: {child.rollNo}</span>
-                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-white/15 text-white">{child.className}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="p-5 bg-white space-y-4">
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Attendance</span>
-                    <span className="text-sm font-black" style={{ color: ac }}>{pct}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
-                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: `linear-gradient(90deg,${ac},${ac}99)` }} />
-                  </div>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-xl"
-                  style={{ background: feeOk ? '#ecfdf5' : '#fffbeb', border: `1px solid ${feeOk ? '#a7f3d0' : '#fde68a'}` }}>
-                  <div className="flex items-center gap-2">
-                    <Wallet className="w-4 h-4" style={{ color: feeOk ? '#059669' : '#d97706' }} />
-                    <span className="text-xs font-bold" style={{ color: feeOk ? '#065f46' : '#92400e' }}>Fee Status</span>
-                  </div>
-                  <span className="text-xs font-black px-2.5 py-0.5 rounded-full"
-                    style={{ background: feeOk ? '#10b98122' : '#f59e0b22', color: feeOk ? '#059669' : '#d97706' }}>
-                    {feeOk ? '✓ Paid' : child.feeStatus?.status === 'PARTIAL' ? 'Partial' : 'Pending'}
-                  </span>
-                </div>
-                {child.recentMarks?.length > 0 && (
-                  <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Recent Marks</p>
-                    <div className="space-y-1.5">
-                      {child.recentMarks.map((m: any, mi: number) => {
-                        const mpct = Math.round((m.marksObtained / m.maxMarks) * 100);
-                        const mc = mpct >= 80 ? '#10b981' : mpct >= 60 ? '#f59e0b' : '#f43f5e';
-                        return (
-                          <div key={mi} className="flex items-center justify-between text-xs">
-                            <span className="text-slate-600 font-medium truncate max-w-[60%]">{m.subjectName}</span>
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold text-slate-700">{m.marksObtained}/{m.maxMarks}</span>
-                              <span className="font-black px-1.5 py-0.5 rounded-md text-[10px]" style={{ background: mc + '18', color: mc }}>{m.grade}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-        {(!data.children || data.children.length === 0) && (
-          <div className="col-span-full text-center py-12 text-slate-400 text-sm">No children records found.</div>
-        )}
-      </div>
-    </div>
-
-    {data.announcements?.length > 0 && (
-      <ChartCard>
-        <SectionHeader title="Announcements" subtitle="Important school notices for parents" icon={Megaphone} iconColor="#8b5cf6"
-          action={<Link to="/announcements" className="text-xs font-bold text-purple-600 flex items-center gap-1">View All <ChevronRight className="w-3.5 h-3.5" /></Link>} />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {data.announcements.slice(0, 4).map((a: any, i: number) => {
-            const c = COLORS[i % COLORS.length];
-            return (
-              <div key={a.id} className="p-4 rounded-xl flex gap-3" style={{ background: c + '06', border: `1px solid ${c}18` }}>
-                <div className="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center" style={{ background: c + '15' }}>
-                  <Megaphone className="w-4 h-4" style={{ color: c }} />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-800 line-clamp-1">{a.title}</h4>
-                  <p className="text-xs text-slate-400 line-clamp-2 mt-0.5">{a.content}</p>
-                  <p className="text-[10px] font-bold mt-1.5" style={{ color: c }}>
-                    {new Date(a.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </ChartCard>
-    )}
-  </div>
-);
 
 export default DashboardPage;

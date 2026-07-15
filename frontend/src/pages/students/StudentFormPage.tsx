@@ -9,7 +9,6 @@ export const StudentFormPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [classes, setClasses] = useState<any[]>([]);
-  const [parents, setParents] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -18,12 +17,8 @@ export const StudentFormPage: React.FC = () => {
 
   const fetchClassesAndParents = async () => {
     try {
-      const [classRes, parentRes]: any = await Promise.all([
-        api.get('/api/classes'),
-        api.get('/api/users?role=PARENT'),
-      ]);
+      const classRes: any = await api.get('/api/classes');
       setClasses(classRes.data || classRes || []);
-      setParents(parentRes.data.data || parentRes.data || []);
     } catch (e) {
       console.error(e);
     }
@@ -41,7 +36,6 @@ export const StudentFormPage: React.FC = () => {
         studentId: student.rollNo,
         phone: student.user.phone || '',
         classId: student.classId || '',
-        parentId: student.parentId || '',
         dob: student.dob ? new Date(student.dob).toISOString().split('T')[0] : '',
         gender: student.gender || '',
         address: student.address || '',
@@ -179,15 +173,6 @@ export const StudentFormPage: React.FC = () => {
               </select>
             </div>
 
-            <div>
-              <label className="label">Link Guardian</label>
-              <select className="input" {...register('parentId')}>
-                <option value="">Select Parent</option>
-                {parents.map(p => (
-                  <option key={p.id} value={p.id}>{p.name} ({p.email})</option>
-                ))}
-              </select>
-            </div>
 
             <div>
               <label className="label">Date of Birth</label>

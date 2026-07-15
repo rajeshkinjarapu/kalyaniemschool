@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">JY School ERP</string>
+    <string name="title_activity_main">JY School ERP</string>
+    <string name="package_name">com.jyschool.erp</string>
+    <string name="custom_url_scheme">com.jyschool.erp</string>
+</resources>

@@ -44,14 +44,6 @@ export const getByStudent = async (req: AuthRequest, res: Response, next: NextFu
   if (req.user?.role === Role.STUDENT) {
     const student = await prisma.student.findUnique({ where: { userId: req.user.id } });
     if (!student || student.id !== studentId) return next(createError('You do not have permission to view this attendance', 403));
-  } else if (req.user?.role === Role.PARENT) {
-    const parent = await prisma.parent.findUnique({
-      where: { userId: req.user.id },
-      include: { children: true },
-    });
-    if (!parent || !parent.children.some((child) => child.id === studentId)) {
-      return next(createError('You do not have permission to view this attendance', 403));
-    }
   }
 
   const where: any = { studentId };

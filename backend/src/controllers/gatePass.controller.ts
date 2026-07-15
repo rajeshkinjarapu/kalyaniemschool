@@ -24,10 +24,6 @@ export const listGatePasses = async (req: AuthRequest, res: Response, next: Next
     if (user.role === 'STUDENT') {
       const student = await prisma.student.findFirst({ where: { userId: user.id } });
       where.studentId = student?.id;
-    } else if (user.role === 'PARENT') {
-      const parent = await prisma.parent.findFirst({ where: { userId: user.id } });
-      const childIds = await prisma.student.findMany({ where: { parentId: parent?.id }, select: { id: true } });
-      where.studentId = { in: childIds.map((c) => c.id) };
     } else if (user.role === 'TEACHER') {
       where.requesterId = user.id;
     }

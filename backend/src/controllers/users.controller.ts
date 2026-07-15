@@ -92,12 +92,6 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
         rollNo,
       }
     });
-  } else if (role === 'PARENT') {
-    await prisma.parent.create({
-      data: {
-        userId: user.id,
-      }
-    });
   }
 
   successResponse(res, user, 'User created successfully', 201);
@@ -142,11 +136,6 @@ export const update = async (req: Request, res: Response, next: NextFunction): P
         const count = await prisma.student.count();
         const year = new Date().getFullYear().toString().slice(-2);
         await prisma.student.create({ data: { userId: id, rollNo: `JY${year}-${String(count + 1).padStart(4, '0')}` } });
-      }
-    } else if (role === 'PARENT') {
-      const hasParent = await prisma.parent.findUnique({ where: { userId: id } });
-      if (!hasParent) {
-        await prisma.parent.create({ data: { userId: id } });
       }
     }
   }

@@ -332,7 +332,6 @@ export const SettingsPage: React.FC = () => {
                 <option value="ADMIN">Admin</option>
                 <option value="TEACHER">Teacher</option>
                 <option value="STUDENT">Student</option>
-                <option value="PARENT">Parent</option>
               </select>
               <button
                 onClick={handleOpenCreateModal}
@@ -506,7 +505,6 @@ export const SettingsPage: React.FC = () => {
                     <option value="ADMIN">Admin</option>
                     <option value="TEACHER">Teacher</option>
                     <option value="STUDENT">Student</option>
-                    <option value="PARENT">Parent</option>
                   </select>
                 </div>
               </div>

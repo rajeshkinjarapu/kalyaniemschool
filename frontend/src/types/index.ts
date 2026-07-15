@@ -9,10 +9,9 @@ export interface User {
   createdAt: string;
   student?: Student;
   teacher?: Teacher;
-  parent?: Parent;
 }
 
-export type Role = 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT' | 'PARENT' | 'ACCOUNTANT';
+export type Role = 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT' | 'ACCOUNTANT';
 
 export interface Student {
   id: string;
@@ -26,8 +25,6 @@ export interface Student {
   address?: string;
   bloodGroup?: string;
   medicalInfo?: string;
-  parentId?: string;
-  parent?: Parent;
   admissionDate: string;
 }
 
@@ -41,14 +38,6 @@ export interface Teacher {
   joiningDate: string;
 }
 
-export interface Parent {
-  id: string;
-  userId: string;
-  user: User;
-  occupation?: string;
-  relation?: string;
-  children?: Student[];
-}
 
 export interface Class {
   id: string;

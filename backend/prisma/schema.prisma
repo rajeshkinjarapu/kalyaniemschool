@@ -28,7 +28,6 @@ model User {
 
   student      Student?
   teacher      Teacher?
-  parent       Parent?
   sentMessages     Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
   announcements    Announcement[]
@@ -58,8 +57,6 @@ model Student {
   address        String?
   bloodGroup     String?
   medicalInfo    String?
-  parentId       String?
-  parent         Parent?   @relation(fields: [parentId], references: [id])
   fatherName     String?
   motherName     String?
   aadharNo       String?
@@ -90,16 +87,6 @@ model Teacher {
   timetableSlots        Timetable[]
   homeRoomClass         Class[]   @relation("ClassTeacher")
   attendanceMarked      Attendance[] @relation("TeacherMarked")
-}
-
-model Parent {
-  id           String    @id @default(uuid())
-  userId       String    @unique
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  occupation   String?
-  relation     String?   // Father, Mother, Guardian
-
-  children     Student[]
 }
 
 model Class {

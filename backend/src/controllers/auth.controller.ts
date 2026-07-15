@@ -33,7 +33,6 @@ export const register = async (req: AuthRequest, res: Response, next: NextFuncti
         gender: profileData.gender || null,
         address: profileData.address || null,
         bloodGroup: profileData.bloodGroup || null,
-        parentId: profileData.parentId || null,
       },
     });
   } else if (role === Role.TEACHER) {
@@ -45,14 +44,6 @@ export const register = async (req: AuthRequest, res: Response, next: NextFuncti
         employeeId,
         qualification: profileData.qualification || null,
         specialization: profileData.specialization || null,
-      },
-    });
-  } else if (role === Role.PARENT) {
-    await prisma.parent.create({
-      data: {
-        userId: user.id,
-        occupation: profileData.occupation || null,
-        relation: profileData.relation || null,
       },
     });
   }
@@ -93,11 +84,9 @@ export const login = async (req: AuthRequest, res: Response, next: NextFunction)
       student: {
         include: {
           class: true,
-          parent: { include: { user: { select: { name: true, phone: true } } } },
         },
       },
       teacher: { include: { homeRoomClass: true } },
-      parent: { include: { children: { include: { user: { select: { name: true, phone: true } }, class: true } } } },
     },
   });
 
@@ -182,9 +171,8 @@ export const getMe = async (req: AuthRequest, res: Response, next: NextFunction)
   const user = await prisma.user.findUnique({
     where: { id: req.user!.id },
     include: {
-      student: { include: { class: true, parent: { include: { user: { select: { name: true, phone: true } } } } } },
+      student: { include: { class: true } },
       teacher: { include: { homeRoomClass: true } },
-      parent: { include: { children: { include: { user: { select: { name: true } } } } } },
     },
   });
   if (!user) return next(createError('User not found', 404));
