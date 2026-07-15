@@ -16,6 +16,7 @@ export const ExamListPage: React.FC = () => {
   const { user } = useAuth();
   const isAdminOrTeacher = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'TEACHER';
   const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN';
+  const isTeacher = user?.role === 'TEACHER';
   const isStudent = user?.role === 'STUDENT';
 
   // Search parameters for linking tabs from sidebar
@@ -23,7 +24,7 @@ export const ExamListPage: React.FC = () => {
   const tabParam = searchParams.get('tab');
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<'examination' | 'exam-plan' | 'question-group' | 'question-bank' | 'add-online-exam' | 'online-exams' | 'written-exam' | 'admit-card' | 'results' | 'progress-card' | 'settings' | 'slip-tests' | ''>('');
+  const [activeTab, setActiveTab] = useState<'examination' | 'exam-plan' | 'question-group' | 'question-bank' | 'question-papers' | 'add-online-exam' | 'online-exams' | 'written-exam' | 'admit-card' | 'results' | 'progress-card' | 'settings' | 'slip-tests' | ''>('');
 
   useEffect(() => {
     if (tabParam) {
@@ -718,8 +719,9 @@ export const ExamListPage: React.FC = () => {
             <span>Examinations Suite</span>
           </h3>
           <p className="text-xs text-gray-500 mt-1">Select a module below to manage exams, grading, and online tests.</p>
-           {!activeTab && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+        </div>
+        {!activeTab && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
           <button onClick={() => setActiveTab('examination')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-1">
             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <Plus className="w-8 h-8" />
@@ -790,7 +792,8 @@ export const ExamListPage: React.FC = () => {
             <span className="text-xs font-black uppercase tracking-widest text-center">Settings</span>
           </button>
         </div>
-      )}   </div>
+      )}
+    </div>
 
       {/* Create Exam Modal */}
       {showExamModal && (

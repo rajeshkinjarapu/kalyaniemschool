@@ -105,9 +105,12 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
 
   // Handles multi-correct answer toggles (e.g. A, C)
   const handleMultiAnswerToggle = (option: string) => {
-    let answers = formData.correctAnswer.split(',').map((x) => x.trim()).filter(Boolean);
+    let answers = formData.correctAnswer
+      .split(',')
+      .map((x: string) => x.trim())
+      .filter(Boolean);
     if (answers.includes(option)) {
-      answers = answers.filter((a) => a !== option);
+      answers = answers.filter((a: string) => a !== option);
     } else {
       answers.push(option);
     }
@@ -372,7 +375,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
               {formData.type === 'MCQ_MULTI' && (
                 <div className="flex gap-2">
                   {['A', 'B', 'C', 'D'].map((opt) => {
-                    const active = formData.correctAnswer.split(',').map((x) => x.trim()).includes(opt);
+                    const active = formData.correctAnswer.split(',').map((x: string) => x.trim()).includes(opt);
                     return (
                       <button
                         key={opt}

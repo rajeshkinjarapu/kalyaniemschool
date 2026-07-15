@@ -1,66 +1,54 @@
+import React, { Suspense, lazy } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import DashboardLayout from '../components/Layout/DashboardLayout';
-
-// Auth Pages
-import LoginPage from '../pages/auth/LoginPage';
-import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
-
-// Dashboards Page (combines all dashboards into one dynamic routing entry)
-import DashboardPage from '../pages/dashboard/DashboardPage';
-
-// Students
-import StudentListPage from '../pages/students/StudentListPage';
-import StudentFormPage from '../pages/students/StudentFormPage';
-import StudentProfilePage from '../pages/students/StudentProfilePage';
-
-// Teachers
-import TeacherListPage from '../pages/teachers/TeacherListPage';
-import TeacherFormPage from '../pages/teachers/TeacherFormPage';
-import TeacherProfilePage from '../pages/teachers/TeacherProfilePage';
-
-// Classes
-import ClassManagementPage from '../pages/classes/ClassManagementPage';
-import ClassDetailPage from '../pages/classes/ClassDetailPage';
-
-// Subjects
-import SubjectPage from '../pages/subjects/SubjectPage';
-
-// Attendance
-import AttendanceMarkingPage from '../pages/attendance/AttendanceMarkingPage';
-import { MyAttendancePage } from '../pages/attendance/MyAttendancePage';
-import AttendanceReportPage from '../pages/attendance/AttendanceReportPage';
-import AttendanceDailyReportPage from '../pages/attendance/AttendanceDailyReportPage';
-
-// Exams
-import ExamListPage from '../pages/exams/ExamListPage';
-import MarksEntryPage from '../pages/exams/MarksEntryPage';
-import ReportCardPage from '../pages/exams/ReportCardPage';
-
-// Paper Generator
-import { Dashboard as PaperGeneratorDashboard } from '../pages/paper-generator/Dashboard';
-import { QuestionBank as QuestionBankPage } from '../pages/paper-generator/QuestionBank';
-import { PaperBuilder as PaperBuilderPage } from '../pages/paper-generator/PaperBuilder';
-import { PaperDetail as PaperDetailPage } from '../pages/paper-generator/PaperDetail';
-
-// Timetable
-import TimetablePage from '../pages/timetable/TimetablePage';
-
-// Finance & Fees
-import FinancePage from '../pages/fees/FinancePage';
-import { FeePaymentsPage } from '../pages/fees/FeePaymentsPage';
-
-// Announcements
-import AnnouncementsPage from '../pages/announcements/AnnouncementsPage';
-
-// Messages
-import MessagesPage from '../pages/messages/MessagesPage';
-
-// Reports
-import ReportsPage from '../pages/reports/ReportsPage';
-
-// Context
+import { LoadingSpinner } from '../components/UI/LoadingSpinner';
 import { useAuth } from '../hooks/useAuth';
+
+const pageLoader = (
+  <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
+    <LoadingSpinner size="lg" />
+  </div>
+);
+
+const withSuspense = (element: React.ReactElement) => (
+  <Suspense fallback={pageLoader}>{element}</Suspense>
+);
+
+const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
+const ForgotPasswordPage = lazy(() => import('../pages/auth/ForgotPasswordPage'));
+const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
+const StudentListPage = lazy(() => import('../pages/students/StudentListPage'));
+const StudentFormPage = lazy(() => import('../pages/students/StudentFormPage'));
+const StudentProfilePage = lazy(() => import('../pages/students/StudentProfilePage'));
+const TeacherListPage = lazy(() => import('../pages/teachers/TeacherListPage'));
+const TeacherFormPage = lazy(() => import('../pages/teachers/TeacherFormPage'));
+const TeacherProfilePage = lazy(() => import('../pages/teachers/TeacherProfilePage'));
+const ClassManagementPage = lazy(() => import('../pages/classes/ClassManagementPage'));
+const ClassDetailPage = lazy(() => import('../pages/classes/ClassDetailPage'));
+const SubjectPage = lazy(() => import('../pages/subjects/SubjectPage'));
+const AttendanceMarkingPage = lazy(() => import('../pages/attendance/AttendanceMarkingPage'));
+const MyAttendancePage = lazy(() => import('../pages/attendance/MyAttendancePage').then((mod) => ({ default: mod.MyAttendancePage })));
+const AttendanceReportPage = lazy(() => import('../pages/attendance/AttendanceReportPage'));
+const AttendanceDailyReportPage = lazy(() => import('../pages/attendance/AttendanceDailyReportPage'));
+const ExamListPage = lazy(() => import('../pages/exams/ExamListPage'));
+const MarksEntryPage = lazy(() => import('../pages/exams/MarksEntryPage'));
+const ReportCardPage = lazy(() => import('../pages/exams/ReportCardPage'));
+const PaperGeneratorDashboard = lazy(() => import('../pages/paper-generator/Dashboard').then((mod) => ({ default: mod.Dashboard })));
+const QuestionBankPage = lazy(() => import('../pages/paper-generator/QuestionBank').then((mod) => ({ default: mod.QuestionBank })));
+const PaperBuilderPage = lazy(() => import('../pages/paper-generator/PaperBuilder').then((mod) => ({ default: mod.PaperBuilder })));
+const PaperDetailPage = lazy(() => import('../pages/paper-generator/PaperDetail').then((mod) => ({ default: mod.PaperDetail })));
+const TimetablePage = lazy(() => import('../pages/timetable/TimetablePage'));
+const FinancePage = lazy(() => import('../pages/fees/FinancePage'));
+const FeePaymentsPage = lazy(() => import('../pages/fees/FeePaymentsPage'));
+const AnnouncementsPage = lazy(() => import('../pages/announcements/AnnouncementsPage'));
+const MessagesPage = lazy(() => import('../pages/messages/MessagesPage'));
+const ReportsPage = lazy(() => import('../pages/reports/ReportsPage'));
+const SettingsPage = lazy(() => import('../pages/settings/SettingsPage'));
+const RolesPage = lazy(() => import('../pages/settings/RolesPage'));
+const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'));
+const LeaveTypePage = lazy(() => import('../pages/leave/LeaveTypePage'));
+const LeaveRequestLogPage = lazy(() => import('../pages/leave/LeaveRequestLogPage'));
 
 const AttendanceWrapper = () => {
   const { user } = useAuth();
@@ -70,25 +58,14 @@ const AttendanceWrapper = () => {
   return <AttendanceMarkingPage />;
 };
 
-// Settings
-import SettingsPage from '../pages/settings/SettingsPage';
-import RolesPage from '../pages/settings/RolesPage';
-
-// Profile
-import ProfilePage from '../pages/profile/ProfilePage';
-
-// Leave
-import LeaveTypePage from '../pages/leave/LeaveTypePage';
-import LeaveRequestLogPage from '../pages/leave/LeaveRequestLogPage';
-
 export const router = createBrowserRouter([
   {
     path: '/login',
-    element: <LoginPage />,
+    element: withSuspense(<LoginPage />),
   },
   {
     path: '/forgot-password',
-    element: <ForgotPasswordPage />,
+    element: withSuspense(<ForgotPasswordPage />),
   },
   {
     path: '/',
@@ -104,11 +81,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'dashboard',
-        element: <DashboardPage />,
+        element: withSuspense(<DashboardPage />),
       },
       {
         path: 'students',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <StudentListPage />
           </ProtectedRoute>
@@ -116,7 +93,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'students/new',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <StudentFormPage />
           </ProtectedRoute>
@@ -124,11 +101,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'students/:id',
-        element: <StudentProfilePage />,
+        element: withSuspense(<StudentProfilePage />),
       },
       {
         path: 'students/:id/edit',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <StudentFormPage />
           </ProtectedRoute>
@@ -136,7 +113,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'teachers',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <TeacherListPage />
           </ProtectedRoute>
@@ -144,7 +121,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'teachers/new',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <TeacherFormPage />
           </ProtectedRoute>
@@ -152,11 +129,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'teachers/:id',
-        element: <TeacherProfilePage />,
+        element: withSuspense(<TeacherProfilePage />),
       },
       {
         path: 'teachers/:id/edit',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <TeacherFormPage />
           </ProtectedRoute>
@@ -164,7 +141,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'classes',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <ClassManagementPage />
           </ProtectedRoute>
@@ -172,11 +149,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'classes/:id',
-        element: <ClassDetailPage />,
+        element: withSuspense(<ClassDetailPage />),
       },
       {
         path: 'subjects',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <SubjectPage />
           </ProtectedRoute>
@@ -184,23 +161,23 @@ export const router = createBrowserRouter([
       },
       {
         path: 'attendance',
-        element: <AttendanceWrapper />,
+        element: withSuspense(<AttendanceWrapper />),
       },
       {
         path: 'attendance/report',
-        element: <AttendanceReportPage />,
+        element: withSuspense(<AttendanceReportPage />),
       },
       {
         path: 'attendance/daily-report',
-        element: <AttendanceDailyReportPage />,
+        element: withSuspense(<AttendanceDailyReportPage />),
       },
       {
         path: 'exams',
-        element: <ExamListPage />,
+        element: withSuspense(<ExamListPage />),
       },
       {
         path: 'exams/:id/entry',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER']}>
             <MarksEntryPage />
           </ProtectedRoute>
@@ -208,11 +185,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'exams/:examId/report-card/:studentId',
-        element: <ReportCardPage />,
+        element: withSuspense(<ReportCardPage />),
       },
       {
         path: 'exams/paper-generator',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER']}>
             <PaperGeneratorDashboard />
           </ProtectedRoute>
@@ -220,7 +197,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'exams/paper-generator/questions',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER']}>
             <QuestionBankPage />
           </ProtectedRoute>
@@ -228,7 +205,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'exams/paper-generator/papers/new',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER']}>
             <PaperBuilderPage />
           </ProtectedRoute>
@@ -236,7 +213,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'exams/paper-generator/papers/:id',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER']}>
             <PaperDetailPage />
           </ProtectedRoute>
@@ -244,27 +221,27 @@ export const router = createBrowserRouter([
       },
       {
         path: 'timetable',
-        element: <TimetablePage />,
+        element: withSuspense(<TimetablePage />),
       },
       {
         path: 'finance',
-        element: <FinancePage />,
+        element: withSuspense(<FinancePage />),
       },
       {
         path: 'fee-payment',
-        element: <FeePaymentsPage />,
+        element: withSuspense(<FeePaymentsPage />),
       },
       {
         path: 'announcements',
-        element: <AnnouncementsPage />,
+        element: withSuspense(<AnnouncementsPage />),
       },
       {
         path: 'messages',
-        element: <MessagesPage />,
+        element: withSuspense(<MessagesPage />),
       },
       {
         path: 'reports',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <ReportsPage />
           </ProtectedRoute>
@@ -272,7 +249,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'settings',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <SettingsPage />
           </ProtectedRoute>
@@ -280,7 +257,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'roles',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <RolesPage />
           </ProtectedRoute>
@@ -288,11 +265,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'profile',
-        element: <ProfilePage />,
+        element: withSuspense(<ProfilePage />),
       },
       {
         path: 'leave/type',
-        element: (
+        element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
             <LeaveTypePage />
           </ProtectedRoute>
@@ -300,7 +277,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'leave/request-log',
-        element: <LeaveRequestLogPage />,
+        element: withSuspense(<LeaveRequestLogPage />),
       },
     ],
   },
