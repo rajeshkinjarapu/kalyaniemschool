@@ -28,10 +28,10 @@ export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoo
     : 0;
 
   return (
-    <div className="hidden print:block w-full text-slate-900 bg-white">
+    <div className="hidden print:flex print:flex-col w-full text-slate-900 bg-white print:h-[297mm] print:overflow-hidden print:justify-center">
       {/* 2 Copies (Office Copy & Parent Copy) */}
       {[ 'OFFICE COPY', 'PARENT COPY' ].map((copyType, idx) => (
-        <div key={copyType} className={`relative ${idx === 1 ? 'mt-8 border-t-2 border-dashed border-slate-300 pt-8' : ''}`}>
+        <div key={copyType} className={`relative ${idx === 1 ? 'mt-4 border-t-2 border-dashed border-slate-300 pt-4' : ''}`}>
           
           {idx === 1 && (
              <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 flex items-center justify-center bg-white px-4 text-slate-500 text-[10px] uppercase tracking-[0.24em]">
@@ -39,34 +39,34 @@ export const FeeReceiptPrint: React.FC<FeeReceiptPrintProps> = ({ payment, schoo
              </div>
           )}
 
-          <div className="max-w-[800px] mx-auto border-2 border-slate-900 p-6 rounded-lg relative overflow-hidden">
+          <div className="max-w-[800px] mx-auto border-2 border-slate-900 p-4 rounded-lg relative overflow-hidden">
             
             {/* Header */}
-            <div className="flex justify-between items-center border-b-2 border-slate-900 pb-4 mb-4">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full border-2 border-slate-900 flex items-center justify-center overflow-hidden">
-                  <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+            <div className="flex justify-between items-center border-b-2 border-slate-900 pb-3 mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full border-2 border-slate-900 flex items-center justify-center overflow-hidden">
+                  <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-black uppercase tracking-wider">{schoolName}</h1>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-slate-600">Fee Payment Receipt</p>
+                  <h1 className="text-xl font-black uppercase tracking-wider">{schoolName}</h1>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Fee Payment Receipt</p>
                 </div>
               </div>
               <div className="text-right">
-                <div className="inline-block bg-slate-900 text-white px-3 py-1 font-black text-[10px] tracking-widest uppercase rounded">
+                <div className="inline-block bg-slate-900 text-white px-2 py-0.5 font-black text-[9px] tracking-widest uppercase rounded">
                   {copyType}
                 </div>
-                <div className="mt-2 text-sm font-bold uppercase tracking-wider">
+                <div className="mt-1.5 text-xs font-bold uppercase tracking-wider">
                   Receipt No: {receiptNumber}
                 </div>
-                <div className="text-xs font-semibold text-slate-600">
+                <div className="text-[10px] font-semibold text-slate-600">
                   Date: {format(new Date(payment.createdAt || new Date()), 'dd MMM yyyy')}
                 </div>
               </div>
             </div>
 
             {/* Content Grid */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               
               {/* Top Details */}
               <div className="grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
