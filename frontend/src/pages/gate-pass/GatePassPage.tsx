@@ -93,8 +93,31 @@ const GatePassPage: React.FC = () => {
   };
 
   const printSlip = (item: GatePassItem) => {
-    // Open the backend printable page in a new tab (it will auto-print)
-    window.open(`/api/gate-pass/${item.id}/print`, '_blank');
+    // Show in-app preview modal
+    setSelected(item);
+    setPreviewOpen(true);
+  };
+
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  const downloadPdf = async (id: string) => {
+    try {
+      setPdfLoading(true);
+      const response = await api.get(`/api/gate-pass/${id}/print/pdf`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `gatepass-${id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'PDF download failed');
+    } finally {
+      setPdfLoading(false);
+    }
   };
 
   const roleLabel = useMemo(() => {
@@ -174,60 +197,70 @@ const GatePassPage: React.FC = () => {
         </div>
       </div>
 
-      {selected && (
-        <div className="hidden print:block">
-          <div className="mx-auto max-w-2xl rounded-2xl border border-slate-300 p-8 shadow-sm">
-            <div className="text-center">
-              <h2 className="text-2xl font-black uppercase">{schoolName.toUpperCase()}</h2>
-              <p className="text-sm text-slate-600">Gate Pass Slip</p>
-            </div>
-            <div className="mt-6 grid gap-4 md:grid-cols-[1fr_180px]">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <p className="text-sm text-slate-500">Slip Number</p>
-                  <p className="font-semibold">{selected.slipNumber || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Status</p>
-                  <p className="font-semibold">{selected.status}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Student</p>
-                  <p className="font-semibold">{selected.student?.user?.name || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Class / Roll</p>
-                  <p className="font-semibold">{selected.student?.class ? `${selected.student.class.name} ${selected.student.class.section}` : 'N/A'}{selected.student?.rollNo ? ` · ${selected.student.rollNo}` : ''}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Requested By</p>
-                  <p className="font-semibold">{selected.requester?.name || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Destination</p>
-                  <p className="font-semibold">{selected.destination || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Reason</p>
-                  <p className="font-semibold">{selected.reason}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Timing</p>
-                  <p className="font-semibold">{selected.exitTime || 'N/A'} - {selected.returnTime || 'N/A'}</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-center rounded-xl border border-dashed border-slate-300 p-3">
-                {selected.student?.user?.photoUrl ? (
-                  <img src={selected.student.user.photoUrl} alt="Student Photo" className="h-36 w-28 rounded-lg object-cover" />
-                ) : (
-                  <div className="flex h-36 w-28 items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-500">No Photo</div>
-                )}
+      {selected && previewOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-6">
+          <div className="max-w-3xl w-full rounded-2xl bg-white p-6 shadow-lg">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Gate Pass Preview</h3>
+              <div className="flex items-center gap-2">
+                <button onClick={() => downloadPdf(selected.id)} className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white">{pdfLoading ? 'Downloading...' : 'Download PDF'}</button>
+                <button onClick={() => window.open(`/api/gate-pass/${selected.id}/print`, '_blank')} className="rounded-md border px-3 py-2 text-sm">Open Print</button>
+                <button onClick={() => setPreviewOpen(false)} className="rounded-md border px-3 py-2 text-sm">Close</button>
               </div>
             </div>
-            <div className="mt-6 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">{selected.notes || 'No additional notes.'}</div>
-            <div className="mt-8 flex items-center justify-between border-t pt-4 text-sm text-slate-600">
-              <div>Approved By: {selected.approvedBy?.name || 'Pending'}</div>
-              <div>Date: {new Date(selected.requestedDate).toLocaleDateString()}</div>
+            <div className="mx-auto mt-4 rounded-2xl border border-slate-300 p-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-black uppercase">{schoolName.toUpperCase()}</h2>
+                <p className="text-sm text-slate-600">Gate Pass Slip</p>
+              </div>
+              <div className="mt-6 grid gap-4 md:grid-cols-[1fr_180px]">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <p className="text-sm text-slate-500">Slip Number</p>
+                    <p className="font-semibold">{selected.slipNumber || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Status</p>
+                    <p className="font-semibold">{selected.status}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Student</p>
+                    <p className="font-semibold">{selected.student?.user?.name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Class / Roll</p>
+                    <p className="font-semibold">{selected.student?.class ? `${selected.student.class.name} ${selected.student.class.section}` : 'N/A'}{selected.student?.rollNo ? ` · ${selected.student.rollNo}` : ''}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Requested By</p>
+                    <p className="font-semibold">{selected.requester?.name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Destination</p>
+                    <p className="font-semibold">{selected.destination || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Reason</p>
+                    <p className="font-semibold">{selected.reason}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Timing</p>
+                    <p className="font-semibold">{selected.exitTime || 'N/A'} - {selected.returnTime || 'N/A'}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center rounded-xl border border-dashed border-slate-300 p-3">
+                  {selected.student?.user?.photoUrl ? (
+                    <img src={selected.student.user.photoUrl} alt="Student Photo" className="h-36 w-28 rounded-lg object-cover" />
+                  ) : (
+                    <div className="flex h-36 w-28 items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-500">No Photo</div>
+                  )}
+                </div>
+              </div>
+              <div className="mt-6 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">{selected.notes || 'No additional notes.'}</div>
+              <div className="mt-8 flex items-center justify-between border-t pt-4 text-sm text-slate-600">
+                <div>Approved By: {selected.approvedBy?.name || 'Pending'}</div>
+                <div>Date: {new Date(selected.requestedDate).toLocaleDateString()}</div>
+              </div>
             </div>
           </div>
         </div>
