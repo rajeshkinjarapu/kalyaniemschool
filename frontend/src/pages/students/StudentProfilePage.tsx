@@ -526,7 +526,7 @@ export const StudentProfilePage: React.FC = () => {
           body { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white; }
         `}
       </style>
-      <div className="hidden print:flex print:w-[210mm] print:h-[297mm] bg-white text-black font-sans relative flex-col mx-auto box-border overflow-hidden" style={{ pageBreakAfter: 'always' }}>
+      <div className={`hidden ${printPayment ? '' : 'print:flex'} print:w-[210mm] print:h-[297mm] bg-white text-black font-sans relative flex-col mx-auto box-border overflow-hidden`} style={{ pageBreakAfter: 'always' }}>
         
         {/* Background Watermark */}
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
