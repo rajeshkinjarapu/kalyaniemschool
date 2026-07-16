@@ -51,26 +51,10 @@ export const ExamListPage: React.FC = () => {
   const [examName, setExamName] = useState('');
   const [examClassIds, setExamClassIds] = useState<string[]>([]);
   const [examDate, setExamDate] = useState(new Date().toISOString().split('T')[0]);
-  const [examSubjects, setExamSubjects] = useState<any[]>([]);
   const [selectedExamSubjects, setSelectedExamSubjects] = useState<{id: string, name: string, maxMarks: number}[]>([]);
   
   // Auto calculate total marks
   const totalMarks = selectedExamSubjects.reduce((sum, sub) => sum + (Number(sub.maxMarks) || 0), 0);
-
-  // Fetch subjects when the first selected class changes
-  useEffect(() => {
-    if (examClassIds.length > 0) {
-      api.get(`/api/classes/${examClassIds[0]}/subjects`)
-        .then((res: any) => {
-          setExamSubjects(res.data || []);
-          if (!editExamId) setSelectedExamSubjects([]); // reset if not editing
-        })
-        .catch(() => {});
-    } else {
-      setExamSubjects([]);
-      if (!editExamId) setSelectedExamSubjects([]);
-    }
-  }, [examClassIds, editExamId]);
 
   const openCreateModal = () => {
     setEditExamId(null);
@@ -903,48 +887,66 @@ export const ExamListPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="label">Subjects & Max Marks</label>
-                <div className="flex flex-col gap-2 mt-2 max-h-60 overflow-y-auto p-2 border border-gray-200 dark:border-gray-700 rounded-lg">
-                  {examSubjects.map(sub => {
-                    const selectedSubject = selectedExamSubjects.find(s => s.id === sub.id);
-                    const isSelected = !!selectedSubject;
-                    return (
-                      <div key={sub.id} className="flex items-center justify-between gap-4 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <label className="flex items-center gap-2 text-sm cursor-pointer select-none font-bold">
-                          <input 
-                            type="checkbox" 
-                            checked={isSelected}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedExamSubjects([...selectedExamSubjects, { id: sub.id, name: sub.name, maxMarks: 100 }]);
-                              } else {
-                                setSelectedExamSubjects(selectedExamSubjects.filter(s => s.id !== sub.id));
-                              }
-                            }}
-                          />
-                          {sub.name}
-                        </label>
-                        {isSelected && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">Max:</span>
-                            <input
-                              type="number"
-                              min={1}
-                              value={selectedSubject.maxMarks}
-                              onChange={(e) => {
-                                const newMax = Number(e.target.value);
-                                setSelectedExamSubjects(selectedExamSubjects.map(s => 
-                                  s.id === sub.id ? { ...s, maxMarks: newMax } : s
-                                ));
-                              }}
-                              className="input !py-1 !px-2 w-20 text-xs"
-                            />
-                          </div>
-                        )}
+                <div className="flex justify-between items-center mb-2">
+                  <label className="label !mb-0">Subjects & Max Marks</label>
+                  <button 
+                    type="button" 
+                    onClick={() => setSelectedExamSubjects([...selectedExamSubjects, { id: Date.now().toString() + Math.random(), name: '', maxMarks: 100 }])}
+                    className="text-xs bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 transition-colors"
+                  >
+                    + Add Subject
+                  </button>
+                </div>
+                <div className="flex flex-col gap-2 max-h-60 overflow-y-auto p-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50/50 dark:bg-gray-800/20">
+                  {selectedExamSubjects.map((sub, index) => (
+                    <div key={sub.id} className="flex items-center gap-3 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          placeholder="Subject Name (e.g. Maths)"
+                          value={sub.name}
+                          required
+                          onChange={(e) => {
+                            const newName = e.target.value;
+                            setSelectedExamSubjects(selectedExamSubjects.map(s => 
+                              s.id === sub.id ? { ...s, name: newName } : s
+                            ));
+                          }}
+                          className="input !py-1.5 !px-3 w-full text-sm font-semibold"
+                        />
                       </div>
-                    );
-                  })}
-                  {examSubjects.length === 0 && <span className="text-xs text-gray-400">Select a class first</span>}
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500 font-bold uppercase">Max:</span>
+                        <input
+                          type="number"
+                          min={1}
+                          required
+                          value={sub.maxMarks || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const newMax = val ? Number(val) : 0;
+                            setSelectedExamSubjects(selectedExamSubjects.map(s => 
+                              s.id === sub.id ? { ...s, maxMarks: newMax } : s
+                            ));
+                          }}
+                          className="input !py-1.5 !px-2 w-20 text-sm font-bold text-center"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setSelectedExamSubjects(selectedExamSubjects.filter(s => s.id !== sub.id))}
+                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-colors"
+                          title="Remove subject"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {selectedExamSubjects.length === 0 && (
+                    <div className="py-6 text-center text-gray-400 text-sm">
+                      No subjects added yet. Click "+ Add Subject" to start.
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex gap-3 justify-end pt-2">
