@@ -206,6 +206,7 @@ export const FeePaymentsPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <div className="print:hidden space-y-6">
       <div className="flex justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-150 dark:border-gray-800">
         <div>
           <h3 className="font-bold text-gray-900 dark:text-white">Fee Transaction Ledger</h3>
@@ -565,6 +566,7 @@ export const FeePaymentsPage: React.FC = () => {
           </div>
         </div>
       )}
+      </div>
 
       {/* Hidden Print Component */}
       <FeeReceiptPrint payment={printPayment} />
