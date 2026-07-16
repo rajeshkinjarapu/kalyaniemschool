@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import api from '../../api/axios';
 import { useAuth } from '../../hooks/useAuth';
 import { FileText, CheckCircle2, XCircle, PlusCircle, Printer } from 'lucide-react';
+import { GatePassPrint } from '../../components/gate-pass/GatePassPrint';
 
 interface GatePassItem {
   id: string;
@@ -92,67 +93,18 @@ const GatePassPage: React.FC = () => {
     }
   };
 
+  const [printGatePass, setPrintGatePass] = useState<any>(null);
+
   const printSlip = (item: GatePassItem) => {
-    // Show in-app preview modal
-    setSelected(item);
-    setPreviewOpen(true);
-  };
-
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [pdfLoading, setPdfLoading] = useState(false);
-  const previewRef = React.useRef<HTMLDivElement | null>(null);
-
-  const downloadPdf = async (id: string) => {
-    try {
-      setPdfLoading(true);
-      const response = await api.get(`/api/gate-pass/${id}/print/pdf`, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `gatepass-${id}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode?.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (err: any) {
-      console.error('PDF download failed', err);
-      const msg = err?.response?.data?.message || err?.message || 'PDF download failed';
-      toast.error(msg);
-    } finally {
-      setPdfLoading(false);
-    }
+    setPrintGatePass(item);
+    setTimeout(() => {
+      window.print();
+    }, 100);
   };
 
   const printPreview = (id: string) => {
-    try {
-      // If preview content ref exists, render it into a new window and call print
-      const content = previewRef.current;
-      if (!content) {
-        toast.error('Preview not available');
-        return;
-      }
-
-      const printWindow = window.open('', '_blank', 'noopener,noreferrer');
-      if (!printWindow) {
-        toast.error('Popup blocked. Allow popups for this site to print.');
-        return;
-      }
-
-      const doc = printWindow.document;
-      doc.open();
-      doc.write(`<!doctype html><html><head><title>Gate Pass</title><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><style>body{font-family:Arial,Helvetica,sans-serif;color:#222} .container{max-width:800px;margin:20px auto;padding:16px} .header{text-align:center}.photo{width:120px;height:140px;object-fit:cover;border:1px solid #ddd}</style></head><body>`);
-      doc.write(content.innerHTML);
-      doc.write('</body></html>');
-      doc.close();
-      printWindow.focus();
-      // Wait a bit for images/styles to load
-      setTimeout(() => {
-        printWindow.print();
-      }, 300);
-    } catch (e) {
-      console.error('Print preview failed', e);
-      toast.error('Print failed');
-    }
+    const item = passes.find(p => p.id === id);
+    if (item) printSlip(item);
   };
 
   const printModal = () => {
@@ -344,6 +296,8 @@ const GatePassPage: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Hidden Print Component */}
+      <GatePassPrint gatePass={printGatePass} />
     </div>
   );
 };

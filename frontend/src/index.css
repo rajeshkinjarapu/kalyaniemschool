@@ -108,10 +108,11 @@
   border: 1px solid rgba(255,255,255,.5);
 }
 
-@utility bg-grid-pattern {
-  background-size: 28px 28px;
-  background-image: linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
-                    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+@utility bg-grid {
+  background-image: 
+    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 /* ── Unified Professional Tables ────────────────────────── */

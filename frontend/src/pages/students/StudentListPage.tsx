@@ -1,19 +1,36 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import api from '../../api/axios';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { Search, UserPlus, FileDown, Trash2, Eye, Upload, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const StudentListPage: React.FC = () => {
-  const [students, setStudents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [classId, setClassId] = useState('');
-  const [classes, setClasses] = useState<any[]>([]);
+  const queryClient = useQueryClient();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const { data: classes = [] } = useQuery({
+    queryKey: ['classes'],
+    queryFn: async () => {
+      const res = await api.get('/api/classes');
+      return res.data || [];
+    },
+    staleTime: 1000 * 60 * 10,
+  });
+
+  const { data: students = [], isLoading: loading, refetch: fetchStudents } = useQuery({
+    queryKey: ['students', search, classId],
+    queryFn: async () => {
+      const res = await api.get('/api/students', { params: { search, classId, limit: 5000 } });
+      return res.data?.data || res.data || [];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -27,7 +44,7 @@ export const StudentListPage: React.FC = () => {
       });
       const data = res.data;
       toast.success(`Import complete! Successfully added ${data.success} students.`, { id: importToast, duration: 4000 });
-      fetchStudents();
+      queryClient.invalidateQueries({ queryKey: ['students'] });
     } catch (err: any) {
       toast.error(err.message || 'Bulk import failed. Please verify format rules.', { id: importToast });
     } finally {
@@ -47,40 +64,13 @@ export const StudentListPage: React.FC = () => {
       });
       const data = res.data.data || res.data;
       toast.success(`Photos imported! Successfully updated ${data.success} students.`, { id: importToast, duration: 5000 });
-      fetchStudents();
+      queryClient.invalidateQueries({ queryKey: ['students'] });
     } catch (err: any) {
       toast.error(err.message || 'Bulk photo upload failed. Ensure files are named as StudentID.jpg', { id: importToast });
     } finally {
       if (photoInputRef.current) photoInputRef.current.value = '';
     }
   };
-
-  const fetchStudents = async () => {
-    setLoading(true);
-    try {
-      const response: any = await api.get('/api/students', { params: { search, classId, limit: 5000 } });
-      setStudents(response.data.data || response.data || []);
-    } catch (error) {
-      toast.error('Failed to load students list');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchClasses = async () => {
-    try {
-      const response: any = await api.get('/api/classes');
-      setClasses(response.data || []);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => { fetchClasses(); }, []);
-  useEffect(() => {
-    const timer = setTimeout(() => fetchStudents(), 300);
-    return () => clearTimeout(timer);
-  }, [search, classId]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this student profile?')) return;

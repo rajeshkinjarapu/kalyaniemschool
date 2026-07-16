@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { AccountantDashboard } from './AccountantDashboard';
+import { useQuery } from '@tanstack/react-query';
 import {
   Users, GraduationCap, School, Wallet, CalendarDays,
   FileText, Award, ArrowUpRight, Clock, Activity,
@@ -20,35 +21,34 @@ import {
 /* ─────────────────────────────────────────────────────────── */
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+
+  const roleMap: Record<string, string> = {
+    super_admin: 'admin',
+    admin: 'admin',
+    teacher: 'teacher',
+    student: 'student',
+    parent: 'parent',
+    accountant: 'accountant',
+  };
+
+  const endpoint = roleMap[user?.role?.toLowerCase() || ''] || 'admin';
+
+  const { data, isLoading: loading } = useQuery({
+    queryKey: ['dashboard', endpoint],
+    queryFn: async () => {
+      const res = await api.get(`/api/dashboard/${endpoint}`);
+      return res.data || res;
+    },
+    enabled: !!user && user.role !== 'ACCOUNTANT',
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+  });
 
   if (user?.role === 'ACCOUNTANT') return <AccountantDashboard />;
-
-  useEffect(() => {
-    if (!user) return;
-
-    const roleMap: Record<string, string> = {
-      super_admin: 'admin',
-      admin: 'admin',
-      teacher: 'teacher',
-      student: 'student',
-      parent: 'parent',
-      accountant: 'accountant',
-    };
-
-    const endpoint = roleMap[user.role?.toLowerCase()] || 'admin';
-
-    api
-      .get(`/api/dashboard/${endpoint}`)
-      .then((res: any) => setData(res.data || res))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [user]);
 
   if (loading) return <LoadingSpinner size="lg" className="h-[70vh]" />;
   if (!data)
     return <p className="text-center py-12 text-gray-400">Failed to load. Please refresh.</p>;
+
 
   return (
     <div className="space-y-7 animate-fade-in-up pb-10">
