@@ -100,6 +100,7 @@ const GatePassPage: React.FC = () => {
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const previewRef = React.useRef<HTMLDivElement | null>(null);
 
   const downloadPdf = async (id: string) => {
     try {
@@ -114,9 +115,43 @@ const GatePassPage: React.FC = () => {
       link.parentNode?.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'PDF download failed');
+      console.error('PDF download failed', err);
+      const msg = err?.response?.data?.message || err?.message || 'PDF download failed';
+      toast.error(msg);
     } finally {
       setPdfLoading(false);
+    }
+  };
+
+  const printPreview = (id: string) => {
+    try {
+      // If preview content ref exists, render it into a new window and call print
+      const content = previewRef.current;
+      if (!content) {
+        toast.error('Preview not available');
+        return;
+      }
+
+      const printWindow = window.open('', '_blank', 'noopener,noreferrer');
+      if (!printWindow) {
+        toast.error('Popup blocked. Allow popups for this site to print.');
+        return;
+      }
+
+      const doc = printWindow.document;
+      doc.open();
+      doc.write(`<!doctype html><html><head><title>Gate Pass</title><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><style>body{font-family:Arial,Helvetica,sans-serif;color:#222} .container{max-width:800px;margin:20px auto;padding:16px} .header{text-align:center}.photo{width:120px;height:140px;object-fit:cover;border:1px solid #ddd}</style></head><body>`);
+      doc.write(content.innerHTML);
+      doc.write('</body></html>');
+      doc.close();
+      printWindow.focus();
+      // Wait a bit for images/styles to load
+      setTimeout(() => {
+        printWindow.print();
+      }, 300);
+    } catch (e) {
+      console.error('Print preview failed', e);
+      toast.error('Print failed');
     }
   };
 
@@ -204,11 +239,12 @@ const GatePassPage: React.FC = () => {
               <h3 className="text-lg font-semibold">Gate Pass Preview</h3>
               <div className="flex items-center gap-2">
                 <button onClick={() => downloadPdf(selected.id)} className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white">{pdfLoading ? 'Downloading...' : 'Download PDF'}</button>
+                <button onClick={() => printPreview(selected.id)} className="rounded-md border px-3 py-2 text-sm">Print</button>
                 <button onClick={() => window.open(`/api/gate-pass/${selected.id}/print`, '_blank')} className="rounded-md border px-3 py-2 text-sm">Open Print</button>
                 <button onClick={() => setPreviewOpen(false)} className="rounded-md border px-3 py-2 text-sm">Close</button>
               </div>
             </div>
-            <div className="mx-auto mt-4 rounded-2xl border border-slate-300 p-6">
+            <div className="mx-auto mt-4 rounded-2xl border border-slate-300 p-6" ref={previewRef}>
               <div className="text-center">
                 <h2 className="text-2xl font-black uppercase">{schoolName.toUpperCase()}</h2>
                 <p className="text-sm text-slate-600">Gate Pass Slip</p>
