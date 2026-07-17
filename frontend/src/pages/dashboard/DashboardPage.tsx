@@ -51,8 +51,8 @@ export const DashboardPage: React.FC = () => {
 
 
   return (
-    <div className="space-y-7 animate-fade-in-up pb-10">
-      <WelcomeBanner name={user?.name || ''} role={user?.role || ''} />
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-3 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-10 rounded-2xl">
+      <WelcomeBanner name={user?.name || ''} role={user?.role || ''} photoUrl={user?.photoUrl} />
       {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && <AdminView data={data} />}
       {user?.role === 'TEACHER' && <TeacherView data={data} />}
       {user?.role === 'STUDENT' && <StudentView data={data} />}
@@ -61,7 +61,7 @@ export const DashboardPage: React.FC = () => {
 };
 
 /* ── Welcome Banner ─────────────────────────────────────── */
-const WelcomeBanner: React.FC<{ name: string; role: string }> = ({ name, role }) => {
+const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }> = ({ name, role, photoUrl }) => {
   const h = new Date().getHours();
   const greeting = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
   const emoji = h < 12 ? '🌅' : h < 17 ? '☀️' : '🌙';
@@ -90,8 +90,14 @@ const WelcomeBanner: React.FC<{ name: string; role: string }> = ({ name, role })
         <div className="flex items-center gap-4 md:gap-6">
           <div className="w-14 h-14 md:w-20 md:h-20 rounded-[1.2rem] md:rounded-[1.5rem] flex items-center justify-center text-3xl md:text-4xl shrink-0 shadow-2xl relative overflow-hidden group"
             style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.15)' }}>
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-            <span className="relative z-10 group-hover:scale-110 transition-transform duration-500">{emoji}</span>
+            {photoUrl ? (
+              <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <>
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                <span className="relative z-10 group-hover:scale-110 transition-transform duration-500">{emoji}</span>
+              </>
+            )}
           </div>
           <div>
             <p className="text-indigo-300/80 text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em] mb-1.5 md:mb-2 flex items-center gap-1.5 md:gap-2">

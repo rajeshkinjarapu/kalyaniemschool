@@ -64,11 +64,11 @@ export const AttendanceReportPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-150 dark:border-gray-800">
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-3 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-10 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 rounded-3xl shadow-xl text-white transform transition-all hover:scale-[1.01]">
         <div>
-          <h3 className="font-bold text-gray-900 dark:text-white">Attendance Analytics</h3>
-          <p className="text-xs text-gray-400">View attendance rates and breakdown.</p>
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">Attendance Analytics</h3>
+          <p className="text-indigo-100 mt-1 sm:mt-2 font-medium text-sm sm:text-lg opacity-90 leading-snug">View attendance rates and breakdown.</p>
         </div>
         <div className="flex gap-3">
           <select
@@ -99,9 +99,9 @@ export const AttendanceReportPage: React.FC = () => {
         loading ? (
           <LoadingSpinner size="lg" className="py-12" />
         ) : (
-          <div className="card overflow-hidden">
+          <div className="rounded-3xl border border-white/50 bg-white/80 backdrop-blur-lg overflow-hidden shadow-2xl">
             <div className="overflow-x-auto w-full max-w-full block"><table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 dark:bg-gray-800/40 text-gray-500 font-semibold border-b">
+              <thead className="bg-indigo-50/50 text-indigo-900 font-bold border-b border-indigo-100">
                 <tr>
                   <th className="px-6 py-4">Student</th>
                   <th className="px-6 py-4">Roll No</th>
@@ -111,15 +111,15 @@ export const AttendanceReportPage: React.FC = () => {
                   <th className="px-6 py-4 text-right">Attendance Rate</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-indigo-50">
                 {report.map((item, idx) => (
-                  <tr key={idx}>
-                    <td className="px-6 py-4 font-semibold">{item.studentName}</td>
-                    <td className="px-6 py-4 font-mono text-xs">{item.rollNo}</td>
-                    <td className="px-6 py-4">{item.totalDays}</td>
-                    <td className="px-6 py-4 text-green-600">{item.present}</td>
-                    <td className="px-6 py-4 text-red-500">{item.absent}</td>
-                    <td className="px-6 py-4 text-right font-bold">
+                  <tr key={idx} className="hover:bg-indigo-50/30 transition-colors">
+                    <td className="px-6 py-4 font-bold text-slate-800">{item.studentName}</td>
+                    <td className="px-6 py-4 font-mono text-xs text-slate-500">{item.rollNo}</td>
+                    <td className="px-6 py-4 font-medium text-slate-600">{item.totalDays}</td>
+                    <td className="px-6 py-4 text-green-600 font-bold">{item.present}</td>
+                    <td className="px-6 py-4 text-red-500 font-bold">{item.absent}</td>
+                    <td className="px-6 py-4 text-right font-black">
                       <span className={item.rate >= 75 ? 'text-green-600' : 'text-red-500'}>
                         {item.rate}%
                       </span>
@@ -128,7 +128,7 @@ export const AttendanceReportPage: React.FC = () => {
                 ))}
                 {report.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-gray-450">
+                    <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
                       No records configured for this selection.
                     </td>
                   </tr>
@@ -138,9 +138,9 @@ export const AttendanceReportPage: React.FC = () => {
           </div>
         )
       ) : (
-        <div className="card p-12 text-center text-gray-400">
-          <CalendarDays className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-          <p>Please select a class to view attendance analytics.</p>
+        <div className="rounded-3xl border border-white/50 bg-white/80 backdrop-blur-lg p-12 text-center text-indigo-400 shadow-2xl">
+          <CalendarDays className="w-16 h-16 mx-auto text-indigo-300 mb-4 opacity-50" />
+          <p className="font-bold text-lg text-indigo-900/60">Please select a class to view attendance analytics.</p>
         </div>
       )}
     </div>
