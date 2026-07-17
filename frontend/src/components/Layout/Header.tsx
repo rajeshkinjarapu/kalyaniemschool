@@ -54,17 +54,6 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, title }) => {
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2 shrink-0">
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all duration-200 cursor-pointer"
-          title={theme === 'light' ? 'Dark Mode' : 'Light Mode'}
-        >
-          {theme === 'light'
-            ? <Moon className="w-4.5 h-4.5" />
-            : <Sun className="w-4.5 h-4.5" />}
-        </button>
-
         {/* Notifications */}
         <button
           className="relative p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all duration-200 cursor-pointer"

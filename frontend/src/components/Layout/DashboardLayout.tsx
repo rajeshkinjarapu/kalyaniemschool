@@ -34,7 +34,7 @@ export const DashboardLayout: React.FC = () => {
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <Header onMenuClick={() => setSidebarOpen(true)} title={getPageTitle(location.pathname)} />
-        <main className="flex-1 overflow-y-auto p-0 sm:p-4 md:p-5 lg:p-7 animate-fade-in-up">
+        <main className="flex-1 overflow-y-auto p-0 md:p-5 lg:p-7 animate-fade-in-up">
           <Outlet />
         </main>
       </div>

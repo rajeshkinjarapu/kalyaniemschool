@@ -51,7 +51,7 @@ export const DashboardPage: React.FC = () => {
 
 
   return (
-    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-3 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-10">
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-0 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-10">
       <WelcomeBanner name={user?.name || ''} role={user?.role || ''} photoUrl={data?.teacherProfile?.photoUrl || data?.studentProfile?.photoUrl || user?.photoUrl} />
       {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && <AdminView data={data} />}
       {user?.role === 'TEACHER' && <TeacherView data={data} />}
@@ -72,7 +72,7 @@ const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }>
     TEACHER: 'Teacher', STUDENT: 'Student', ACCOUNTANT: 'Accountant',
   };
   return (
-    <div className="relative overflow-hidden rounded-[2rem]" style={{
+    <div className="relative overflow-hidden rounded-none sm:rounded-[2rem]" style={{
       background: 'linear-gradient(120deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
       boxShadow: '0 25px 50px -12px rgba(49, 46, 129, 0.4)',
     }}>
@@ -86,9 +86,9 @@ const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }>
       }} />
       
       {/* Glass Panel Content */}
-      <div className="relative z-10 p-4 sm:p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-8">
-        <div className="flex items-center gap-3 md:gap-6">
-          <div className="w-12 h-12 md:w-20 md:h-20 rounded-[1rem] md:rounded-[1.5rem] flex items-center justify-center text-2xl md:text-4xl shrink-0 shadow-2xl relative overflow-hidden group"
+      <div className="relative z-10 p-3 sm:p-5 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-6">
+        <div className="flex items-center gap-3 md:gap-5">
+          <div className="w-10 h-10 md:w-16 md:h-16 rounded-[1rem] md:rounded-[1.2rem] flex items-center justify-center text-xl md:text-3xl shrink-0 shadow-2xl relative overflow-hidden group"
             style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.15)' }}>
             {photoUrl ? (
               <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
@@ -110,18 +110,20 @@ const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }>
           </div>
         </div>
         
-        <div className="flex flex-row gap-2 md:gap-4 shrink-0 mt-1 md:mt-0">
-          <div className="flex items-center gap-2 md:gap-3 px-4 py-2.5 md:px-5 md:py-3.5 rounded-[1rem] md:rounded-[1.25rem] bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors shadow-inner justify-center sm:justify-start">
-            <CalendarDays className="w-4 h-4 md:w-5 md:h-5 text-indigo-300" />
-            <span className="text-xs md:text-sm font-bold text-white tracking-wide">{today}</span>
+        <div className="flex flex-row gap-2 md:gap-3 shrink-0 mt-1 md:mt-0">
+          <div className="flex items-center gap-2 px-3 py-2 md:px-4 md:py-3 rounded-[0.8rem] md:rounded-[1rem] bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors shadow-inner justify-center sm:justify-start">
+            <CalendarDays className="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-300" />
+            <span className="text-[10px] md:text-xs font-bold text-white tracking-wide">{today}</span>
           </div>
-          <div className="flex items-center gap-2 md:gap-2.5 px-4 py-2.5 md:px-5 md:py-3.5 rounded-[1rem] md:rounded-[1.25rem] bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.15)] justify-center sm:justify-start">
-            <div className="relative flex h-2.5 w-2.5 md:h-3 md:w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 md:h-3 md:w-3 bg-emerald-500"></span>
+          {role !== 'TEACHER' && (
+            <div className="flex items-center gap-1.5 md:gap-2 px-3 py-2 md:px-4 md:py-3 rounded-[0.8rem] md:rounded-[1rem] bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.15)] justify-center sm:justify-start">
+              <div className="relative flex h-2 w-2 md:h-2.5 md:w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5 bg-emerald-500"></span>
+              </div>
+              <span className="text-[10px] md:text-xs font-black text-emerald-300 tracking-wider uppercase">System Active</span>
             </div>
-            <span className="text-xs md:text-sm font-black text-emerald-300 tracking-wider uppercase">System Active</span>
-          </div>
+          )}
         </div>
       </div>
     </div>
