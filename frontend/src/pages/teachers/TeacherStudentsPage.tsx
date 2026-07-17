@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
-import { Search, Users, Eye, ArrowLeft } from 'lucide-react';
+import { Search, Users, Eye, ArrowLeft, Phone, IdCard, UserCircle } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
 export const TeacherStudentsPage: React.FC = () => {
@@ -49,7 +49,7 @@ export const TeacherStudentsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-3 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-10 rounded-2xl">
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-3 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 rounded-3xl shadow-xl text-white transform transition-all hover:scale-[1.01]">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-2xl bg-white/20 shadow-inner backdrop-blur-md border border-white/30">
@@ -60,29 +60,29 @@ export const TeacherStudentsPage: React.FC = () => {
             <p className="text-indigo-100 mt-1 sm:mt-2 font-medium text-sm sm:text-lg opacity-90 leading-snug">View all students across the school</p>
           </div>
         </div>
-        <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm font-bold bg-white/20 hover:bg-white/30 backdrop-blur-md px-4 py-2 rounded-xl transition-colors border border-white/30">
+        <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 text-sm font-bold bg-white/20 hover:bg-white/30 backdrop-blur-md px-5 py-2.5 rounded-xl transition-colors border border-white/30">
           <ArrowLeft className="w-4 h-4" /> Back to Dashboard
         </Link>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/60 backdrop-blur-md p-4 rounded-2xl border border-white/50 shadow-sm">
-        <div className="flex items-center gap-3 text-slate-700">
-          <div className="w-10 h-10 rounded-xl bg-indigo-100 grid place-items-center text-indigo-700">
-            <Users className="w-5 h-5" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/80 backdrop-blur-lg p-5 rounded-3xl border border-white/50 shadow-md">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-100 grid place-items-center text-indigo-700">
+            <Users className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm font-black text-gray-900">School Student Roster</p>
-            <p className="text-xs text-slate-500 font-semibold">{students.length} Total Students</p>
+            <p className="text-lg font-black text-slate-800">School Student Roster</p>
+            <p className="text-sm text-slate-500 font-semibold">{students.length} Total Students</p>
           </div>
         </div>
-        <div className="flex-1 max-w-md relative mt-2 sm:mt-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+        <div className="flex-1 w-full sm:max-w-md relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400 w-5 h-5" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, roll no or class..."
-            className="w-full pl-9 pr-4 py-2.5 bg-white/60 border border-gray-200 rounded-xl text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500/25"
+            className="w-full pl-12 pr-4 py-3 bg-white border-2 border-indigo-100 rounded-2xl text-sm font-semibold outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 transition-all placeholder:text-slate-400 text-slate-700"
           />
         </div>
       </div>
@@ -90,86 +90,86 @@ export const TeacherStudentsPage: React.FC = () => {
       {loading ? (
         <LoadingSpinner size="lg" className="py-24" />
       ) : (
-        <div className="bg-white/80 backdrop-blur-lg border border-white/50 rounded-3xl shadow-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead>
-                <tr className="bg-indigo-50/50 text-indigo-900 border-b border-indigo-100">
-                  <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider">#</th>
-                  <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider">Photo</th>
-                  <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider">Student Name</th>
-                  <th className="hidden md:table-cell px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider">Student ID</th>
-                  <th className="hidden sm:table-cell px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider">Class</th>
-                  <th className="hidden sm:table-cell px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider">Section</th>
-                  <th className="hidden lg:table-cell px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider">Parent</th>
-                  <th className="hidden sm:table-cell px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-indigo-50/50">
-                {filteredStudents.length === 0 ? (
-                  <tr>
-                    <td colSpan={10} className="py-16 text-center text-gray-500 font-semibold text-sm">
-                      No students found matching your search.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredStudents.map((student: any, idx: number) => {
-                    const name = student.user?.name || 'Unknown';
-                    const photoUrl = student.user?.photoUrl;
-                    
-                    return (
-                      <tr key={student.id} className="hover:bg-white/60 transition-colors group">
-                        <td className="px-5 py-4 text-indigo-400 font-bold text-xs">{idx + 1}</td>
-                        <td className="px-5 py-3">
-                          {photoUrl ? (
-                            <img src={photoUrl.startsWith('http') ? photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${photoUrl.startsWith('/') ? photoUrl : '/' + photoUrl}`} alt={name} className="w-12 h-16 rounded-lg object-cover border-2 border-white shadow-md ring-1 ring-gray-200" />
-                          ) : (
-                            <div className={`w-12 h-16 rounded-lg bg-gradient-to-br ${getColor(name)} flex items-center justify-center text-white font-black text-lg border-2 border-white shadow-md ring-1 ring-gray-200`}>
-                              {getInitials(name)}
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-5 py-4 whitespace-nowrap">
-                          <Link to={`/students/${student.id}`} className="font-extrabold text-gray-900 hover:text-indigo-600 transition-colors block">
+        <div className="space-y-4">
+          {filteredStudents.length === 0 ? (
+            <div className="rounded-3xl border-2 border-dashed border-indigo-200 bg-white/50 p-12 text-center backdrop-blur-sm">
+              <UserCircle className="w-16 h-16 text-indigo-300 mx-auto mb-4" />
+              <p className="text-xl font-bold text-slate-600">No students found</p>
+              <p className="text-slate-500 mt-2">Try adjusting your search query.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filteredStudents.map((student: any, idx: number) => {
+                const name = student.user?.name || 'Unknown';
+                const photoUrl = student.user?.photoUrl;
+                
+                return (
+                  <div key={student.id} className="group flex flex-col justify-between rounded-3xl border-2 border-slate-100 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+                    {/* Index badge */}
+                    <div className="absolute top-4 right-4 bg-slate-50 text-slate-400 font-black text-xs px-2 py-1 rounded-lg">
+                      #{idx + 1}
+                    </div>
+
+                    <div className="flex items-start gap-4 mb-4 mt-2">
+                      <div className="shrink-0">
+                        {photoUrl ? (
+                          <img 
+                            src={photoUrl.startsWith('http') ? photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${photoUrl.startsWith('/') ? photoUrl : '/' + photoUrl}`} 
+                            alt={name} 
+                            className="w-16 h-20 sm:w-20 sm:h-24 rounded-2xl object-cover shadow-md border-2 border-white ring-1 ring-slate-100 group-hover:scale-105 transition-transform" 
+                          />
+                        ) : (
+                          <div className={`w-16 h-20 sm:w-20 sm:h-24 rounded-2xl bg-gradient-to-br ${getColor(name)} flex items-center justify-center text-white font-black text-2xl shadow-md border-2 border-white ring-1 ring-slate-100 group-hover:scale-105 transition-transform`}>
+                            {getInitials(name)}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="min-w-0 flex-1 pt-1">
+                        <Link to={`/students/${student.id}`} className="block">
+                          <h3 className="font-extrabold text-lg sm:text-xl text-slate-800 hover:text-indigo-600 truncate transition-colors leading-tight" title={name}>
                             {name}
-                            <span className="block sm:hidden text-[10px] text-gray-500 font-semibold mt-1">Class {student.class?.name || 'N/A'}-{student.class?.section || 'N/A'}</span>
-                          </Link>
-                        </td>
-                        <td className="hidden md:table-cell px-5 py-4">
-                          <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
-                            {student.rollNo || '—'}
+                          </h3>
+                        </Link>
+                        
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-teal-50 text-teal-700 border border-teal-100">
+                            Class {student.class?.name || 'N/A'}-{student.class?.section || 'N/A'}
                           </span>
-                        </td>
-                        <td className="hidden sm:table-cell px-5 py-4">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-teal-50 text-teal-700">
-                            {student.class?.name || 'N/A'}
-                          </span>
-                        </td>
-                        <td className="hidden sm:table-cell px-5 py-4">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-700">
-                            {student.class?.section || 'N/A'}
-                          </span>
-                        </td>
-                        <td className="hidden lg:table-cell px-5 py-4 text-gray-700 font-semibold text-xs">
-                          {student.fatherName || student.parentName || student.user?.phone || '—'}
-                        </td>
-                        <td className="hidden sm:table-cell px-5 py-4 text-right">
-                          <Link to={`/students/${student.id}`} className="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-extrabold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-all" title="View Profile">
-                            <Eye className="w-3.5 h-3.5" /> View
-                          </Link>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+                          {student.rollNo && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                              <IdCard className="w-3.5 h-3.5" />
+                              {student.rollNo}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-slate-500">
+                        <Phone className="w-4 h-4 text-slate-400" />
+                        <span className="text-xs font-semibold truncate max-w-[120px]" title={student.fatherName || student.parentName || student.user?.phone || 'No Contact'}>
+                          {student.fatherName || student.parentName || student.user?.phone || 'No Contact'}
+                        </span>
+                      </div>
+                      <Link 
+                        to={`/students/${student.id}`} 
+                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-extrabold text-white bg-indigo-500 hover:bg-indigo-600 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                      >
+                        <Eye className="w-4 h-4" /> View Profile
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
           
           {filteredStudents.length > 0 && (
-            <div className="px-5 py-3 border-t border-white/50 bg-white/40 flex items-center justify-between">
-              <span className="text-xs text-gray-500 font-semibold">
-                Showing <span className="text-gray-900 font-bold">{filteredStudents.length}</span> students
+            <div className="mt-6 flex items-center justify-center">
+              <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/80 backdrop-blur-md text-sm text-slate-600 font-bold border border-slate-200 shadow-sm">
+                Showing <span className="text-indigo-600 font-black">{filteredStudents.length}</span> students
               </span>
             </div>
           )}
