@@ -156,26 +156,26 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon: Icon, gradient,
       <div className="absolute top-0 left-0 right-0 h-1.5 opacity-80 group-hover:opacity-100 transition-opacity bg-white/30" />
       
       <div className="relative z-10">
-        <div className="flex items-start justify-between mb-3 md:mb-5">
-          <div className="p-2.5 md:p-3 rounded-[1rem] bg-white/20 shadow-inner backdrop-blur-md border border-white/30"
+        <div className="flex items-start justify-between mb-2 md:mb-5">
+          <div className="p-2 md:p-3 rounded-xl md:rounded-[1rem] bg-white/20 shadow-inner backdrop-blur-md border border-white/30"
             style={{ boxShadow: `0 8px 16px ${glow}` }}>
-            <Icon className="w-5 h-5 md:w-6 md:h-6 text-white drop-shadow-md" />
+            <Icon className="w-4 h-4 md:w-6 md:h-6 text-white drop-shadow-md" />
           </div>
           {badge && (
-            <span className="text-[9px] font-black px-2 py-0.5 rounded-full border shadow-sm"
+            <span className="text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded-full border shadow-sm"
               style={{ background: badgeColor ? badgeColor + '15' : '#ecfdf5', color: badgeColor || '#065f46', borderColor: badgeColor ? badgeColor + '30' : '#a7f3d0' }}>
               {badge}
             </span>
           )}
           {link && !badge && (
-            <div className="p-2 rounded-full bg-white/20 group-hover:bg-white/30 transition-colors border border-white/20">
-              <ArrowUpRight className="w-4 h-4 text-white" />
+            <div className="p-1.5 md:p-2 rounded-full bg-white/20 group-hover:bg-white/30 transition-colors border border-white/20">
+              <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4 text-white" />
             </div>
           )}
         </div>
-        <p className="text-[10px] md:text-[11px] font-black text-white/80 uppercase tracking-widest mb-1">{label}</p>
-        <p className="text-2xl md:text-3xl font-black text-white tracking-tight leading-none drop-shadow-md">{value}</p>
-        {sub && <p className="text-[10px] md:text-[11px] text-white/90 mt-2 font-bold flex items-center gap-1.5 opacity-90"><span className="w-1.5 h-1.5 rounded-full bg-white/80"/>{sub}</p>}
+        <p className="text-[9px] sm:text-[10px] md:text-[11px] font-black text-white/80 uppercase tracking-wider mb-0.5 md:mb-1 truncate">{label}</p>
+        <p className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight leading-none drop-shadow-md">{value}</p>
+        {sub && <p className="text-[8px] sm:text-[10px] md:text-[11px] text-white/90 mt-1 md:mt-2 font-bold flex items-center gap-1 sm:gap-1.5 opacity-90 truncate"><span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-white/80 shrink-0"/>{sub}</p>}
       </div>
     </div>
   );
@@ -238,7 +238,7 @@ const AdminView: React.FC<{ data: any }> = ({ data }) => {
   return (
     <div className="space-y-7">
       {/* KPI */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
         {stats.map((s, i) => <StatCard key={i} {...s} />)}
       </div>
 
