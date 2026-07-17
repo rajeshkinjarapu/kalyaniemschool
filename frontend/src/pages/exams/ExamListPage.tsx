@@ -752,94 +752,103 @@ export const ExamListPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* ══ TOP NAVIGATION GRID ══ */}
-      <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-150 dark:border-gray-800 shadow-sm mb-6">
-        <div className="mb-4">
-          <h3 className="text-xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
-            <ClipboardList className="w-5 h-5 text-indigo-500" />
-            <span>Examinations Suite</span>
-          </h3>
-          <p className="text-xs text-gray-500 mt-1">Select a module below to manage exams, grading, and online tests.</p>
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-3 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen">
+      <div className="space-y-4 sm:space-y-6 md:space-y-8">
+        {/* ══ TOP NAVIGATION HEADER ══ */}
+        <div className="rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 shadow-xl text-white transform transition-all hover:scale-[1.01]">
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:block rounded-2xl bg-white/20 p-3 backdrop-blur-md">
+              <ClipboardList className="h-8 w-8 text-white" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight whitespace-nowrap overflow-hidden text-ellipsis flex items-center gap-2">
+                <ClipboardList className="h-6 w-6 sm:hidden shrink-0" />
+                Examinations Suite
+              </h2>
+              <p className="text-indigo-100 mt-1 sm:mt-2 font-medium text-sm sm:text-lg opacity-90 leading-snug">Select a module below to manage exams, grading, and online tests.</p>
+            </div>
+          </div>
         </div>
+
         {!activeTab && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {/* Examinations List - Visible to all, but Create Exam is only for Admin */}
-            <button onClick={() => setActiveTab('examination')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-1">
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <ClipboardList className="w-8 h-8" />
-              <span className="text-xs font-black uppercase tracking-widest text-center">Examinations List</span>
-            </button>
+          <div className="rounded-3xl border border-white/50 bg-white/80 backdrop-blur-lg p-5 sm:p-6 md:p-8 shadow-2xl">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+              {/* Examinations List - Visible to all, but Create Exam is only for Admin */}
+              <button onClick={() => setActiveTab('examination')} className="relative overflow-hidden group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl border-0 transition-all gap-2 sm:gap-3 bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-1">
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <ClipboardList className="w-6 h-6 sm:w-8 sm:h-8" />
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-center leading-tight">Examinations List</span>
+              </button>
 
-            {isAdmin && (
-              <>
-                <button onClick={() => setActiveTab('exam-plan')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg hover:shadow-purple-500/30 hover:-translate-y-1">
-                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <Calendar className="w-8 h-8" />
-                  <span className="text-xs font-black uppercase tracking-widest text-center">Exam Plan</span>
-                </button>
+              {isAdmin && (
+                <>
+                  <button onClick={() => setActiveTab('exam-plan')} className="relative overflow-hidden group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl border-0 transition-all gap-2 sm:gap-3 bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg hover:shadow-purple-500/30 hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <Calendar className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-center leading-tight">Exam Plan</span>
+                  </button>
 
-                <button onClick={() => setActiveTab('admit-card')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg hover:shadow-amber-500/30 hover:-translate-y-1">
-                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <FileText className="w-8 h-8" />
-                  <span className="text-xs font-black uppercase tracking-widest text-center">Admit Card</span>
-                </button>
+                  <button onClick={() => setActiveTab('admit-card')} className="relative overflow-hidden group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl border-0 transition-all gap-2 sm:gap-3 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg hover:shadow-amber-500/30 hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <FileText className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-center leading-tight">Admit Card</span>
+                  </button>
 
-                <button onClick={() => setActiveTab('add-online-exam')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-lg hover:shadow-violet-500/30 hover:-translate-y-1">
-                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <Plus className="w-8 h-8" />
-                  <span className="text-xs font-black uppercase tracking-widest text-center">Add Online Exam</span>
-                </button>
+                  <button onClick={() => setActiveTab('add-online-exam')} className="relative overflow-hidden group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl border-0 transition-all gap-2 sm:gap-3 bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-lg hover:shadow-violet-500/30 hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <Plus className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-center leading-tight">Add Online Exam</span>
+                  </button>
+                </>
+              )}
+
+              {/* Common: Marks Upload, Results, Progress Card, Question Papers */}
+              <button onClick={() => setActiveTab('written-exam')} className="relative overflow-hidden group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl border-0 transition-all gap-2 sm:gap-3 bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-1">
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <Edit3 className="w-6 h-6 sm:w-8 sm:h-8" />
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-center leading-tight">Marks Upload</span>
+              </button>
+
+              <button onClick={() => setActiveTab('results')} className="relative overflow-hidden group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl border-0 transition-all gap-2 sm:gap-3 bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-lg hover:shadow-blue-500/30 hover:-translate-y-1">
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <Award className="w-6 h-6 sm:w-8 sm:h-8" />
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-center leading-tight">Results</span>
+              </button>
+
+              <button onClick={() => setActiveTab('progress-card')} className="relative overflow-hidden group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl border-0 transition-all gap-2 sm:gap-3 bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-lg hover:shadow-rose-500/30 hover:-translate-y-1">
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <Award className="w-6 h-6 sm:w-8 sm:h-8" />
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-center leading-tight">Progress Card</span>
+              </button>
+
+              {isAdminOrTeacher && (
+                <>
+                  <button onClick={() => setActiveTab('question-bank')} className="relative overflow-hidden group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl border-0 transition-all gap-2 sm:gap-3 bg-gradient-to-br from-slate-600 to-gray-800 text-white shadow-lg hover:shadow-slate-500/30 hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <Layers className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-center leading-tight">Question Papers</span>
+                  </button>
               </>
             )}
 
-            {/* Common: Marks Upload, Results, Progress Card, Question Papers */}
-            <button onClick={() => setActiveTab('written-exam')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-1">
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <Edit3 className="w-8 h-8" />
-              <span className="text-xs font-black uppercase tracking-widest text-center">Marks Upload</span>
-            </button>
+              {isAdmin && (
+                <>
+                  <button onClick={() => setActiveTab('slip-tests')} className="relative overflow-hidden group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl border-0 transition-all gap-2 sm:gap-3 bg-gradient-to-br from-cyan-600 to-sky-700 text-white shadow-lg hover:shadow-cyan-500/30 hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <Clock className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-center leading-tight">Slip Tests</span>
+                  </button>
 
-            <button onClick={() => setActiveTab('results')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-lg hover:shadow-blue-500/30 hover:-translate-y-1">
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <Award className="w-8 h-8" />
-              <span className="text-xs font-black uppercase tracking-widest text-center">Results</span>
-            </button>
-
-            <button onClick={() => setActiveTab('progress-card')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-lg hover:shadow-rose-500/30 hover:-translate-y-1">
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <Award className="w-8 h-8" />
-              <span className="text-xs font-black uppercase tracking-widest text-center">Progress Card</span>
-            </button>
-
-            {isAdminOrTeacher && (
-              <>
-                <button onClick={() => setActiveTab('question-bank')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-slate-600 to-gray-800 text-white shadow-lg hover:shadow-slate-500/30 hover:-translate-y-1">
-                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <Layers className="w-8 h-8" />
-                  <span className="text-xs font-black uppercase tracking-widest text-center">Question Papers</span>
-                </button>
-              </>
-            )}
-
-            {isAdmin && (
-              <>
-                <button onClick={() => setActiveTab('slip-tests')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-cyan-600 to-sky-700 text-white shadow-lg hover:shadow-cyan-500/30 hover:-translate-y-1">
-                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <Clock className="w-8 h-8" />
-                  <span className="text-xs font-black uppercase tracking-widest text-center">Slip Tests</span>
-                </button>
-
-                <button onClick={() => setActiveTab('settings')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-gray-500 to-gray-600 text-white shadow-lg hover:shadow-gray-500/30 hover:-translate-y-1">
-                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <Settings className="w-8 h-8" />
-                  <span className="text-xs font-black uppercase tracking-widest text-center">Settings</span>
-                </button>
-              </>
-            )}
+                  <button onClick={() => setActiveTab('settings')} className="relative overflow-hidden group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl border-0 transition-all gap-2 sm:gap-3 bg-gradient-to-br from-gray-500 to-gray-600 text-white shadow-lg hover:shadow-gray-500/30 hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <Settings className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-center leading-tight">Settings</span>
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         )}
-    </div>
 
       {/* Create Exam Modal */}
       {showExamModal && (
@@ -1719,6 +1728,7 @@ export const ExamListPage: React.FC = () => {
       {activeTab === 'progress-card' && (
         <ProgressCardTab exams={exams} />
       )}
+    </div>
     </div>
   );
 };
