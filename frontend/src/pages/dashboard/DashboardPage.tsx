@@ -52,7 +52,7 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6 md:space-y-8 p-3 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-10 rounded-2xl">
-      <WelcomeBanner name={user?.name || ''} role={user?.role || ''} photoUrl={user?.photoUrl} />
+      <WelcomeBanner name={user?.name || ''} role={user?.role || ''} photoUrl={data?.teacherProfile?.photoUrl || data?.studentProfile?.photoUrl || user?.photoUrl} />
       {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && <AdminView data={data} />}
       {user?.role === 'TEACHER' && <TeacherView data={data} />}
       {user?.role === 'STUDENT' && <StudentView data={data} />}
@@ -423,51 +423,15 @@ const TeacherView: React.FC<{ data: any }> = ({ data }) => {
 
   return (
     <div className="space-y-7">
-      {/* Teacher Profile / Quick Stats */}
-      <div className="flex flex-col lg:flex-row gap-5">
-        <div className="lg:w-1/3 rounded-[2rem] p-6 relative overflow-hidden text-white"
-          style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', boxShadow: '0 15px 40px -10px rgba(16,185,129,0.4)' }}>
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl transform translate-x-1/3 -translate-y-1/3" />
-          <div className="relative z-10 flex items-center gap-5 mb-6 pb-6 border-b border-white/20">
-            {teacherProfile?.photoUrl ? (
-              <img src={teacherProfile.photoUrl} alt="Profile" className="w-16 h-16 rounded-2xl object-cover border-2 border-white/40 shadow-lg" />
-            ) : (
-              <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-3xl font-black shadow-lg">
-                {teacherProfile?.name?.charAt(0) || 'T'}
-              </div>
-            )}
-            <div>
-              <h2 className="text-xl font-black leading-tight tracking-tight">{teacherProfile?.name || 'Teacher'}</h2>
-              <p className="text-emerald-100 text-sm font-semibold mt-1">{teacherProfile?.employeeId || 'ID Not Set'}</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-emerald-200 text-xs font-black uppercase tracking-wider mb-1">My Attendance</p>
-              <p className="text-2xl font-black">{myAttendance?.rate || 0}%</p>
-            </div>
-            {pendingSalary ? (
-              <div>
-                <p className="text-emerald-200 text-xs font-black uppercase tracking-wider mb-1">Pending Salary</p>
-                <p className="text-2xl font-black">₹{pendingSalary.netSalary.toLocaleString('en-IN')}</p>
-              </div>
-            ) : (
-              <div>
-                <p className="text-emerald-200 text-xs font-black uppercase tracking-wider mb-1">Status</p>
-                <p className="text-xl font-bold flex items-center gap-1.5"><CheckCircle2 className="w-5 h-5"/> All Paid</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-3 gap-5">
-          {[
-            { label: 'My Students', value: data.totalStudents || 0, icon: Users, gradient: 'linear-gradient(90deg,#6366f1,#818cf8)', glow: 'rgba(99,102,241,0.08)', sub: 'Across all classes' },
-            { label: 'Assigned Classes', value: data.assignedClasses?.length || 0, icon: School, gradient: 'linear-gradient(90deg,#f59e0b,#fbbf24)', glow: 'rgba(245,158,11,0.08)', sub: 'Active assignments' },
-            { label: "Today's Class Att.", value: `${rate}%`, icon: Clock, gradient: 'linear-gradient(90deg,#0ea5e9,#38bdf8)', glow: 'rgba(14,165,233,0.08)', sub: `${present} present · ${absent} absent` },
-          ].map((s, i) => <StatCard key={i} {...(s as StatCardProps)} />)}
-        </div>
+      {/* Teacher Quick Stats Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
+        {[
+          { label: 'My Attendance', value: `${myAttendance?.rate || 0}%`, icon: UserCheck, gradient: 'linear-gradient(90deg,#10b981,#34d399)', glow: 'rgba(16,185,129,0.08)', sub: 'This month' },
+          { label: 'Salary Status', value: pendingSalary ? `₹${pendingSalary.netSalary}` : 'All Paid', icon: Wallet, gradient: 'linear-gradient(90deg,#f43f5e,#fb7185)', glow: 'rgba(244,63,94,0.08)', sub: pendingSalary ? 'Pending' : 'No dues' },
+          { label: 'My Students', value: data.totalStudents || 0, icon: Users, gradient: 'linear-gradient(90deg,#6366f1,#818cf8)', glow: 'rgba(99,102,241,0.08)', sub: 'Across all classes' },
+          { label: 'Assigned Classes', value: data.assignedClasses?.length || 0, icon: School, gradient: 'linear-gradient(90deg,#f59e0b,#fbbf24)', glow: 'rgba(245,158,11,0.08)', sub: 'Active assignments' },
+          { label: "Today's Att.", value: `${rate}%`, icon: Clock, gradient: 'linear-gradient(90deg,#0ea5e9,#38bdf8)', glow: 'rgba(14,165,233,0.08)', sub: `${present}P · ${absent}A` },
+        ].map((s, i) => <StatCard key={i} {...(s as StatCardProps)} />)}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
