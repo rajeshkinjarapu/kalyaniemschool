@@ -4,8 +4,11 @@ import api from '../../api/axios';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { ShieldAlert, Search, Calendar, Users, ListFilter, CheckCircle, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../hooks/useAuth';
 
 export const AttendanceMarkingPage: React.FC = () => {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
   const [classes, setClasses] = useState<any[]>([]);
   
   const [selectedClassName, setSelectedClassName] = useState('');
@@ -137,12 +140,14 @@ export const AttendanceMarkingPage: React.FC = () => {
           >
             Marking
           </Link>
-          <Link
-            to="/attendance/report"
-            className="flex-1 sm:flex-none text-center px-6 py-2.5 text-sm font-bold text-slate-600 hover:bg-white/50 rounded-xl transition-all"
-          >
-            Report
-          </Link>
+          {isAdmin && (
+            <Link
+              to="/attendance/report"
+              className="flex-1 sm:flex-none text-center px-6 py-2.5 text-sm font-bold text-slate-600 hover:bg-white/50 rounded-xl transition-all"
+            >
+              Report
+            </Link>
+          )}
         </div>
       </div>
 
