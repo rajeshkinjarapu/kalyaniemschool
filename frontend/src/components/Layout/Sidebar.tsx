@@ -6,7 +6,11 @@ import {
   LayoutDashboard, Users, GraduationCap, School, BookOpen,
   CalendarCheck, ClipboardList, PenTool, Calendar, CreditCard,
   Megaphone, MessageSquare, BarChart3, Settings, LogOut,
+<<<<<<< HEAD
   Shield, FileText, UserCheck, X, ChevronDown, Smartphone,
+=======
+  Shield, FileText, UserCheck, X, ChevronDown, MapPin,
+>>>>>>> 3e5ae40 (Add colorful Gate Pass dashboard and route)
 } from 'lucide-react';
 import { usePWA } from '../../hooks/usePWA';
 
@@ -79,6 +83,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       { to: '/gate-pass',     label: 'Gate Pass',     icon: FileText },
       { to: '/exams',         label: 'Exams',         icon: ClipboardList },
       { to: '/timetable',     label: 'Timetable',     icon: Calendar      },
+      { to: '/leave/gate-pass', label: 'Gate Pass',    icon: MapPin       },
       { to: '/leave/type',    label: 'Leave',         icon: UserCheck     },
       { to: '/finance',       label: 'Finance',       icon: CreditCard    },
       { to: '/fee-payment',   label: 'Fee Payment',   icon: CreditCard    },

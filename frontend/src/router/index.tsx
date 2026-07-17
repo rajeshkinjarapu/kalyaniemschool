@@ -51,10 +51,14 @@ const RolesPage = lazy(() => import('../pages/settings/RolesPage'));
 const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'));
 const LeaveTypePage = lazy(() => import('../pages/leave/LeaveTypePage'));
 const LeaveRequestLogPage = lazy(() => import('../pages/leave/LeaveRequestLogPage'));
+<<<<<<< HEAD
 const GatePassPage = lazy(() => import('../pages/gate-pass/GatePassPage'));
 const HomeworkPage = lazy(() => import('../pages/homework/HomeworkPage'));
 const TeacherAttendancePage = lazy(() => import('../pages/teacher-attendance/TeacherAttendancePage'));
 const SalaryPage = lazy(() => import('../pages/hr/SalaryPage'));
+=======
+const GatePassPage = lazy(() => import('../pages/leave/GatePassPage'));
+>>>>>>> 3e5ae40 (Add colorful Gate Pass dashboard and route)
 
 const AttendanceWrapper = () => {
   const { user } = useAuth();
@@ -288,6 +292,10 @@ export const router = createBrowserRouter([
       {
         path: 'profile',
         element: withSuspense(<ProfilePage />),
+      },
+      {
+        path: 'leave/gate-pass',
+        element: withSuspense(<GatePassPage />),
       },
       {
         path: 'leave/type',
