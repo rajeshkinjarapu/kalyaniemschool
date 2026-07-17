@@ -205,14 +205,14 @@ export const FeePaymentsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="print:hidden space-y-6">
-      <div className="flex justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-150 dark:border-gray-800">
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-3 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-24 rounded-2xl">
+      <div className="print:hidden space-y-4 sm:space-y-6 md:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 rounded-3xl shadow-xl text-white transform transition-all hover:scale-[1.01]">
         <div>
-          <h3 className="font-bold text-gray-900 dark:text-white">Fee Transaction Ledger</h3>
-          <p className="text-xs text-gray-400">Track paid, pending and overdue tuition invoices.</p>
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">Fee Transaction Ledger</h3>
+          <p className="text-indigo-100 mt-1 sm:mt-2 font-medium text-sm sm:text-lg opacity-90 leading-snug">Track paid, pending and overdue tuition invoices.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT' || user?.role === 'TEACHER') && (
             <>
               <button
@@ -246,9 +246,9 @@ export const FeePaymentsPage: React.FC = () => {
       {loading ? (
         <LoadingSpinner size="lg" className="py-12" />
       ) : (
-        <div className="card overflow-hidden">
+        <div className="rounded-3xl border border-white/50 bg-white/80 backdrop-blur-lg overflow-hidden shadow-2xl">
           <div className="overflow-x-auto w-full max-w-full block"><table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 dark:bg-gray-800/40 text-gray-500 font-semibold border-b">
+            <thead className="bg-indigo-50/50 text-indigo-900 font-bold border-b border-indigo-100">
               <tr>
                 <th className="px-6 py-4">Student</th>
                 <th className="px-6 py-4">Fee Structure</th>
@@ -261,9 +261,9 @@ export const FeePaymentsPage: React.FC = () => {
             </thead>
             <tbody className="divide-y">
               {payments.map((p) => (
-                <tr key={p.id}>
-                  <td className="px-6 py-4 font-semibold">{p.student?.user?.name || 'Unknown student'}</td>
-                  <td className="px-6 py-4 text-gray-500">{p.feeStructure?.name || 'Deleted structure'}</td>
+                <tr key={p.id} className="hover:bg-indigo-50/30 transition-colors">
+                  <td className="px-6 py-4 font-bold text-slate-800">{p.student?.user?.name || 'Unknown student'}</td>
+                  <td className="px-6 py-4 text-slate-500">{p.feeStructure?.name || 'Deleted structure'}</td>
                   <td className="px-6 py-4 font-bold">₹{p.amountPaid.toLocaleString()}</td>
                   <td className="px-6 py-4 text-gray-500">
                     {new Date(p.paymentDate).toLocaleDateString()}
@@ -299,9 +299,9 @@ export const FeePaymentsPage: React.FC = () => {
 
       {/* Record Payment Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-sm">
           <div className="fixed inset-0" onClick={() => setShowModal(false)} />
-          <div className="relative card w-full max-w-md p-6 space-y-5 animate-scale-in z-10 bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-white/95 backdrop-blur-xl border border-white/50 w-full max-w-md p-5 sm:p-6 space-y-5 animate-scale-in z-10 rounded-[2rem] shadow-2xl max-h-[90vh] overflow-y-auto">
             <div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">Record Tuition Payment</h3>
               <p className="text-xs text-gray-450 mt-1">Select multiple fees to collect them at once.</p>
