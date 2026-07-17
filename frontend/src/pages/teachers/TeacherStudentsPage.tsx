@@ -60,30 +60,21 @@ export const TeacherStudentsPage: React.FC = () => {
             <p className="text-indigo-100 mt-1 sm:mt-2 font-medium text-sm sm:text-lg opacity-90 leading-snug">View all students across the school</p>
           </div>
         </div>
-        <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 text-sm font-bold bg-white/20 hover:bg-white/30 backdrop-blur-md px-5 py-2.5 rounded-xl transition-colors border border-white/30">
-          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-        </Link>
-      </div>
-
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/80 backdrop-blur-lg p-5 rounded-3xl border border-white/50 shadow-md">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-100 grid place-items-center text-indigo-700">
-            <Users className="w-6 h-6" />
+        
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-2 sm:mt-0">
+          <div className="w-full sm:w-72 relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400 w-5 h-5" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name, roll no or class..."
+              className="w-full pl-12 pr-4 py-2.5 bg-white border-2 border-transparent rounded-2xl text-sm font-semibold outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-300/50 transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
+            />
           </div>
-          <div>
-            <p className="text-lg font-black text-slate-800">School Student Roster</p>
-            <p className="text-sm text-slate-500 font-semibold">{students.length} Total Students</p>
-          </div>
-        </div>
-        <div className="flex-1 w-full sm:max-w-md relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400 w-5 h-5" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, roll no or class..."
-            className="w-full pl-12 pr-4 py-3 bg-white border-2 border-indigo-100 rounded-2xl text-sm font-semibold outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 transition-all placeholder:text-slate-400 text-slate-700"
-          />
+          <Link to="/dashboard" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-bold bg-white/20 hover:bg-white/30 backdrop-blur-md px-5 py-2.5 rounded-2xl transition-colors border border-white/30 whitespace-nowrap">
+            <ArrowLeft className="w-4 h-4" /> Back
+          </Link>
         </div>
       </div>
 
