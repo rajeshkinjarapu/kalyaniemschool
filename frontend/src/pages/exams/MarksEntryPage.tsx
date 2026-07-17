@@ -156,7 +156,7 @@ export const MarksEntryPage: React.FC = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="px-3 sm:px-0">
+      <div className="space-y-6">
       <div className="rounded-3xl border border-white/50 bg-white/80 backdrop-blur-lg p-4 md:p-8 shadow-2xl">
         
         {/* Toolbar */}

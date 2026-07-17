@@ -53,7 +53,7 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-4 sm:space-y-6 md:space-y-8 p-0 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-10">
       <WelcomeBanner name={user?.name || ''} role={user?.role || ''} photoUrl={data?.teacherProfile?.photoUrl || data?.studentProfile?.photoUrl || user?.photoUrl} />
-      <div className="px-3 sm:px-0">
+      <div>
         {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && <AdminView data={data} />}
         {user?.role === 'TEACHER' && <TeacherView data={data} />}
         {user?.role === 'STUDENT' && <StudentView data={data} />}

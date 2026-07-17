@@ -181,7 +181,7 @@ const TeacherAttendancePage: React.FC = () => {
 
       {/* ADMIN VIEW */}
       {isAdmin && (
-        <div className="space-y-5 px-3 sm:px-0">
+        <div className="space-y-5">
           {/* Date Selector */}
           <div className="flex items-center gap-4 bg-white rounded-[1.5rem] p-4 border border-slate-100"
             style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.04)' }}>
@@ -260,7 +260,7 @@ const TeacherAttendancePage: React.FC = () => {
 
       {/* TEACHER VIEW — Calendar */}
       {isTeacher && (
-        <div className="space-y-5 px-3 sm:px-0">
+        <div className="space-y-5">
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[

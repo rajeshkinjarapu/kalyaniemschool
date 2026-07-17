@@ -157,7 +157,7 @@ const SalaryPage: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 px-3 sm:px-0">
+      <div className="flex flex-wrap gap-3">
         <select value={filterYear} onChange={e => setFilterYear(parseInt(e.target.value))}
           className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500 cursor-pointer">
           {[0,1,2,3,4].map(y => {
@@ -173,7 +173,7 @@ const SalaryPage: React.FC = () => {
       </div>
 
       {/* Salary List */}
-      <div className="px-3 sm:px-0">
+      <div>
         {salaries.length === 0 ? (
         <div className="text-center py-20 rounded-[2rem] bg-white border border-slate-100"
           style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.04)' }}>

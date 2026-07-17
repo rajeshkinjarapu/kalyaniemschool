@@ -243,7 +243,7 @@ export const FeePaymentsPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="px-3 sm:px-0">
+      <div>
       {loading ? (
         <LoadingSpinner size="lg" className="py-12" />
       ) : (

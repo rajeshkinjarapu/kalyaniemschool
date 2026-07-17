@@ -128,7 +128,7 @@ export const AttendanceMarkingPage: React.FC = () => {
 
   return (
     <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-0 sm:p-4 md:p-8 pb-24 overflow-x-hidden">
-      <div className="px-3 sm:px-0 pt-3 sm:pt-0 space-y-6">
+      <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-800 to-purple-800">
           Manage Attendance

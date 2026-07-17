@@ -190,7 +190,7 @@ const GatePassPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="px-3 sm:px-0 space-y-4 sm:space-y-6 md:space-y-8">
+        <div className="space-y-4 sm:space-y-6 md:space-y-8">
           <div className="rounded-3xl border border-white/50 bg-white/80 backdrop-blur-lg p-5 sm:p-6 md:p-8 shadow-2xl space-y-5 sm:space-y-6">
           <div className="flex items-center gap-3 text-indigo-700 font-extrabold text-lg sm:text-xl border-b border-indigo-100 pb-4">
             <PlusCircle className="h-5 w-5 sm:h-6 sm:w-6" /> {canApprove ? 'Issue New Gate Pass' : 'New Request'}

@@ -6,7 +6,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { login as loginApi } from '../../api/auth';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, Twitter, Linkedin, Facebook, Chrome } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Username is required'),
@@ -118,29 +118,8 @@ export const LoginPage: React.FC = () => {
             New user? <Link to="/register" className="text-blue-600 font-semibold hover:underline">Sign Up</Link>
           </p>
 
-          <div className="w-full flex items-center gap-4 my-6">
-            <div className="h-px bg-gray-300 flex-1"></div>
-            <span className="text-blue-600 font-bold text-sm">OR</span>
-            <div className="h-px bg-gray-300 flex-1"></div>
-          </div>
-
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <button className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white hover:bg-blue-600 transition-colors">
-              <Twitter className="w-5 h-5" />
-            </button>
-            <button className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white hover:bg-blue-700 transition-colors">
-              <Linkedin className="w-5 h-5" />
-            </button>
-            <button className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-white hover:bg-blue-800 transition-colors">
-              <Facebook className="w-5 h-5" />
-            </button>
-            <button className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white hover:bg-blue-600 transition-colors">
-              <Chrome className="w-5 h-5" />
-            </button>
-          </div>
-
           <p className="text-xs text-gray-400">
-            Sign in with another account
+            Sign in with your credentials
           </p>
         </div>
       </div>
