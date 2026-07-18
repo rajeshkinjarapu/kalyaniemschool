@@ -1081,26 +1081,32 @@ export const ExamListPage: React.FC = () => {
       {/* ══ TAB 3: MARKS UPLOAD (written-exam) ══ */}
       {activeTab === 'written-exam' && (
         <div className="space-y-6">
-          <div className="flex justify-between items-center bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 p-5 rounded-3xl shadow-lg border border-pink-400/50">
-            <span className="text-sm font-black uppercase text-white tracking-widest flex items-center gap-2">
-              <span>📝</span> Marks Upload / Results Entry
-            </span>
+          <div className="flex justify-between items-center bg-white/40 dark:bg-white/10 backdrop-blur-xl p-5 rounded-3xl shadow-xl border border-white/50 dark:border-white/20">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <span className="text-xl">📝</span>
+              </div>
+              <div>
+                <h2 className="text-lg font-black uppercase text-slate-900 dark:text-white tracking-wider drop-shadow-sm">Marks Upload & Entry</h2>
+                <p className="text-xs font-bold text-slate-500 dark:text-indigo-200">Select an examination and class to enter student marks</p>
+              </div>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {exams.map(exam => (
-              <div key={exam.id} className="relative rounded-[2rem] p-6 overflow-hidden bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl shadow-xl shadow-indigo-500/5 border-2 border-pink-100 dark:border-pink-900/30 hover:border-pink-400 dark:hover:border-pink-600 transition-all duration-300 flex flex-col group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pink-400/20 to-orange-400/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
+              <div key={exam.id} className="relative rounded-[2rem] p-6 overflow-hidden bg-white/40 dark:bg-white/10 backdrop-blur-2xl shadow-xl border-2 border-white/50 dark:border-white/20 hover:border-indigo-400 dark:hover:border-indigo-400 transition-all duration-300 flex flex-col group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-400/20 to-purple-400/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
                 
                 <div className="relative z-10">
-                  <h4 className="font-extrabold text-slate-900 dark:text-white text-xl drop-shadow-sm">{exam.name}</h4>
-                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1.5">Select a class to enter marks:</p>
+                  <h4 className="font-extrabold text-slate-900 dark:text-white text-xl drop-shadow-sm truncate whitespace-nowrap overflow-hidden" title={exam.name}>{exam.name}</h4>
+                  <p className="text-xs font-bold text-slate-500 dark:text-indigo-200 mt-1.5">Select a class to enter marks:</p>
                 </div>
                 
                 <div className="flex flex-col gap-3 flex-1 mt-5 relative z-10">
                   {(exam.classes || []).map((c: any) => (
-                    <div key={c.id} className="flex gap-2 items-center bg-slate-50/80 dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-200 dark:border-slate-700/80 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                      <div className="flex-1 text-sm font-black text-slate-700 dark:text-slate-300 px-3 truncate">
+                    <div key={c.id} className="flex gap-2 items-center bg-white/50 dark:bg-black/20 p-2 rounded-2xl border border-white/40 dark:border-white/10 hover:bg-white/80 dark:hover:bg-black/40 transition-colors shadow-sm">
+                      <div className="flex-1 text-sm font-black text-slate-700 dark:text-white px-3 truncate">
                         {c.name}-{c.section}
                       </div>
                       <Link to={`/exams/${exam.id}/entry?classId=${c.id}`} className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold rounded-xl text-xs shadow-lg shadow-indigo-500/30 transition-all transform hover:-translate-y-0.5 text-center shrink-0">
@@ -1109,14 +1115,14 @@ export const ExamListPage: React.FC = () => {
                     </div>
                   ))}
                   {(!exam.classes || exam.classes.length === 0) && (
-                    <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-center">
+                    <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-center">
                       <p className="text-xs text-amber-600 dark:text-amber-400 font-bold">No classes assigned to this exam</p>
                     </div>
                   )}
                 </div>
 
                 {isAdmin && (
-                  <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700 relative z-10">
+                  <div className="pt-4 mt-4 border-t border-white/20 dark:border-white/10 relative z-10">
                     <button onClick={() => { setExcelExamId(exam.id); setShowExcelModal(true); }} className="w-full px-4 py-3 bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-500 hover:to-green-600 text-white font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/30 transition-all transform hover:-translate-y-0.5">
                       Excel Bulk Upload
                     </button>
