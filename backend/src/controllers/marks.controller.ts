@@ -65,7 +65,31 @@ export const bulkCreate = async (req: AuthRequest, res: Response, next: NextFunc
 
     // Pre-fetch all real subjects for those classes
     const classIds = [...new Set(students.map(s => s.classId))];
-    const realSubjects = await prisma.subject.findMany({ where: { classId: { in: classIds } } });
+    let realSubjects = await prisma.subject.findMany({ where: { classId: { in: classIds } } });
+
+    // Create any missing subjects dynamically
+    for (const m of marks) {
+      const fakeSubject = examSubjects.find(s => s.id === m.subjectId);
+      if (fakeSubject) {
+        const classId = studentClassMap.get(m.studentId);
+        if (classId) {
+          const matchingRealSubject = realSubjects.find(
+            s => s.classId === classId && s.name.toLowerCase() === fakeSubject.name.toLowerCase()
+          );
+          if (!matchingRealSubject) {
+            // Subject doesn't exist for this class! Auto-create it to prevent 500 FK error.
+            const newSubject = await prisma.subject.create({
+              data: {
+                name: fakeSubject.name,
+                code: `${fakeSubject.name.substring(0, 3).toUpperCase()}-${Math.floor(Math.random() * 1000)}`,
+                classId: classId
+              }
+            });
+            realSubjects.push(newSubject);
+          }
+        }
+      }
+    }
 
     const upsertOps = marks.map((m) => {
       // Resolve fake subject ID to real subject ID
@@ -73,7 +97,6 @@ export const bulkCreate = async (req: AuthRequest, res: Response, next: NextFunc
       const fakeSubject = examSubjects.find(s => s.id === m.subjectId);
       
       if (fakeSubject) {
-        // Find a real subject in the student's class with the same name
         const classId = studentClassMap.get(m.studentId);
         const matchingRealSubject = realSubjects.find(
           s => s.classId === classId && s.name.toLowerCase() === fakeSubject.name.toLowerCase()
