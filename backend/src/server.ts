@@ -44,6 +44,7 @@ import salaryRoutes from './routes/salary';
 import leaveRoutes from './routes/leave';
 
 const app = express();
+app.set('trust proxy', 1);
 const httpServer = createServer(app);
 
 // Init Socket.io
