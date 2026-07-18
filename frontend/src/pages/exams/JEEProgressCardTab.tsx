@@ -239,7 +239,7 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                     <div className="h-4 w-full bg-gray-200 rounded-full overflow-hidden flex shadow-inner progress-bar-bg">
                       <div 
                         className="h-full bg-gradient-to-r from-amber-500 via-gray-700 to-[#1e2b4d]" 
-                        style={{ width: \`\${percentNumber}%\` }}
+                        style={{ width: `${percentNumber}%` }}
                       ></div>
                     </div>
                     <div className="flex justify-between text-[10px] text-gray-500 mt-1 font-semibold">
