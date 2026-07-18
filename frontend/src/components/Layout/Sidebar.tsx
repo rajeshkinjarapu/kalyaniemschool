@@ -53,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [schoolName, setSchoolName] = useState('JY SCHOOL');
-  const { isInstallable, installApp } = usePWA();
+  const { isInstallable, isInstalled, installApp } = usePWA();
 
   useEffect(() => {
     api.get('/api/settings').then((r: any) => {
