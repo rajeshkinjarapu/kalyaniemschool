@@ -127,11 +127,11 @@ export const MarksEntryPage: React.FC = () => {
       {/* Header Section */}
       <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link to="/exams?tab=written-exam" className="p-3 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+          <Link to="/exams?tab=written-exam" className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
             <ArrowLeft className="w-6 h-6 text-slate-700" />
           </Link>
-          <div>
-            <h2 className="text-2xl font-black text-slate-900">{exam?.name}</h2>
+          <div className="min-w-0">
+            <h2 className="text-lg md:text-2xl font-black text-slate-900 truncate">{exam?.name}</h2>
             <div className="flex items-center gap-2 mt-1">
               <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                 Class: {currentClass?.name}-{currentClass?.section}

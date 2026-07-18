@@ -264,7 +264,7 @@ const AdminView: React.FC<{ data: any }> = ({ data }) => {
 
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        <ChartCard className="lg:col-span-3">
+        <ChartCard className="hidden md:block lg:col-span-3">
           <SectionHeader title="Revenue Trend" subtitle="Monthly fee collection (last 12 months)" icon={TrendingUp} iconColor="#6366f1"
             action={<Link to="/finance" className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-700">View Finance <ChevronRight className="w-3.5 h-3.5" /></Link>} />
           <div className="h-[260px]">
@@ -288,7 +288,7 @@ const AdminView: React.FC<{ data: any }> = ({ data }) => {
           </div>
         </ChartCard>
 
-        <ChartCard className="lg:col-span-2">
+        <ChartCard className="hidden md:block lg:col-span-2">
           <SectionHeader title="Demographics" subtitle="Student gender distribution" icon={PieChartIcon} iconColor="#8b5cf6" />
           <div className="h-[200px]">
             {pieData.length > 0 ? (
@@ -316,7 +316,7 @@ const AdminView: React.FC<{ data: any }> = ({ data }) => {
 
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        <ChartCard className="lg:col-span-3">
+        <ChartCard className="hidden md:block lg:col-span-3">
           <SectionHeader title="Attendance Overview" subtitle="Present vs absent — last 7 days" icon={Activity} iconColor="#10b981" />
           <div className="h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
