@@ -208,41 +208,43 @@ export const FeePaymentsPage: React.FC = () => {
   return (
     <div className="space-y-4 sm:space-y-6 md:space-y-8 p-0 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-24 overflow-x-hidden">
       <div className="print:hidden space-y-4 sm:space-y-6 md:space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 rounded-none sm:rounded-3xl shadow-xl text-white transform transition-all sm:hover:scale-[1.01]">
-        <div>
-          <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">Fee Transaction Ledger</h3>
-          <p className="text-indigo-100 mt-1 sm:mt-2 font-medium text-sm sm:text-lg opacity-90 leading-snug">Track paid, pending and overdue tuition invoices.</p>
+      {user?.role !== 'TEACHER' && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 rounded-none sm:rounded-3xl shadow-xl text-white transform transition-all sm:hover:scale-[1.01]">
+          <div>
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">Fee Transaction Ledger</h3>
+            <p className="text-indigo-100 mt-1 sm:mt-2 font-medium text-sm sm:text-lg opacity-90 leading-snug">Track paid, pending and overdue tuition invoices.</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT' || user?.role === 'TEACHER') && (
+              <>
+                <button
+                  onClick={exportPaymentsExcel}
+                  className="btn-secondary flex items-center gap-2 text-sm text-emerald-600 border border-emerald-100/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/10 cursor-pointer"
+                >
+                  <FileDown className="w-4.5 h-4.5" />
+                  <span>Export Excel</span>
+                </button>
+                <button
+                  onClick={exportPaymentsPdf}
+                  className="btn-secondary flex items-center gap-2 text-sm text-indigo-600 border border-indigo-100/50 hover:bg-indigo-50 dark:hover:bg-indigo-950/10 cursor-pointer"
+                >
+                  <FileDown className="w-4.5 h-4.5" />
+                  <span>Export PDF</span>
+                </button>
+                {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
+                  <Link to="/fees/structures" className="btn-secondary text-sm">
+                    Structure Settings
+                  </Link>
+                )}
+                <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2">
+                  <Plus className="w-4.5 h-4.5" />
+                  <span>Collect Payment</span>
+                </button>
+              </>
+            )}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-3">
-          {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT' || user?.role === 'TEACHER') && (
-            <>
-              <button
-                onClick={exportPaymentsExcel}
-                className="btn-secondary flex items-center gap-2 text-sm text-emerald-600 border border-emerald-100/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/10 cursor-pointer"
-              >
-                <FileDown className="w-4.5 h-4.5" />
-                <span>Export Excel</span>
-              </button>
-              <button
-                onClick={exportPaymentsPdf}
-                className="btn-secondary flex items-center gap-2 text-sm text-indigo-600 border border-indigo-100/50 hover:bg-indigo-50 dark:hover:bg-indigo-950/10 cursor-pointer"
-              >
-                <FileDown className="w-4.5 h-4.5" />
-                <span>Export PDF</span>
-              </button>
-              {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
-                <Link to="/fees/structures" className="btn-secondary text-sm">
-                  Structure Settings
-                </Link>
-              )}
-              <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2">
-                <Plus className="w-4.5 h-4.5" />
-                <span>Collect Payment</span>
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+      )}
 
       {user?.role !== 'TEACHER' && (
         <div className="px-3 sm:px-0">
@@ -302,20 +304,22 @@ export const FeePaymentsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Record Payment Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-[100] flex flex-col sm:items-center sm:justify-center bg-indigo-900/30 backdrop-blur-md">
-          <div className="fixed inset-0 hidden sm:block" onClick={() => setShowModal(false)} />
-          <div className="relative bg-white/95 sm:backdrop-blur-xl sm:border border-white/80 w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-lg p-0 sm:p-0 sm:rounded-[2rem] shadow-[0_20px_50px_rgba(8,_112,_184,_0.15)] overflow-hidden flex flex-col z-10 animate-scale-in">
+      {/* Record Payment Modal / Inline Form for Teachers */}
+      {(showModal || user?.role === 'TEACHER') && (
+        <div className={user?.role === 'TEACHER' ? "w-full max-w-4xl mx-auto mt-2" : "fixed inset-0 z-[100] flex flex-col sm:items-center sm:justify-center bg-indigo-900/30 backdrop-blur-md"}>
+          {user?.role !== 'TEACHER' && <div className="fixed inset-0 hidden sm:block" onClick={() => setShowModal(false)} />}
+          <div className={`relative bg-white/95 sm:backdrop-blur-xl sm:border border-white/80 w-full ${user?.role === 'TEACHER' ? 'sm:rounded-[2rem] shadow-2xl h-auto' : 'h-full sm:h-auto sm:max-h-[90vh] sm:max-w-lg p-0 sm:p-0 sm:rounded-[2rem] shadow-[0_20px_50px_rgba(8,_112,_184,_0.15)]'} overflow-hidden flex flex-col z-10 animate-scale-in`}>
             <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 p-5 sm:px-6 flex justify-between items-center text-white shrink-0 shadow-sm relative overflow-hidden">
               <div className="absolute top-[-20px] right-[-20px] w-24 h-24 bg-white/20 rounded-full blur-xl mix-blend-overlay"></div>
               <div className="relative z-10">
                 <h3 className="text-xl font-extrabold tracking-tight drop-shadow-md">Collect Payment</h3>
                 <p className="text-xs text-pink-50 mt-1 font-medium">Select multiple fees to collect them at once.</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="relative z-10 p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors backdrop-blur-md">
-                <X className="w-5 h-5 text-white" />
-              </button>
+              {user?.role !== 'TEACHER' && (
+                <button onClick={() => setShowModal(false)} className="relative z-10 p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors backdrop-blur-md">
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              )}
             </div>
 
             <div className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-5 bg-gradient-to-b from-pink-50/50 via-purple-50/30 to-white">
@@ -559,13 +563,15 @@ export const FeePaymentsPage: React.FC = () => {
               </div>
 
               <div className="flex gap-3 justify-end pt-4 border-t border-purple-100/50 mt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-5 py-3 rounded-xl text-sm font-bold text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  Cancel
-                </button>
+                {user?.role !== 'TEACHER' && (
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="px-5 py-3 rounded-xl text-sm font-bold text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                )}
                 <button
                   type="submit"
                   disabled={isSubmitting}
