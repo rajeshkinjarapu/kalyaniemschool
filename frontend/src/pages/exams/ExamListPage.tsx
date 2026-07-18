@@ -72,7 +72,7 @@ export const ExamListPage: React.FC = () => {
   const openEditModal = (exam: any) => {
     setEditExamId(exam.id);
     setExamName(exam.name);
-    setExamClassIds([exam.classId]);
+    setExamClassIds((exam.classes || []).map((c: any) => c.id));
     setExamDate(new Date(exam.examDate).toISOString().split('T')[0]);
     setSelectedExamSubjects(exam.subjects || []);
     setShowExamModal(true);
@@ -110,6 +110,7 @@ export const ExamListPage: React.FC = () => {
       if (editExamId) {
         await api.put(`/api/exams/${editExamId}`, {
           name: examName,
+          classIds: examClassIds,
           examDate: new Date(examDate),
           maxMarks: totalMarks,
           subjects: selectedExamSubjects
