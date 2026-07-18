@@ -45,81 +45,89 @@ export const getByExam = async (req: AuthRequest, res: Response, next: NextFunct
 };
 
 export const bulkCreate = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
-  const { marks } = req.body as {
-    marks: { studentId: string; examId: string; subjectId: string; marksObtained: number; maxMarks: number; remarks?: string }[];
-  };
-  if (!marks?.length) return next(createError('marks array is required', 400));
+  try {
+    const { marks } = req.body as {
+      marks: { studentId: string; examId: string; subjectId: string; marksObtained: number; maxMarks: number; remarks?: string }[];
+    };
+    if (!marks?.length) return next(createError('marks array is required', 400));
 
-  const upsertOps = marks.map((m) => {
-    const grade = calculateGrade(m.marksObtained, m.maxMarks);
-    return prisma.mark.upsert({
-      where: { studentId_examId_subjectId: { studentId: m.studentId, examId: m.examId, subjectId: m.subjectId } },
-      update: { marksObtained: m.marksObtained, maxMarks: m.maxMarks, grade, remarks: m.remarks },
-      create: { studentId: m.studentId, examId: m.examId, subjectId: m.subjectId, marksObtained: m.marksObtained, maxMarks: m.maxMarks, grade, remarks: m.remarks },
+    const upsertOps = marks.map((m) => {
+      const grade = calculateGrade(m.marksObtained, m.maxMarks);
+      return prisma.mark.upsert({
+        where: { studentId_examId_subjectId: { studentId: m.studentId, examId: m.examId, subjectId: m.subjectId } },
+        update: { marksObtained: m.marksObtained, maxMarks: m.maxMarks, grade, remarks: m.remarks },
+        create: { studentId: m.studentId, examId: m.examId, subjectId: m.subjectId, marksObtained: m.marksObtained, maxMarks: m.maxMarks, grade, remarks: m.remarks },
+      });
     });
-  });
 
-  const results = await prisma.$transaction(upsertOps);
-  successResponse(res, results, `${results.length} marks saved`);
+    const results = await prisma.$transaction(upsertOps);
+    successResponse(res, results, `${results.length} marks saved`);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getReportCard = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
-  const studentId = req.params.studentId as string;
-  const examId = req.params.examId as string;
+  try {
+    const studentId = req.params.studentId as string;
+    const examId = req.params.examId as string;
 
-  const student = await prisma.student.findUnique({
-    where: { id: studentId },
-    include: {
-      user: { select: { name: true, email: true, photoUrl: true } },
-      class: { select: { name: true, section: true } },
-    },
-  });
-  if (!student) return next(createError('Student not found', 404));
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      include: {
+        user: { select: { name: true, email: true, photoUrl: true } },
+        class: { select: { name: true, section: true } },
+      },
+    });
+    if (!student) return next(createError('Student not found', 404));
 
-  const exam = await prisma.exam.findUnique({ where: { id: examId } });
-  if (!exam) return next(createError('Exam not found', 404));
+    const exam = await prisma.exam.findUnique({ where: { id: examId } });
+    if (!exam) return next(createError('Exam not found', 404));
 
-  const marks = await prisma.mark.findMany({
-    where: { studentId, examId },
-    include: { subject: { select: { name: true, code: true } } },
-  });
+    const marks = await prisma.mark.findMany({
+      where: { studentId, examId },
+      include: { subject: { select: { name: true, code: true } } },
+    });
 
-  const totalObtained = marks.reduce((s, m) => s + m.marksObtained, 0);
-  const totalMax = marks.reduce((s, m) => s + m.maxMarks, 0);
-  const percentage = totalMax > 0 ? parseFloat(((totalObtained / totalMax) * 100).toFixed(2)) : 0;
-  const grade = calculateGrade(totalObtained, totalMax);
+    const totalObtained = marks.reduce((s, m) => s + m.marksObtained, 0);
+    const totalMax = marks.reduce((s, m) => s + m.maxMarks, 0);
+    const percentage = totalMax > 0 ? parseFloat(((totalObtained / totalMax) * 100).toFixed(2)) : 0;
+    const grade = calculateGrade(totalObtained, totalMax);
 
-  // Calculate rank among class
-  const allStudentMarks = await (prisma.mark as any).groupBy({
-    by: ['studentId'],
-    where: { examId },
-    _sum: { marksObtained: true },
-    orderBy: { _sum: { marksObtained: 'desc' } },
-  });
-  const rank = (allStudentMarks as any[]).findIndex((s) => s.studentId === studentId) + 1;
+    // Calculate rank among class
+    const allStudentMarks = await (prisma.mark as any).groupBy({
+      by: ['studentId'],
+      where: { examId },
+      _sum: { marksObtained: true },
+      orderBy: { _sum: { marksObtained: 'desc' } },
+    });
+    const rank = (allStudentMarks as any[]).findIndex((s) => s.studentId === studentId) + 1;
 
-  // Attendance last 30 days
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const attendanceRecords = await prisma.attendance.findMany({
-    where: { studentId, date: { gte: thirtyDaysAgo } },
-  });
-  const presentCount = attendanceRecords.filter((a) => a.status === 'PRESENT').length;
-  const attendancePercentage = attendanceRecords.length > 0
-    ? parseFloat(((presentCount / attendanceRecords.length) * 100).toFixed(2))
-    : 0;
+    // Attendance last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const attendanceRecords = await prisma.attendance.findMany({
+      where: { studentId, date: { gte: thirtyDaysAgo } },
+    });
+    const presentCount = attendanceRecords.filter((a) => a.status === 'PRESENT').length;
+    const attendancePercentage = attendanceRecords.length > 0
+      ? parseFloat(((presentCount / attendanceRecords.length) * 100).toFixed(2))
+      : 0;
 
-  successResponse(res, {
-    student,
-    exam,
-    marks,
-    totalObtained,
-    totalMax,
-    percentage,
-    grade,
-    rank,
-    attendancePercentage,
-  }, 'Report card fetched');
+    successResponse(res, {
+      student,
+      exam,
+      marks,
+      totalObtained,
+      totalMax,
+      percentage,
+      grade,
+      rank,
+      attendancePercentage,
+    }, 'Report card fetched');
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const downloadReportCard = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
