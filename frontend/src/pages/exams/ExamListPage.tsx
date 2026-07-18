@@ -14,6 +14,7 @@ import * as XLSX from 'xlsx';
 import { SlipTestsTab } from './SlipTestsTab';
 import { AdmitCardTab } from './AdmitCardTab';
 import { ProgressCardTab } from './ProgressCardTab';
+import { JEEProgressCardTab } from './JEEProgressCardTab';
 
 export const ExamListPage: React.FC = () => {
   const { user } = useAuth();
@@ -27,7 +28,7 @@ export const ExamListPage: React.FC = () => {
   const tabParam = searchParams.get('tab');
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<'examination' | 'exam-plan' | 'question-group' | 'question-bank' | 'question-papers' | 'add-online-exam' | 'online-exams' | 'written-exam' | 'admit-card' | 'results' | 'progress-card' | 'settings' | 'slip-tests' | ''>('');
+  const [activeTab, setActiveTab] = useState<'examination' | 'exam-plan' | 'question-group' | 'question-bank' | 'question-papers' | 'add-online-exam' | 'online-exams' | 'written-exam' | 'admit-card' | 'results' | 'progress-card' | 'jee-progress-card' | 'settings' | 'slip-tests' | ''>('');
 
   useEffect(() => {
     if (tabParam) {
@@ -812,6 +813,12 @@ export const ExamListPage: React.FC = () => {
               <span className="text-xs font-black uppercase tracking-widest text-center">Progress Card</span>
             </button>
 
+            <button onClick={() => setActiveTab('jee-progress-card')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg hover:shadow-amber-500/30 hover:-translate-y-1">
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <Award className="w-8 h-8" />
+              <span className="text-xs font-black uppercase tracking-widest text-center">JEE Progress Card</span>
+            </button>
+
             {isAdminOrTeacher && (
               <>
                 <button onClick={() => setActiveTab('question-bank')} className="relative overflow-hidden group flex flex-col items-center justify-center p-6 rounded-2xl border-0 transition-all gap-3 bg-gradient-to-br from-slate-600 to-gray-800 text-white shadow-lg hover:shadow-slate-500/30 hover:-translate-y-1">
@@ -1184,6 +1191,11 @@ export const ExamListPage: React.FC = () => {
           </div>
           <iframe src="/JEE Mains Result card with Reports.html" className="w-full h-full border-0 rounded-b-lg"></iframe>
         </div>
+      )}
+
+      {/* ══ TAB: JEE PROGRESS CARD ══ */}
+      {activeTab === 'jee-progress-card' && (
+        <JEEProgressCardTab exams={exams} />
       )}
 
       {/* ══ TAB 6: SLIP TESTS ══ */}

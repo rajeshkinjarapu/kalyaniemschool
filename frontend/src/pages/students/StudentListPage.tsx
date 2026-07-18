@@ -140,35 +140,24 @@ export const StudentListPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/20">
-            <Users className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-          </div>
-          <div>
-            <h2 className="text-xl font-black text-gray-900 dark:text-white">Students</h2>
-            <p className="text-xs text-indigo-500 font-semibold">Home / Students</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-150 dark:border-gray-700 px-3 py-1.5 rounded-full">
-            {students.length} Records
-          </span>
-        </div>
-      </div>
+      {/* No Duplicate Page Header */}
 
       {/* Search & Action Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-150 dark:border-gray-800 shadow-sm">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by name or Student ID..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/25 font-medium"
-          />
+        <div className="flex-1 relative flex items-center gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-3 w-4 h-4 text-indigo-500" />
+            <input
+              type="text"
+              placeholder="Search by name or Student ID..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2.5 text-sm bg-indigo-50/30 dark:bg-gray-800/50 border border-indigo-100 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/50 font-medium transition-all"
+            />
+          </div>
+          <span className="hidden sm:inline-flex items-center justify-center px-3 py-2 text-xs font-black text-indigo-600 bg-indigo-100 rounded-lg whitespace-nowrap">
+            {students.length} Records
+          </span>
         </div>
         <div className="flex gap-2 flex-wrap">
           <select
@@ -238,10 +227,10 @@ export const StudentListPage: React.FC = () => {
                   return (
                     <tr
                       key={student.id}
-                      className="hover:bg-indigo-50/30 dark:hover:bg-indigo-950/10 transition-colors group"
+                      className="hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-all duration-300 group border-l-4 border-transparent hover:border-indigo-500"
                     >
                       {/* Sr No */}
-                      <td className="px-5 py-4 text-gray-400 font-bold text-xs">{idx + 1}</td>
+                      <td className="px-5 py-4 text-indigo-400 font-black text-xs">{idx + 1}</td>
 
                       {/* Photo */}
                       <td className="px-5 py-3">
@@ -249,10 +238,10 @@ export const StudentListPage: React.FC = () => {
                           <img
                             src={photoUrl.startsWith('http') ? photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${photoUrl.startsWith('/') ? photoUrl : `/${photoUrl}`}`}
                             alt={name}
-                            className="w-12 h-16 rounded-lg object-cover border-2 border-white dark:border-gray-800 shadow-md ring-1 ring-gray-200 dark:ring-gray-700"
+                            className="w-12 h-16 rounded-xl object-cover border-2 border-white dark:border-gray-800 shadow-lg ring-2 ring-indigo-100 dark:ring-indigo-900/30 transform group-hover:scale-105 transition-transform"
                           />
                         ) : (
-                          <div className={`w-12 h-16 rounded-lg bg-gradient-to-br ${getColor(name)} flex items-center justify-center text-white font-black text-lg border-2 border-white dark:border-gray-800 shadow-md ring-1 ring-gray-200 dark:ring-gray-700`}>
+                          <div className={`w-12 h-16 rounded-xl bg-gradient-to-br ${getColor(name)} flex items-center justify-center text-white font-black text-xl shadow-lg shadow-${getColor(name).split('-')[1]}-500/30 transform group-hover:scale-105 transition-transform`}>
                             {getInitials(name)}
                           </div>
                         )}
@@ -260,7 +249,7 @@ export const StudentListPage: React.FC = () => {
 
                       {/* Student Name */}
                       <td className="px-5 py-4 whitespace-nowrap">
-                        <Link to={`/students/${student.id}`} className="font-bold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                        <Link to={`/students/${student.id}`} className="font-extrabold text-gray-900 dark:text-white hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-indigo-600 hover:to-purple-600 transition-all underline decoration-indigo-200 dark:decoration-indigo-900/50 underline-offset-4 group-hover:decoration-indigo-500">
                           {name}
                         </Link>
                       </td>
