@@ -20,6 +20,7 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   const [published, setPublished] = useState(false);
   const [instructions, setInstructions] = useState('Candidate must carry this Admit Card to the examination hall.\nElectronic devices including calculators and mobile phones are strictly prohibited.\nCandidate should report to the examination center 30 minutes before commencement.');
   const [signatureUrl, setSignatureUrl] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
 
   useEffect(() => {
     if (selectedExam) {
@@ -27,6 +28,7 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
       const settings = selectedExam.admitCardSettings || {};
       setInstructions(settings.instructions || 'Candidate must carry this Admit Card to the examination hall.\nElectronic devices including calculators and mobile phones are strictly prohibited.\nCandidate should report to the examination center 30 minutes before commencement.');
       setSignatureUrl(settings.signatureUrl || '');
+      setLogoUrl(settings.logoUrl || '');
     }
   }, [selectedExam]);
 
@@ -65,21 +67,22 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         admitCardPublished: published,
         admitCardSettings: {
           instructions,
-          signatureUrl
+          signatureUrl,
+          logoUrl
         }
       });
       toast.success('Admit Card settings saved successfully!');
       // Update local object to avoid fetching again
       if (selectedExam) {
         selectedExam.admitCardPublished = published;
-        selectedExam.admitCardSettings = { instructions, signatureUrl };
+        selectedExam.admitCardSettings = { instructions, signatureUrl, logoUrl };
       }
     } catch (e: any) {
       toast.error('Failed to save settings: ' + e.message);
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'signature' | 'logo') => {
     const file = e.target.files?.[0];
     if (!file) return;
     const formData = new FormData();
@@ -88,8 +91,9 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
       const res = await api.post('/api/uploads/image', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setSignatureUrl(res.data.url);
-      toast.success('Signature uploaded!');
+      if (type === 'signature') setSignatureUrl(res.data.url);
+      if (type === 'logo') setLogoUrl(res.data.url);
+      toast.success(`${type === 'logo' ? 'Logo' : 'Signature'} uploaded!`);
     } catch (err) {
       toast.error('Failed to upload image');
     }
@@ -169,7 +173,20 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                 )}
                 <label className="btn-secondary cursor-pointer flex items-center gap-2">
                   <Upload className="w-4 h-4" /> Upload
-                  <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'signature')} />
+                </label>
+              </div>
+
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mt-4">School Logo Image</label>
+              <div className="flex items-center gap-4">
+                {logoUrl ? (
+                  <img src={logoUrl} alt="Logo" className="h-16 object-contain border border-gray-200 rounded p-1" />
+                ) : (
+                  <div className="h-16 w-16 border-2 border-dashed border-gray-300 rounded flex items-center justify-center text-xs text-gray-400">No Logo</div>
+                )}
+                <label className="btn-secondary cursor-pointer flex items-center gap-2">
+                  <Upload className="w-4 h-4" /> Upload
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'logo')} />
                 </label>
               </div>
             </div>

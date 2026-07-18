@@ -443,6 +443,7 @@ const TeacherView: React.FC<{ data: any }> = ({ data }) => {
           { label: 'Marks Entry', value: 'Enter', icon: PenTool, gradient: 'linear-gradient(135deg,#ec4899 0%,#e11d48 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Update grades', link: '/exams?tab=written-exam' },
           { label: 'Fee Pay', value: 'Pay', icon: CreditCard, gradient: 'linear-gradient(135deg,#f97316 0%,#d97706 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Clear dues', link: '/fee-payment?action=collect' },
           { label: 'Leave Apply', value: 'Apply', icon: FileText, gradient: 'linear-gradient(135deg,#06b6d4 0%,#2563eb 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Request leave', link: '/leave/request-log' },
+          { label: 'Admit Cards', value: 'View', icon: BookMarked, gradient: 'linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Students Admit Cards', link: '/teacher/admit-cards' },
         ].map((stat, i) => <StatCard key={i} {...(stat as StatCardProps)} />)}
       </div>
 
@@ -529,11 +530,12 @@ const StudentView: React.FC<{ data: any }> = ({ data }) => {
 
   return (
     <div className="space-y-7">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {[
           { label: 'Attendance Rate', value: `${attPct}%`, icon: CalendarDays, gradient: `linear-gradient(90deg,${attColor},${attColor}99)`, glow: attColor + '15', sub: 'Last 30 days', badge: attPct >= 80 ? '✓ Good' : 'At Risk', badgeColor: attPct >= 80 ? '#10b981' : '#f59e0b' },
           { label: 'Latest Score', value: data.recentMarks?.length > 0 ? `${data.recentMarks[0].marksObtained}/${data.recentMarks[0].maxMarks}` : 'N/A', icon: Award, gradient: 'linear-gradient(90deg,#6366f1,#818cf8)', glow: 'rgba(99,102,241,0.08)', sub: data.recentMarks?.[0]?.examName || 'No results yet', badge: data.recentMarks?.[0]?.grade, badgeColor: '#6366f1' },
           { label: 'Fee Status', value: feeStatus === 'PAID' ? 'Paid ✓' : feeStatus === 'PARTIAL' ? 'Partial' : 'Pending', icon: FileText, gradient: feeStatus === 'PAID' ? 'linear-gradient(90deg,#10b981,#34d399)' : 'linear-gradient(90deg,#f59e0b,#fbbf24)', glow: feeStatus === 'PAID' ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.08)', sub: feeStatus === 'PAID' ? 'All dues cleared' : 'Payment pending', link: '/finance' },
+          { label: 'Admit Cards', value: 'View', icon: BookMarked, gradient: 'linear-gradient(90deg,#8b5cf6,#a78bfa)', glow: 'rgba(139,92,246,0.08)', sub: 'Download admit cards', link: '/student/admit-cards' },
         ].map((s, i) => <StatCard key={i} {...(s as StatCardProps)} />)}
       </div>
 

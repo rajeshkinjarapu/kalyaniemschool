@@ -22,11 +22,13 @@ const StudentListPage = lazy(() => import('../pages/students/StudentListPage'));
 const StudentFormPage = lazy(() => import('../pages/students/StudentFormPage'));
 const StudentProfilePage = lazy(() => import('../pages/students/StudentProfilePage'));
 const StudentAdmitCardViewPage = lazy(() => import('../pages/students/StudentAdmitCardViewPage').then((mod) => ({ default: mod.StudentAdmitCardViewPage })));
+const StudentAdmitCardsPage = lazy(() => import('../pages/students/StudentAdmitCardsPage').then((mod) => ({ default: mod.StudentAdmitCardsPage })));
 const TeacherListPage = lazy(() => import('../pages/teachers/TeacherListPage'));
 const TeacherFormPage = lazy(() => import('../pages/teachers/TeacherFormPage'));
 const TeacherProfilePage = lazy(() => import('../pages/teachers/TeacherProfilePage'));
 const TeacherStudentsPage = lazy(() => import('../pages/teachers/TeacherStudentsPage'));
 const TeacherClassesPage = lazy(() => import('../pages/teachers/TeacherClassesPage'));
+const TeacherAdmitCardsPage = lazy(() => import('../pages/teachers/TeacherAdmitCardsPage').then((mod) => ({ default: mod.TeacherAdmitCardsPage })));
 const ClassManagementPage = lazy(() => import('../pages/classes/ClassManagementPage'));
 const ClassDetailPage = lazy(() => import('../pages/classes/ClassDetailPage'));
 const SubjectPage = lazy(() => import('../pages/subjects/SubjectPage'));
@@ -159,6 +161,22 @@ export const router = createBrowserRouter([
         element: withSuspense(
           <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN', 'ADMIN']}>
             <TeacherClassesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'teacher/admit-cards',
+        element: withSuspense(
+          <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN', 'ADMIN']}>
+            <TeacherAdmitCardsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'student/admit-cards',
+        element: withSuspense(
+          <ProtectedRoute allowedRoles={['STUDENT']}>
+            <StudentAdmitCardsPage />
           </ProtectedRoute>
         ),
       },

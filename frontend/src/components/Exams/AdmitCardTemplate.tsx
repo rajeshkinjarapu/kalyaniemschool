@@ -11,6 +11,7 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
   const settings = exam?.admitCardSettings || {};
   const instructions = settings.instructions || 'Candidate must carry this Admit Card to the examination hall.\nElectronic devices including calculators and mobile phones are strictly prohibited.\nCandidate should report to the examination center 30 minutes before commencement.';
   const signatureUrl = settings.signatureUrl || '';
+  const logoUrl = settings.logoUrl || '';
 
   return (
     <div className="admit-card-wrapper bg-white rounded-none sm:rounded-xl">
@@ -26,8 +27,12 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
 
         {/* Header */}
         <div className="relative z-10 bg-gradient-to-r from-indigo-900 via-blue-800 to-indigo-900 text-white p-6 sm:p-8 flex items-center gap-6 border-b-4 border-amber-400">
-          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-amber-400 shrink-0">
-            <span className="text-4xl font-black text-indigo-900">JY</span>
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-amber-400 shrink-0 overflow-hidden">
+            {logoUrl ? (
+              <img src={logoUrl} alt="Logo" className="w-full h-full object-contain p-1" />
+            ) : (
+              <span className="text-4xl font-black text-indigo-900">JY</span>
+            )}
           </div>
           <div className="flex-1 text-center">
             <h1 className="text-4xl font-black uppercase tracking-wider text-amber-300 drop-shadow-md mb-2">JY School</h1>
