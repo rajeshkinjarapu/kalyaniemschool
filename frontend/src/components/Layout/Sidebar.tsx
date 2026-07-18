@@ -6,11 +6,7 @@ import {
   LayoutDashboard, Users, GraduationCap, School, BookOpen,
   CalendarCheck, ClipboardList, PenTool, Calendar, CreditCard,
   Megaphone, MessageSquare, BarChart3, Settings, LogOut,
-<<<<<<< HEAD
-  Shield, FileText, UserCheck, X, ChevronDown, Smartphone,
-=======
-  Shield, FileText, UserCheck, X, ChevronDown, MapPin,
->>>>>>> 3e5ae40 (Add colorful Gate Pass dashboard and route)
+  Shield, FileText, UserCheck, X, ChevronDown, Smartphone, MapPin,
 } from 'lucide-react';
 import { usePWA } from '../../hooks/usePWA';
 
@@ -45,7 +41,7 @@ const NAV_COLORS: Record<string, { text: string; bg: string; glow: string }> = {
   Reports:       { text: '#fda4af', bg: 'rgba(244,63,94,0.18)',  glow: '0 0 12px rgba(244,63,94,.5)'   },
   Settings:      { text: '#94a3b8', bg: 'rgba(100,116,139,0.18)',glow: '0 0 12px rgba(100,116,139,.5)' },
   Roles:         { text: '#a5b4fc', bg: 'rgba(99,102,241,0.15)', glow: '0 0 12px rgba(99,102,241,.4)'  },
-  'My Students': { text: '#67e8f9', bg: 'rgba(6,182,212,0.18)',   glow: '0 0 12px rgba(6,182,212,.5)'   },
+  'Total Students': { text: '#67e8f9', bg: 'rgba(6,182,212,0.18)',   glow: '0 0 12px rgba(6,182,212,.5)'   },
   'My Attendance':{ text: '#fde68a', bg: 'rgba(245,158,11,0.18)', glow: '0 0 12px rgba(245,158,11,.5)'  },
   'My Salary':   { text: '#c4b5fd', bg: 'rgba(139,92,246,0.18)', glow: '0 0 12px rgba(139,92,246,.5)'  },
   Homework:      { text: '#86efac', bg: 'rgba(34,197,94,0.18)',   glow: '0 0 12px rgba(34,197,94,.5)'   },
@@ -97,7 +93,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       { to: '/settings',      label: 'Settings',      icon: Settings      },
     ];
     if (role === 'TEACHER') return [...base,
-      { to: '/teachers/students', label: 'My Students',    icon: Users         },
+      { to: '/teachers/students', label: 'Total Students', icon: Users         },
       { to: '/attendance',        label: 'Attendance',     icon: CalendarCheck },
       { to: '/teacher-attendance',label: 'My Attendance',  icon: UserCheck     },
       { to: '/homework',          label: 'Homework',       icon: BookOpen      },

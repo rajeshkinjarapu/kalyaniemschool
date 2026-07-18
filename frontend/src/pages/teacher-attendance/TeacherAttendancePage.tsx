@@ -137,9 +137,9 @@ const TeacherAttendancePage: React.FC = () => {
   if (loading) return <LoadingSpinner size="lg" className="h-[70vh]" />;
 
   return (
-    <div className="space-y-6 animate-fade-in-up pb-10">
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-0 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-10 overflow-x-hidden">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-[2rem]" style={{
+      <div className="relative overflow-hidden rounded-none sm:rounded-[2rem]" style={{
         background: 'linear-gradient(120deg, #0f172a 0%, #1e1b4b 50%, #7c3aed 100%)',
         boxShadow: '0 25px 50px -12px rgba(124,58,237,0.3)',
       }}>
@@ -181,7 +181,7 @@ const TeacherAttendancePage: React.FC = () => {
 
       {/* ADMIN VIEW */}
       {isAdmin && (
-        <div className="space-y-5">
+        <div className="space-y-5 px-3 sm:px-0">
           {/* Date Selector */}
           <div className="flex items-center gap-4 bg-white rounded-[1.5rem] p-4 border border-slate-100"
             style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.04)' }}>
@@ -260,7 +260,7 @@ const TeacherAttendancePage: React.FC = () => {
 
       {/* TEACHER VIEW — Calendar */}
       {isTeacher && (
-        <div className="space-y-5">
+        <div className="space-y-5 px-3 sm:px-0">
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
@@ -277,61 +277,7 @@ const TeacherAttendancePage: React.FC = () => {
             ))}
           </div>
 
-          {/* Calendar */}
-          <div className="bg-white rounded-[1.5rem] border border-slate-100 overflow-hidden"
-            style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.04)' }}>
-            <div className="p-5 border-b border-slate-50">
-              <h3 className="font-black text-slate-800">Attendance Calendar — {MONTHS[selectedMonth]} {selectedYear}</h3>
-            </div>
-            <div className="p-5">
-              {/* Weekday headers */}
-              <div className="grid grid-cols-7 mb-2">
-                {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
-                  <div key={d} className="text-center text-xs font-black text-slate-400 py-2">{d}</div>
-                ))}
-              </div>
-              {/* Days */}
-              <div className="grid grid-cols-7 gap-1">
-                {Array.from({ length: getFirstDay(selectedMonth, selectedYear) }).map((_, i) => (
-                  <div key={`e-${i}`} />
-                ))}
-                {Array.from({ length: getDaysInMonth(selectedMonth, selectedYear) }).map((_, i) => {
-                  const day = i + 1;
-                  const dateStr = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                  const record = myRecords.find(r => new Date(r.date).toISOString().split('T')[0] === dateStr);
-                  const isToday = dateStr === today.toISOString().split('T')[0];
-                  const isFuture = new Date(dateStr) > today;
-                  const sc = record ? STATUS_COLORS[record.status] : null;
-
-                  return (
-                    <div key={day} className="aspect-square flex flex-col items-center justify-center rounded-xl text-sm font-bold transition-all"
-                      style={{
-                        background: sc ? sc.bg : isToday ? '#f5f3ff' : 'transparent',
-                        color: sc ? sc.text : isToday ? '#7c3aed' : isFuture ? '#cbd5e1' : '#64748b',
-                        border: isToday ? '2px solid #7c3aed' : sc ? `1px solid ${sc.text}30` : '1px solid transparent',
-                      }}>
-                      <span>{day}</span>
-                      {record && (
-                        <span className="text-[8px] font-black mt-0.5">
-                          {record.status === 'HALF_DAY' ? 'H' : record.status.charAt(0)}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Legend */}
-              <div className="flex items-center flex-wrap gap-3 mt-4 pt-4 border-t border-slate-50">
-                {Object.entries(STATUS_COLORS).map(([key, val]) => (
-                  <div key={key} className="flex items-center gap-1.5 text-xs font-bold" style={{ color: val.text }}>
-                    <div className="w-3 h-3 rounded-full" style={{ background: val.bg, border: `2px solid ${val.text}` }} />
-                    {key === 'HALF_DAY' ? 'Half Day' : key.charAt(0) + key.slice(1).toLowerCase()}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          {/* Removed Calendar Section as requested */}
 
           {/* History Logs */}
           <div className="bg-white rounded-[1.5rem] border border-slate-100 overflow-hidden mt-6" style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.04)' }}>

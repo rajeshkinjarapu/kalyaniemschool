@@ -4,7 +4,7 @@ import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { Badge } from '../../components/UI/Badge';
 import { Plus, FileDown, Trash2, Search, X, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { FeeReceiptPrint } from '../../components/fees/FeeReceiptPrint';
 
@@ -15,7 +15,8 @@ export const FeePaymentsPage: React.FC = () => {
   const [structures, setStructures] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [showModal, setShowModal] = useState(searchParams.get('action') === 'collect');
   const [printPayment, setPrintPayment] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -205,109 +206,124 @@ export const FeePaymentsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="print:hidden space-y-6">
-      <div className="flex justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-150 dark:border-gray-800">
-        <div>
-          <h3 className="font-bold text-gray-900 dark:text-white">Fee Transaction Ledger</h3>
-          <p className="text-xs text-gray-400">Track paid, pending and overdue tuition invoices.</p>
-        </div>
-        <div className="flex gap-3">
-          {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT') && (
-            <>
-              <button
-                onClick={exportPaymentsExcel}
-                className="btn-secondary flex items-center gap-2 text-sm text-emerald-600 border border-emerald-100/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/10 cursor-pointer"
-              >
-                <FileDown className="w-4.5 h-4.5" />
-                <span>Export Excel</span>
-              </button>
-              <button
-                onClick={exportPaymentsPdf}
-                className="btn-secondary flex items-center gap-2 text-sm text-indigo-600 border border-indigo-100/50 hover:bg-indigo-50 dark:hover:bg-indigo-950/10 cursor-pointer"
-              >
-                <FileDown className="w-4.5 h-4.5" />
-                <span>Export PDF</span>
-              </button>
-              {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
-                <Link to="/fees/structures" className="btn-secondary text-sm">
-                  Structure Settings
-                </Link>
-              )}
-              <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2">
-                <Plus className="w-4.5 h-4.5" />
-                <span>Collect Payment</span>
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {loading ? (
-        <LoadingSpinner size="lg" className="py-12" />
-      ) : (
-        <div className="card overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-full block"><table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 dark:bg-gray-800/40 text-gray-500 font-semibold border-b">
-              <tr>
-                <th className="px-6 py-4">Student</th>
-                <th className="px-6 py-4">Fee Structure</th>
-                <th className="px-6 py-4">Amount Paid</th>
-                <th className="px-6 py-4">Date</th>
-                <th className="px-6 py-4">Method</th>
-                <th className="px-6 py-4">Receipt No</th>
-                <th className="px-6 py-4 text-right">Invoice</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {payments.map((p) => (
-                <tr key={p.id}>
-                  <td className="px-6 py-4 font-semibold">{p.student?.user?.name || 'Unknown student'}</td>
-                  <td className="px-6 py-4 text-gray-500">{p.feeStructure?.name || 'Deleted structure'}</td>
-                  <td className="px-6 py-4 font-bold">₹{p.amountPaid.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-gray-500">
-                    {new Date(p.paymentDate).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4">
-                    <Badge variant={p.method === 'UPI' ? 'danger' : 'info'}>{p.method}</Badge>
-                  </td>
-                  <td className="px-6 py-4 font-mono text-xs text-gray-400 opacity-70 truncate max-w-[120px]">{p.receiptNo}</td>
-                  <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
-                    <button
-                      onClick={() => handlePrintReceipt(p.id)}
-                      className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 cursor-pointer"
-                      title="Print Dual Receipt"
-                    >
-                      <FileDown className="w-4 h-4" />
-                    </button>
-                    {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT') && (
-                      <button
-                        onClick={() => handleDeletePayment(p.id)}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
-                        title="Delete Payment"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table></div>
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-0 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-24 overflow-x-hidden">
+      <div className="print:hidden space-y-4 sm:space-y-6 md:space-y-8">
+      {user?.role !== 'TEACHER' && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 rounded-none sm:rounded-3xl shadow-xl text-white transform transition-all sm:hover:scale-[1.01]">
+          <div>
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">Fee Transaction Ledger</h3>
+            <p className="text-indigo-100 mt-1 sm:mt-2 font-medium text-sm sm:text-lg opacity-90 leading-snug">Track paid, pending and overdue tuition invoices.</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT' || user?.role === 'TEACHER') && (
+              <>
+                <button
+                  onClick={exportPaymentsExcel}
+                  className="btn-secondary flex items-center gap-2 text-sm text-emerald-600 border border-emerald-100/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/10 cursor-pointer"
+                >
+                  <FileDown className="w-4.5 h-4.5" />
+                  <span>Export Excel</span>
+                </button>
+                <button
+                  onClick={exportPaymentsPdf}
+                  className="btn-secondary flex items-center gap-2 text-sm text-indigo-600 border border-indigo-100/50 hover:bg-indigo-50 dark:hover:bg-indigo-950/10 cursor-pointer"
+                >
+                  <FileDown className="w-4.5 h-4.5" />
+                  <span>Export PDF</span>
+                </button>
+                {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && (
+                  <Link to="/fees/structures" className="btn-secondary text-sm">
+                    Structure Settings
+                  </Link>
+                )}
+                <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2">
+                  <Plus className="w-4.5 h-4.5" />
+                  <span>Collect Payment</span>
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Record Payment Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-xs">
-          <div className="fixed inset-0" onClick={() => setShowModal(false)} />
-          <div className="relative card w-full max-w-md p-6 space-y-5 animate-scale-in z-10 bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Record Tuition Payment</h3>
-              <p className="text-xs text-gray-450 mt-1">Select multiple fees to collect them at once.</p>
+      {user?.role !== 'TEACHER' && (
+        <div className="px-3 sm:px-0">
+        {loading ? (
+          <LoadingSpinner size="lg" className="py-12" />
+        ) : (
+          <div className="rounded-3xl border border-white/50 bg-white/80 backdrop-blur-lg overflow-hidden shadow-2xl">
+            <div className="overflow-x-auto w-full max-w-full block"><table className="w-full text-sm text-left">
+              <thead className="bg-indigo-50/50 text-indigo-900 font-bold border-b border-indigo-100">
+                <tr>
+                  <th className="px-6 py-4">Student</th>
+                  <th className="px-6 py-4">Fee Structure</th>
+                  <th className="px-6 py-4">Amount Paid</th>
+                  <th className="px-6 py-4">Date</th>
+                  <th className="px-6 py-4">Method</th>
+                  <th className="px-6 py-4">Receipt No</th>
+                  <th className="px-6 py-4 text-right">Invoice</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {payments.map((p) => (
+                  <tr key={p.id} className="hover:bg-indigo-50/30 transition-colors">
+                    <td className="px-6 py-4 font-bold text-slate-800">{p.student?.user?.name || 'Unknown student'}</td>
+                    <td className="px-6 py-4 text-slate-500">{p.feeStructure?.name || 'Deleted structure'}</td>
+                    <td className="px-6 py-4 font-bold">₹{p.amountPaid.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-gray-500">
+                      {new Date(p.paymentDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <Badge variant={p.method === 'UPI' ? 'danger' : 'info'}>{p.method}</Badge>
+                    </td>
+                    <td className="px-6 py-4 font-mono text-xs text-gray-400 opacity-70 truncate max-w-[120px]">{p.receiptNo}</td>
+                    <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => handlePrintReceipt(p.id)}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 cursor-pointer"
+                        title="Print Dual Receipt"
+                      >
+                        <FileDown className="w-4 h-4" />
+                      </button>
+                      {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT') && (
+                        <button
+                          onClick={() => handleDeletePayment(p.id)}
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
+                          title="Delete Payment"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table></div>
+          </div>
+        )}
+        </div>
+      )}
+
+      {/* Record Payment Modal / Inline Form for Teachers */}
+      {(showModal || user?.role === 'TEACHER') && (
+        <div className={user?.role === 'TEACHER' ? "w-full max-w-4xl mx-auto mt-2" : "fixed inset-0 z-[100] flex flex-col sm:items-center sm:justify-center bg-indigo-900/30 backdrop-blur-md"}>
+          {user?.role !== 'TEACHER' && <div className="fixed inset-0 hidden sm:block" onClick={() => setShowModal(false)} />}
+          <div className={`relative bg-white/95 sm:backdrop-blur-xl sm:border border-white/80 w-full ${user?.role === 'TEACHER' ? 'sm:rounded-[2rem] shadow-2xl h-auto' : 'h-full sm:h-auto sm:max-h-[90vh] sm:max-w-lg p-0 sm:p-0 sm:rounded-[2rem] shadow-[0_20px_50px_rgba(8,_112,_184,_0.15)]'} overflow-hidden flex flex-col z-10 animate-scale-in`}>
+            <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 p-5 sm:px-6 flex justify-between items-center text-white shrink-0 shadow-sm relative overflow-hidden">
+              <div className="absolute top-[-20px] right-[-20px] w-24 h-24 bg-white/20 rounded-full blur-xl mix-blend-overlay"></div>
+              <div className="relative z-10">
+                <h3 className="text-xl font-extrabold tracking-tight drop-shadow-md">Collect Payment</h3>
+                <p className="text-xs text-pink-50 mt-1 font-medium">Select multiple fees to collect them at once.</p>
+              </div>
+              {user?.role !== 'TEACHER' && (
+                <button onClick={() => setShowModal(false)} className="relative z-10 p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors backdrop-blur-md">
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              )}
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-5 bg-gradient-to-b from-pink-50/50 via-purple-50/30 to-white">
+              <form onSubmit={handleSubmit} className="space-y-5">
               {/* ── Smart Student Selector ── */}
               <div className="space-y-3">
                 <label className="label font-bold">Select Student</label>
@@ -315,11 +331,11 @@ export const FeePaymentsPage: React.FC = () => {
                 {/* Row 1: Class + Section */}
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Class</label>
+                    <label className="text-[10px] font-bold text-purple-400 uppercase tracking-wider mb-1 block">Class</label>
                     <select
                       value={filterClass}
                       onChange={(e) => { setFilterClass(e.target.value); setFilterSection(''); setSelectedStudent(null); setStudentId(''); setSelectedFees([]); }}
-                      className="w-full px-3 py-2 text-xs border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-400 font-semibold"
+                      className="w-full px-3 py-2 text-xs border border-purple-100 rounded-xl bg-purple-50/50 outline-none focus:ring-2 focus:ring-purple-400 font-semibold text-purple-900"
                     >
                       <option value="">All Classes</option>
                       {uniqueClassNames.map((name) => (
@@ -328,11 +344,11 @@ export const FeePaymentsPage: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Section</label>
+                    <label className="text-[10px] font-bold text-purple-400 uppercase tracking-wider mb-1 block">Section</label>
                     <select
                       value={filterSection}
                       onChange={(e) => { setFilterSection(e.target.value); setSelectedStudent(null); setStudentId(''); setSelectedFees([]); }}
-                      className="w-full px-3 py-2 text-xs border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-400 font-semibold"
+                      className="w-full px-3 py-2 text-xs border border-purple-100 rounded-xl bg-purple-50/50 outline-none focus:ring-2 focus:ring-purple-400 font-semibold text-purple-900"
                     >
                       <option value="">All Sections</option>
                       {uniqueSections.map(sec => (
@@ -344,19 +360,19 @@ export const FeePaymentsPage: React.FC = () => {
 
                 {/* Row 2: Search box with live dropdown */}
                 <div className="relative">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Search by Name or Roll No</label>
+                  <label className="text-[10px] font-bold text-pink-400 uppercase tracking-wider mb-1 block">Search by Name or Roll No</label>
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-pink-400" />
                     <input
                       type="text"
                       placeholder="Type student name..."
                       value={searchName}
                       onFocus={() => setShowStudentDropdown(true)}
                       onChange={(e) => { setSearchName(e.target.value); setShowStudentDropdown(true); }}
-                      className="w-full pl-8 pr-8 py-2 text-xs border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-400 font-medium"
+                      className="w-full pl-8 pr-8 py-2 text-xs border border-pink-100 rounded-xl bg-pink-50/50 outline-none focus:ring-2 focus:ring-pink-400 font-medium text-pink-900"
                     />
                     {searchName && (
-                      <button type="button" onClick={() => { setSearchName(''); setSelectedStudent(null); setStudentId(''); setSelectedFees([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      <button type="button" onClick={() => { setSearchName(''); setSelectedStudent(null); setStudentId(''); setSelectedFees([]); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-pink-400 hover:text-pink-600">
                         <X className="w-3.5 h-3.5" />
                       </button>
                     )}
@@ -364,9 +380,9 @@ export const FeePaymentsPage: React.FC = () => {
 
                   {/* Dropdown results */}
                   {showStudentDropdown && (searchName || filterClass || filterSection) && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-pink-100 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">
                       {filteredStudents.length === 0 ? (
-                        <div className="px-4 py-3 text-xs text-gray-400 text-center">No students found</div>
+                        <div className="px-4 py-3 text-xs text-pink-400 text-center">No students found</div>
                       ) : (
                         filteredStudents.slice(0, 20).map(s => (
                           <button
@@ -379,14 +395,14 @@ export const FeePaymentsPage: React.FC = () => {
                               setSelectedFees([]);
                               setShowStudentDropdown(false);
                             }}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 text-left transition-colors"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-pink-50 text-left transition-colors border-b border-pink-50 last:border-0"
                           >
-                            <div className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
-                              <span className="text-[10px] font-black text-indigo-600">{s.user.name?.[0]?.toUpperCase()}</span>
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+                              <span className="text-[10px] font-black text-white">{s.user.name?.[0]?.toUpperCase()}</span>
                             </div>
                             <div>
-                              <p className="text-xs font-bold text-gray-900 dark:text-white">{s.user.name}</p>
-                              <p className="text-[10px] text-gray-400">{s.rollNo} • {s.class ? `${s.class.name}-${s.class.section}` : 'No class'}</p>
+                              <p className="text-xs font-bold text-gray-900">{s.user.name}</p>
+                              <p className="text-[10px] text-pink-500 font-medium">{s.rollNo} • {s.class ? `${s.class.name}-${s.class.section}` : 'No class'}</p>
                             </div>
                           </button>
                         ))
@@ -397,15 +413,15 @@ export const FeePaymentsPage: React.FC = () => {
 
                 {/* Selected student badge */}
                 {selectedStudent && (
-                  <div className="flex items-center gap-3 p-3 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800/40 rounded-xl">
-                    <div className="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl shadow-sm">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
                       <span className="text-sm font-black text-white">{selectedStudent.user.name?.[0]?.toUpperCase()}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100 truncate">{selectedStudent.user.name}</p>
-                      <p className="text-[10px] text-indigo-500">{selectedStudent.rollNo} • {selectedStudent.class ? `${selectedStudent.class.name}-${selectedStudent.class.section}` : 'No class'}</p>
+                      <p className="text-sm font-bold text-indigo-900 truncate">{selectedStudent.user.name}</p>
+                      <p className="text-[10px] font-semibold text-indigo-600">{selectedStudent.rollNo} • {selectedStudent.class ? `${selectedStudent.class.name}-${selectedStudent.class.section}` : 'No class'}</p>
                     </div>
-                    <button type="button" onClick={() => { setSelectedStudent(null); setStudentId(''); setSearchName(''); setSelectedFees([]); }} className="text-indigo-400 hover:text-indigo-600">
+                    <button type="button" onClick={() => { setSelectedStudent(null); setStudentId(''); setSearchName(''); setSelectedFees([]); }} className="text-indigo-400 hover:text-indigo-600 bg-white p-1 rounded-full shadow-sm">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
@@ -414,8 +430,8 @@ export const FeePaymentsPage: React.FC = () => {
 
               {studentId && (
                 <div>
-                  <label className="label mb-2">Select Fee Components & Amount</label>
-                  <div className="space-y-2 border border-gray-200 dark:border-gray-800 rounded-xl p-3 bg-gray-50 dark:bg-gray-800/20 max-h-48 overflow-y-auto">
+                  <label className="label mb-2 text-indigo-900">Select Fee Components & Amount</label>
+                  <div className="space-y-2 border border-indigo-100 rounded-xl p-3 bg-white/60 backdrop-blur-sm max-h-48 overflow-y-auto shadow-inner">
                     {(() => {
                       const availableStructures = structures.filter((s) => s.studentId === studentId || s.classId === students.find((st) => st.id === studentId)?.classId);
                       const allPaid = availableStructures.every(s => {
@@ -433,7 +449,7 @@ export const FeePaymentsPage: React.FC = () => {
                             const isSelected = selectedFees.find(f => f.feeStructureId === s.id);
 
                             return (
-                              <div key={s.id} className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700 rounded-lg">
+                              <div key={s.id} className={`flex items-center justify-between p-2.5 rounded-xl border transition-all ${isSelected ? 'bg-indigo-50 border-indigo-300 shadow-sm' : 'bg-white border-gray-100 hover:border-indigo-200'}`}>
                                 <div className="flex items-center gap-3">
                                   <input
                                     type="checkbox"
@@ -448,16 +464,16 @@ export const FeePaymentsPage: React.FC = () => {
                                     }}
                                   />
                                   <div>
-                                    <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{s.name}</p>
-                                    <p className="text-[10px] text-gray-500">Pending: ₹{pendingAmount}</p>
+                                    <p className="text-xs font-bold text-gray-900">{s.name}</p>
+                                    <p className="text-[10px] text-pink-600 font-semibold">Pending: ₹{pendingAmount}</p>
                                   </div>
                                 </div>
                                 {isSelected && (
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-xs text-gray-500">₹</span>
+                                  <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-indigo-100 shadow-sm">
+                                    <span className="text-xs text-indigo-500 font-bold px-1">₹</span>
                                     <input
                                       type="number"
-                                      className="w-20 px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 outline-none"
+                                      className="w-20 px-2 py-1 text-xs border-0 rounded focus:ring-0 outline-none text-indigo-900 font-bold bg-transparent"
                                       value={isSelected.amountPaid}
                                       onChange={(e) => {
                                         setSelectedFees(selectedFees.map(f => f.feeStructureId === s.id ? { ...f, amountPaid: Number(e.target.value) } : f));
@@ -471,7 +487,7 @@ export const FeePaymentsPage: React.FC = () => {
                           })}
                           
                           {allPaid && (
-                            <p className="text-xs text-emerald-600 font-bold text-center py-2">No pending fees found for this student!</p>
+                            <p className="text-xs text-emerald-600 font-bold text-center py-4 bg-emerald-50 rounded-lg border border-emerald-100">✨ All fees cleared for this student!</p>
                           )}
                         </>
                       );
@@ -479,9 +495,9 @@ export const FeePaymentsPage: React.FC = () => {
                   </div>
                   
                   {selectedFees.length > 0 && (
-                    <div className="mt-3 flex justify-between items-center p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800/30">
-                      <span className="text-xs font-bold text-indigo-900 dark:text-indigo-300">Total Amount to Pay</span>
-                      <span className="text-lg font-black text-indigo-600 dark:text-indigo-400">₹{selectedFees.reduce((sum, f) => sum + f.amountPaid, 0).toLocaleString()}</span>
+                    <div className="mt-4 flex justify-between items-center p-4 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl shadow-lg border-none text-white">
+                      <span className="text-sm font-bold text-white/90">Total Amount to Pay</span>
+                      <span className="text-2xl font-black text-white drop-shadow-md">₹{selectedFees.reduce((sum, f) => sum + f.amountPaid, 0).toLocaleString()}</span>
                     </div>
                   )}
                 </div>
@@ -546,25 +562,28 @@ export const FeePaymentsPage: React.FC = () => {
                 />
               </div>
 
-              <div className="flex gap-3 justify-end pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="btn-secondary text-sm"
-                >
-                  Cancel
-                </button>
+              <div className="flex gap-3 justify-end pt-4 border-t border-purple-100/50 mt-2">
+                {user?.role !== 'TEACHER' && (
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="px-5 py-3 rounded-xl text-sm font-bold text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                )}
                 <button
                   type="submit"
-                  disabled={isUploading}
-                  className="btn-primary text-sm"
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto px-8 py-3 text-sm font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-pink-600 hover:via-purple-600 hover:to-indigo-600 text-white shadow-xl shadow-purple-500/30 transform transition-all hover:-translate-y-1 rounded-xl"
                 >
-                  Record Payment
+                  {isSubmitting ? 'Recording...' : 'Confirm & Record'}
                 </button>
               </div>
             </form>
           </div>
         </div>
+      </div>
       )}
       </div>
 

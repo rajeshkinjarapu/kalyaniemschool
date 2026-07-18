@@ -1,55 +1,26 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
-import { Search, Users, Eye, ArrowLeft } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Search, Users, Eye, ArrowLeft, Phone, IdCard, UserCircle } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 export const TeacherStudentsPage: React.FC = () => {
-  const [teacher, setTeacher] = useState<any>(null);
-  const [students, setStudents] = useState<any[]>([]);
   const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchAssignedStudents = async () => {
-      setLoading(true);
-      try {
-        const profileRes: any = await api.get('/api/teachers/my-profile');
-        setTeacher(profileRes.data);
-
-        const assignedClassIds = Array.from(new Set(
-          (profileRes.data.classSubjectTeachers || []).map((assignment: any) => String(assignment.class.id))
-        ));
-
-        if (assignedClassIds.length === 0) {
-          setStudents([]);
-          return;
-        }
-
-        const studentRequests = assignedClassIds.map((classId) =>
-          api.get('/api/students', { params: { classId, limit: 5000 } })
-        );
-
-        const responses: any = await Promise.all(studentRequests);
-        const allStudents = responses.flatMap((response: any) => response.data?.data || response.data || []);
-        const uniqueStudents = Array.from(new Map(allStudents.map((student: any) => [student.id, student])).values());
-        setStudents(uniqueStudents);
-      } catch (error) {
-        toast.error('Unable to load assigned students.');
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAssignedStudents();
-  }, []);
+  const { data: students = [], isLoading: loading } = useQuery({
+    queryKey: ['all-students'],
+    queryFn: async () => {
+      const res = await api.get('/api/students', { params: { limit: 5000 } });
+      return res.data?.data || res.data || [];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
   const filteredStudents = useMemo(() => {
     const query = search.trim().toLowerCase();
     if (!query) return students;
-    return students.filter((student) => {
+    return students.filter((student: any) => {
       const studentName = student.user?.name?.toLowerCase() || '';
       const rollNo = student.rollNo?.toLowerCase() || '';
       const className = `${student.class?.name || ''}-${student.class?.section || ''}`.toLowerCase();
@@ -57,81 +28,141 @@ export const TeacherStudentsPage: React.FC = () => {
     });
   }, [students, search]);
 
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-black text-slate-900">My Students</h2>
-          <p className="text-sm text-slate-500 mt-1">View assigned students by class and section.</p>
-        </div>
-        <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm font-bold text-indigo-700 hover:text-indigo-900">
-          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-        </Link>
-      </div>
+  const getInitials = (name: string) => {
+    if (!name) return '?';
+    const parts = name.trim().split(' ');
+    return parts.length >= 2 ? `${parts[0][0]}${parts[1][0]}`.toUpperCase() : name[0].toUpperCase();
+  };
 
-      <div className="bg-white border border-slate-200 rounded-[1.75rem] p-5 shadow-sm">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-3 text-slate-700">
-            <div className="w-11 h-11 rounded-2xl bg-indigo-100 grid place-items-center text-indigo-700">
-              <Users className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm font-black">Assigned Student Roster</p>
-              <p className="text-xs text-slate-500">{students.length} students across assigned classes</p>
-            </div>
+  const avatarColors = [
+    'from-indigo-500 to-purple-600',
+    'from-teal-400 to-emerald-600',
+    'from-rose-400 to-pink-600',
+    'from-amber-400 to-orange-500',
+    'from-blue-400 to-cyan-500',
+    'from-violet-500 to-fuchsia-600',
+  ];
+
+  const getColor = (name: string) => {
+    const idx = name ? name.charCodeAt(0) % avatarColors.length : 0;
+    return avatarColors[idx];
+  };
+
+  return (
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-0 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen pb-10 overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 rounded-none sm:rounded-3xl shadow-xl text-white transform transition-all sm:hover:scale-[1.01]">
+        <div className="flex items-center gap-4 min-w-0">
+          <div className="p-3 rounded-2xl bg-white/20 shadow-inner backdrop-blur-md border border-white/30 shrink-0">
+            <Users className="w-6 h-6 md:w-8 md:h-8 text-white drop-shadow-md" />
           </div>
-          <div className="flex-1 min-w-[220px] relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <div className="min-w-0">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">Total Students</h2>
+            <p className="text-indigo-100 mt-1 sm:mt-2 font-medium text-sm sm:text-lg opacity-90 leading-snug truncate">View all students across the school</p>
+          </div>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-2 sm:mt-0">
+          <div className="w-full sm:w-72 relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400 w-5 h-5" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, roll no or class"
-              className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 text-sm font-semibold outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+              placeholder="Search by name, roll no or class..."
+              className="w-full pl-12 pr-4 py-2.5 bg-white border-2 border-transparent rounded-2xl text-sm font-semibold outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-300/50 transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
             />
           </div>
+          <Link to="/dashboard" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-bold bg-white/20 hover:bg-white/30 backdrop-blur-md px-5 py-2.5 rounded-2xl transition-colors border border-white/30 whitespace-nowrap">
+            <ArrowLeft className="w-4 h-4" /> Back
+          </Link>
         </div>
       </div>
 
       {loading ? (
         <LoadingSpinner size="lg" className="py-24" />
       ) : (
-        <div className="overflow-x-auto bg-white border border-slate-200 rounded-[1.75rem] p-5 shadow-sm">
-          {students.length === 0 ? (
-            <div className="text-center py-16 text-slate-500">
-              No students assigned to your classes yet.
+        <div className="space-y-4 px-3 sm:px-0">
+          {filteredStudents.length === 0 ? (
+            <div className="rounded-3xl border-2 border-dashed border-indigo-200 bg-white/50 p-12 text-center backdrop-blur-sm">
+              <UserCircle className="w-16 h-16 text-indigo-300 mx-auto mb-4" />
+              <p className="text-xl font-bold text-slate-600">No students found</p>
+              <p className="text-slate-500 mt-2">Try adjusting your search query.</p>
             </div>
           ) : (
-            <table className="min-w-full text-sm text-left">
-              <thead>
-                <tr className="text-slate-500 uppercase text-[11px] tracking-[0.24em] font-black border-b border-slate-200">
-                  <th className="px-4 py-4">Student</th>
-                  <th className="px-4 py-4">Student ID</th>
-                  <th className="px-4 py-4">Class</th>
-                  <th className="px-4 py-4">Section</th>
-                  <th className="px-4 py-4">Roll Number</th>
-                  <th className="px-4 py-4">Parent / Contact</th>
-                  <th className="px-4 py-4 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredStudents.map((student) => (
-                  <tr key={student.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-4 py-4 font-semibold text-slate-800">{student.user?.name || 'Unknown'}</td>
-                    <td className="px-4 py-4 text-slate-500">{student.studentId || student.id}</td>
-                    <td className="px-4 py-4 text-slate-500">{student.class?.name || 'N/A'}</td>
-                    <td className="px-4 py-4 text-slate-500">{student.class?.section || 'N/A'}</td>
-                    <td className="px-4 py-4 text-slate-500">{student.rollNo || '—'}</td>
-                    <td className="px-4 py-4 text-slate-500">{student.fatherName || student.parentName || student.user?.phone || '—'}</td>
-                    <td className="px-4 py-4 text-right">
-                      <Link to={`/students/${student.id}`} className="inline-flex items-center gap-2 text-indigo-600 font-semibold hover:text-indigo-700">
-                        <Eye className="w-4 h-4" /> View
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filteredStudents.map((student: any, idx: number) => {
+                const name = student.user?.name || 'Unknown';
+                const photoUrl = student.user?.photoUrl;
+                
+                return (
+                  <div key={student.id} className="group flex flex-col justify-between rounded-3xl border-2 border-slate-100 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+                    {/* Index badge */}
+                    <div className="absolute top-4 right-4 bg-slate-50 text-slate-400 font-black text-xs px-2 py-1 rounded-lg">
+                      #{idx + 1}
+                    </div>
+
+                    <div className="flex items-start gap-4 mb-4 mt-2">
+                      <div className="shrink-0">
+                        {photoUrl ? (
+                          <img 
+                            src={photoUrl.startsWith('http') ? photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${photoUrl.startsWith('/') ? photoUrl : '/' + photoUrl}`} 
+                            alt={name} 
+                            className="w-16 h-20 sm:w-20 sm:h-24 rounded-2xl object-cover shadow-md border-2 border-white ring-1 ring-slate-100 group-hover:scale-105 transition-transform" 
+                          />
+                        ) : (
+                          <div className={`w-16 h-20 sm:w-20 sm:h-24 rounded-2xl bg-gradient-to-br ${getColor(name)} flex items-center justify-center text-white font-black text-2xl shadow-md border-2 border-white ring-1 ring-slate-100 group-hover:scale-105 transition-transform`}>
+                            {getInitials(name)}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="min-w-0 flex-1 pt-1">
+                        <Link to={`/students/${student.id}`} className="block">
+                          <h3 className="font-extrabold text-lg sm:text-xl text-slate-800 hover:text-indigo-600 truncate transition-colors leading-tight" title={name}>
+                            {name}
+                          </h3>
+                        </Link>
+                        
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-teal-50 text-teal-700 border border-teal-100">
+                            Class {student.class?.name || 'N/A'}-{student.class?.section || 'N/A'}
+                          </span>
+                          {student.rollNo && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                              <IdCard className="w-3.5 h-3.5" />
+                              {student.rollNo}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-slate-500">
+                        <Phone className="w-4 h-4 text-slate-400" />
+                        <span className="text-xs font-semibold truncate max-w-[120px]" title={student.fatherName || student.parentName || student.user?.phone || 'No Contact'}>
+                          {student.fatherName || student.parentName || student.user?.phone || 'No Contact'}
+                        </span>
+                      </div>
+                      <Link 
+                        to={`/students/${student.id}`} 
+                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-extrabold text-white bg-indigo-500 hover:bg-indigo-600 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                      >
+                        <Eye className="w-4 h-4" /> View Profile
                       </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          
+          {filteredStudents.length > 0 && (
+            <div className="mt-6 flex items-center justify-center pb-4">
+              <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/80 backdrop-blur-md text-sm text-slate-600 font-bold border border-slate-200 shadow-sm">
+                Showing <span className="text-indigo-600 font-black">{filteredStudents.length}</span> students
+              </span>
+            </div>
           )}
         </div>
       )}

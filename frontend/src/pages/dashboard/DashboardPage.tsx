@@ -10,7 +10,7 @@ import {
   FileText, Award, ArrowUpRight, Clock, Activity,
   PieChart as PieChartIcon, TrendingUp, BarChart3,
   BookOpen, CheckCircle2, XCircle, Megaphone, Star,
-  ChevronRight, Zap, Target, BookMarked, UserCheck,
+  ChevronRight, Zap, Target, BookMarked, UserCheck, PenTool, CreditCard,
 } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
@@ -51,17 +51,19 @@ export const DashboardPage: React.FC = () => {
 
 
   return (
-    <div className="space-y-7 animate-fade-in-up pb-10">
-      <WelcomeBanner name={user?.name || ''} role={user?.role || ''} />
-      {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && <AdminView data={data} />}
-      {user?.role === 'TEACHER' && <TeacherView data={data} />}
-      {user?.role === 'STUDENT' && <StudentView data={data} />}
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-0 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-10">
+      <WelcomeBanner name={user?.name || ''} role={user?.role || ''} photoUrl={data?.teacherProfile?.photoUrl || data?.studentProfile?.photoUrl || user?.photoUrl} />
+      <div className="px-3 sm:px-0">
+        {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN') && <AdminView data={data} />}
+        {user?.role === 'TEACHER' && <TeacherView data={data} />}
+        {user?.role === 'STUDENT' && <StudentView data={data} />}
+      </div>
     </div>
   );
 };
 
 /* ── Welcome Banner ─────────────────────────────────────── */
-const WelcomeBanner: React.FC<{ name: string; role: string }> = ({ name, role }) => {
+const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }> = ({ name, role, photoUrl }) => {
   const h = new Date().getHours();
   const greeting = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
   const emoji = h < 12 ? '🌅' : h < 17 ? '☀️' : '🌙';
@@ -72,7 +74,7 @@ const WelcomeBanner: React.FC<{ name: string; role: string }> = ({ name, role })
     TEACHER: 'Teacher', STUDENT: 'Student', ACCOUNTANT: 'Accountant',
   };
   return (
-    <div className="relative overflow-hidden rounded-[2rem]" style={{
+    <div className="relative overflow-hidden rounded-none sm:rounded-[2rem]" style={{
       background: 'linear-gradient(120deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
       boxShadow: '0 25px 50px -12px rgba(49, 46, 129, 0.4)',
     }}>
@@ -86,36 +88,44 @@ const WelcomeBanner: React.FC<{ name: string; role: string }> = ({ name, role })
       }} />
       
       {/* Glass Panel Content */}
-      <div className="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-5 md:gap-8">
-        <div className="flex items-center gap-4 md:gap-6">
-          <div className="w-14 h-14 md:w-20 md:h-20 rounded-[1.2rem] md:rounded-[1.5rem] flex items-center justify-center text-3xl md:text-4xl shrink-0 shadow-2xl relative overflow-hidden group"
+      <div className="relative z-10 p-3 sm:p-5 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-6">
+        <div className="flex items-center gap-3 md:gap-5">
+          <div className="w-10 h-10 md:w-16 md:h-16 rounded-[1rem] md:rounded-[1.2rem] flex items-center justify-center text-xl md:text-3xl shrink-0 shadow-2xl relative overflow-hidden group"
             style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.15)' }}>
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-            <span className="relative z-10 group-hover:scale-110 transition-transform duration-500">{emoji}</span>
+            {photoUrl ? (
+              <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <>
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                <span className="relative z-10 group-hover:scale-110 transition-transform duration-500">{emoji}</span>
+              </>
+            )}
           </div>
           <div>
-            <p className="text-indigo-300/80 text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em] mb-1.5 md:mb-2 flex items-center gap-1.5 md:gap-2">
+            <p className="text-indigo-300/80 text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em] mb-0.5 md:mb-2 flex items-center gap-1.5 md:gap-2">
               <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-400 animate-ping absolute" />
               <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-400 relative" />
               {greeting}
             </p>
-            <h1 className="text-2xl sm:text-3xl md:text-5xl font-black text-white mb-1 md:mb-1.5 tracking-tight drop-shadow-md">{name}</h1>
-            <p className="text-indigo-100/90 text-xs sm:text-sm md:text-base font-semibold">{roleLabel[role] || role} <span className="mx-1.5 md:mx-2 opacity-50">•</span> JY School Operations</p>
+            <h1 className="text-xl sm:text-3xl md:text-5xl font-black text-white mb-0.5 md:mb-1.5 tracking-tight drop-shadow-md">{name}</h1>
+            <p className="text-indigo-100/90 text-[10px] sm:text-sm md:text-base font-semibold">{roleLabel[role] || role} <span className="mx-1.5 md:mx-2 opacity-50">•</span> JY School Operations</p>
           </div>
         </div>
         
-        <div className="flex flex-col sm:flex-row gap-3 md:gap-4 shrink-0 mt-2 md:mt-0">
-          <div className="flex items-center gap-2 md:gap-3 px-4 py-2.5 md:px-5 md:py-3.5 rounded-[1rem] md:rounded-[1.25rem] bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors shadow-inner justify-center sm:justify-start">
-            <CalendarDays className="w-4 h-4 md:w-5 md:h-5 text-indigo-300" />
-            <span className="text-xs md:text-sm font-bold text-white tracking-wide">{today}</span>
+        <div className="flex flex-row gap-2 md:gap-3 shrink-0 mt-1 md:mt-0">
+          <div className="flex items-center gap-2 px-3 py-2 md:px-4 md:py-3 rounded-[0.8rem] md:rounded-[1rem] bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors shadow-inner justify-center sm:justify-start">
+            <CalendarDays className="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-300" />
+            <span className="text-[10px] md:text-xs font-bold text-white tracking-wide">{today}</span>
           </div>
-          <div className="flex items-center gap-2 md:gap-2.5 px-4 py-2.5 md:px-5 md:py-3.5 rounded-[1rem] md:rounded-[1.25rem] bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.15)] justify-center sm:justify-start">
-            <div className="relative flex h-2.5 w-2.5 md:h-3 md:w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 md:h-3 md:w-3 bg-emerald-500"></span>
+          {role !== 'TEACHER' && (
+            <div className="flex items-center gap-1.5 md:gap-2 px-3 py-2 md:px-4 md:py-3 rounded-[0.8rem] md:rounded-[1rem] bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.15)] justify-center sm:justify-start">
+              <div className="relative flex h-2 w-2 md:h-2.5 md:w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5 bg-emerald-500"></span>
+              </div>
+              <span className="text-[10px] md:text-xs font-black text-emerald-300 tracking-wider uppercase">System Active</span>
             </div>
-            <span className="text-xs md:text-sm font-black text-emerald-300 tracking-wider uppercase">System Active</span>
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -136,36 +146,36 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon: Icon, gradient,
     : gradient.includes('#06b6d4') ? '#0891b2' : '#8b5cf6';
     
   const inner = (
-    <div className="group relative overflow-hidden rounded-[2rem] p-5 md:p-6 transition-all duration-500 hover:-translate-y-2 cursor-pointer bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800"
-      style={{ boxShadow: '0 10px 40px -10px rgba(0,0,0,0.08)' }}>
+    <div className="group relative overflow-hidden rounded-[1.5rem] p-4 transition-all duration-500 hover:-translate-y-1 cursor-pointer shadow-lg border border-white/20"
+      style={{ background: gradient, boxShadow: '0 10px 30px -10px rgba(0,0,0,0.15)' }}>
       {/* Background ambient glow */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl opacity-10 group-hover:opacity-20 transition-opacity duration-500 rounded-bl-full"
+      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl opacity-10 group-hover:opacity-20 transition-opacity duration-500 rounded-bl-full"
         style={{ backgroundImage: `linear-gradient(to bottom left, ${iconColor}, transparent)` }} />
         
       {/* Top gradient border */}
-      <div className="absolute top-0 left-0 right-0 h-1.5 opacity-80 group-hover:opacity-100 transition-opacity" style={{ background: gradient }} />
+      <div className="absolute top-0 left-0 right-0 h-1.5 opacity-80 group-hover:opacity-100 transition-opacity bg-white/30" />
       
       <div className="relative z-10">
-        <div className="flex items-start justify-between mb-4 md:mb-6">
-          <div className="p-3 md:p-4 rounded-2xl shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" 
-               style={{ background: `linear-gradient(135deg, ${glow}, transparent)` }}>
-            <Icon className="w-6 h-6 md:w-7 md:h-7" style={{ color: iconColor }} />
+        <div className="flex items-start justify-between mb-2 md:mb-5">
+          <div className="p-2 md:p-3 rounded-xl md:rounded-[1rem] bg-white/20 shadow-inner backdrop-blur-md border border-white/30"
+            style={{ boxShadow: `0 8px 16px ${glow}` }}>
+            <Icon className="w-4 h-4 md:w-6 md:h-6 text-white drop-shadow-md" />
           </div>
           {badge && (
-            <span className="text-[10px] font-black px-3 py-1 rounded-full border shadow-sm"
+            <span className="text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded-full border shadow-sm"
               style={{ background: badgeColor ? badgeColor + '15' : '#ecfdf5', color: badgeColor || '#065f46', borderColor: badgeColor ? badgeColor + '30' : '#a7f3d0' }}>
               {badge}
             </span>
           )}
           {link && !badge && (
-            <div className="p-2 rounded-full bg-slate-50 dark:bg-gray-800 group-hover:bg-slate-100 dark:group-hover:bg-gray-700 transition-colors border border-slate-100 dark:border-gray-700">
-              <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-white" />
+            <div className="p-1.5 md:p-2 rounded-full bg-white/20 group-hover:bg-white/30 transition-colors border border-white/20">
+              <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4 text-white" />
             </div>
           )}
         </div>
-        <p className="text-[10px] md:text-[11px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-1.5">{label}</p>
-        <p className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">{value}</p>
-        {sub && <p className="text-[11px] md:text-xs text-slate-500 dark:text-gray-400 mt-2.5 font-semibold flex items-center gap-1.5 opacity-90"><span className="w-1.5 h-1.5 rounded-full" style={{ background: iconColor }}/>{sub}</p>}
+        <p className="text-[9px] sm:text-[10px] md:text-[11px] font-black text-white/80 uppercase tracking-wider mb-0.5 md:mb-1 truncate">{label}</p>
+        <p className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight leading-none drop-shadow-md">{value}</p>
+        {sub && <p className="text-[8px] sm:text-[10px] md:text-[11px] text-white/90 mt-1 md:mt-2 font-bold flex items-center gap-1 sm:gap-1.5 opacity-90 truncate"><span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-white/80 shrink-0"/>{sub}</p>}
       </div>
     </div>
   );
@@ -191,9 +201,14 @@ const SectionHeader: React.FC<{
 );
 
 const ChartCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={`rounded-[2rem] p-6 relative overflow-hidden bg-white dark:bg-gray-900 border border-slate-200/60 dark:border-gray-800 transition-all duration-300 hover:shadow-xl ${className}`}
-    style={{ boxShadow: '0 10px 40px -15px rgba(0,0,0,0.05)' }}>
-    <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '24px 24px', color: '#94a3b8' }} />
+  <div className={`rounded-[2rem] p-6 relative overflow-hidden bg-white/70 backdrop-blur-xl border-[3px] border-indigo-200/50 ring-4 ring-white/60 transition-all duration-300 hover:shadow-2xl hover:bg-white/90 group ${className}`}
+    style={{ 
+      boxShadow: '0 20px 40px -5px rgba(99, 102, 241, 0.15)',
+    }}>
+    {/* Decorative colorful ambient glow */}
+    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-400/20 to-purple-400/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
+    <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-pink-400/20 to-rose-400/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
+    <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(#6366f1 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
     <div className="relative z-10">
       {children}
     </div>
@@ -228,7 +243,7 @@ const AdminView: React.FC<{ data: any }> = ({ data }) => {
   return (
     <div className="space-y-7">
       {/* KPI */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
         {stats.map((s, i) => <StatCard key={i} {...s} />)}
       </div>
 
@@ -417,56 +432,23 @@ const TeacherView: React.FC<{ data: any }> = ({ data }) => {
 
   return (
     <div className="space-y-7">
-      {/* Teacher Profile / Quick Stats */}
-      <div className="flex flex-col lg:flex-row gap-5">
-        <div className="lg:w-1/3 rounded-[2rem] p-6 relative overflow-hidden text-white"
-          style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', boxShadow: '0 15px 40px -10px rgba(16,185,129,0.4)' }}>
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl transform translate-x-1/3 -translate-y-1/3" />
-          <div className="relative z-10 flex items-center gap-5 mb-6 pb-6 border-b border-white/20">
-            {teacherProfile?.photoUrl ? (
-              <img src={teacherProfile.photoUrl} alt="Profile" className="w-16 h-16 rounded-2xl object-cover border-2 border-white/40 shadow-lg" />
-            ) : (
-              <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-3xl font-black shadow-lg">
-                {teacherProfile?.name?.charAt(0) || 'T'}
-              </div>
-            )}
-            <div>
-              <h2 className="text-xl font-black leading-tight tracking-tight">{teacherProfile?.name || 'Teacher'}</h2>
-              <p className="text-emerald-100 text-sm font-semibold mt-1">{teacherProfile?.employeeId || 'ID Not Set'}</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-emerald-200 text-xs font-black uppercase tracking-wider mb-1">My Attendance</p>
-              <p className="text-2xl font-black">{myAttendance?.rate || 0}%</p>
-            </div>
-            {pendingSalary ? (
-              <div>
-                <p className="text-emerald-200 text-xs font-black uppercase tracking-wider mb-1">Pending Salary</p>
-                <p className="text-2xl font-black">₹{pendingSalary.netSalary.toLocaleString('en-IN')}</p>
-              </div>
-            ) : (
-              <div>
-                <p className="text-emerald-200 text-xs font-black uppercase tracking-wider mb-1">Status</p>
-                <p className="text-xl font-bold flex items-center gap-1.5"><CheckCircle2 className="w-5 h-5"/> All Paid</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-3 gap-5">
-          {[
-            { label: 'My Students', value: data.totalStudents || 0, icon: Users, gradient: 'linear-gradient(90deg,#6366f1,#818cf8)', glow: 'rgba(99,102,241,0.08)', sub: 'Across all classes' },
-            { label: 'Assigned Classes', value: data.assignedClasses?.length || 0, icon: School, gradient: 'linear-gradient(90deg,#f59e0b,#fbbf24)', glow: 'rgba(245,158,11,0.08)', sub: 'Active assignments' },
-            { label: "Today's Class Att.", value: `${rate}%`, icon: Clock, gradient: 'linear-gradient(90deg,#0ea5e9,#38bdf8)', glow: 'rgba(14,165,233,0.08)', sub: `${present} present · ${absent} absent` },
-          ].map((s, i) => <StatCard key={i} {...(s as StatCardProps)} />)}
-        </div>
+      {/* Teacher Quick Stats Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
+        {[
+          { label: 'My Attendance', value: `${myAttendance?.rate || 0}%`, icon: UserCheck, gradient: 'linear-gradient(135deg,#0ea5e9 0%,#2563eb 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'This month' },
+          { label: 'Salary Status', value: pendingSalary ? `₹${pendingSalary.netSalary}` : 'All Paid', icon: Wallet, gradient: 'linear-gradient(135deg,#f43f5e 0%,#e11d48 100%)', glow: 'rgba(255,255,255,0.2)', sub: pendingSalary ? 'Pending' : 'No dues' },
+          { label: 'My Students', value: data.totalStudents || 0, icon: Users, gradient: 'linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Across all classes' },
+          { label: 'Assigned Classes', value: data.assignedClasses?.length || 0, icon: School, gradient: 'linear-gradient(135deg,#f59e0b 0%,#d97706 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Active assignments' },
+          { label: "Today's Att.", value: `${rate}%`, icon: Clock, gradient: 'linear-gradient(135deg,#10b981 0%,#059669 100%)', glow: 'rgba(255,255,255,0.2)', sub: `${present}P · ${absent}A`, link: '/teacher-attendance' },
+          { label: 'Marks Entry', value: 'Enter', icon: PenTool, gradient: 'linear-gradient(135deg,#ec4899 0%,#e11d48 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Update grades', link: '/exams?tab=written-exam' },
+          { label: 'Fee Pay', value: 'Pay', icon: CreditCard, gradient: 'linear-gradient(135deg,#f97316 0%,#d97706 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Clear dues', link: '/fee-payment?action=collect' },
+          { label: 'Leave Apply', value: 'Apply', icon: FileText, gradient: 'linear-gradient(135deg,#06b6d4 0%,#2563eb 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Request leave', link: '/leave/request-log' },
+        ].map((stat, i) => <StatCard key={i} {...(stat as StatCardProps)} />)}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Timetable */}
-        <ChartCard>
+        <ChartCard className="border border-slate-100">
           <SectionHeader title="Today's Schedule" subtitle={new Date().toLocaleDateString('en-IN', { weekday: 'long' })} icon={CalendarDays} iconColor="#06b6d4" />
           <div className="space-y-3 max-h-[240px] overflow-y-auto pr-1">
             {data.timetableToday?.length > 0 ? data.timetableToday.map((slot: any, idx: number) => (

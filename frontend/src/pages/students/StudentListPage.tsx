@@ -249,12 +249,12 @@ export const StudentListPage: React.FC = () => {
                   <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">#</th>
                   <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Photo</th>
                   <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Student Name</th>
-                  <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Student ID</th>
-                  <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Class</th>
-                  <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Section</th>
-                  <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Father Name</th>
-                  <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Mobile No</th>
-                  <th className="px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400 text-right">Actions</th>
+                  <th className="hidden md:table-cell px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Student ID</th>
+                  <th className="hidden sm:table-cell px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Class</th>
+                  <th className="hidden sm:table-cell px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Section</th>
+                  <th className="hidden lg:table-cell px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Father Name</th>
+                  <th className="hidden lg:table-cell px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Mobile No</th>
+                  <th className="hidden sm:table-cell px-5 py-4 text-[11px] font-extrabold uppercase tracking-wider text-gray-400 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
@@ -300,38 +300,38 @@ export const StudentListPage: React.FC = () => {
                       </td>
 
                       {/* Student ID */}
-                      <td className="px-5 py-4">
+                      <td className="hidden md:table-cell px-5 py-4">
                         <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/20 px-2.5 py-1 rounded-lg">
                           {student.rollNo || '—'}
                         </span>
                       </td>
 
                       {/* Class */}
-                      <td className="px-5 py-4">
+                      <td className="hidden sm:table-cell px-5 py-4">
                         <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-teal-50 dark:bg-teal-950/20 text-teal-700 dark:text-teal-400">
                           {className}
                         </span>
                       </td>
 
                       {/* Section */}
-                      <td className="px-5 py-4">
+                      <td className="hidden sm:table-cell px-5 py-4">
                         <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400">
                           {section}
                         </span>
                       </td>
 
                       {/* Father Name */}
-                      <td className="px-5 py-4 text-gray-700 dark:text-gray-300 font-semibold text-xs">
+                      <td className="hidden lg:table-cell px-5 py-4 text-gray-700 dark:text-gray-300 font-semibold text-xs">
                         {fatherName}
                       </td>
 
                       {/* Mobile No */}
-                      <td className="px-5 py-4 text-gray-600 dark:text-gray-400 font-mono text-xs">
+                      <td className="hidden lg:table-cell px-5 py-4 text-gray-600 dark:text-gray-400 font-mono text-xs">
                         {mobile}
                       </td>
 
                       {/* Actions */}
-                      <td className="px-5 py-4 text-right">
+                      <td className="hidden sm:table-cell px-5 py-4 text-right">
                         <div className="flex justify-end items-center gap-1.5">
                           <Link
                             to={`/students/${student.id}`}
