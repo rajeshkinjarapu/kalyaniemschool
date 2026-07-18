@@ -50,10 +50,10 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, title }) => {
         {showBackButton && (
           <button
             onClick={() => navigate(-1)}
-            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all duration-200 cursor-pointer shrink-0 hidden sm:flex items-center justify-center mr-1"
+            className="px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-200 hover:text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-500/20 bg-slate-100 dark:bg-slate-800 transition-all duration-200 cursor-pointer shrink-0 hidden sm:flex items-center gap-1.5 mr-2 shadow-sm border border-slate-200 dark:border-slate-700 font-bold text-xs uppercase tracking-wider"
             title="Go Back"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" /> Back
           </button>
         )}
         <div className="flex items-center gap-2.5 min-w-0">
