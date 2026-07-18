@@ -5,8 +5,12 @@ import { Badge } from '../../components/UI/Badge';
 import { School, User, Users, Plus, Trash2, Edit3, Upload, FileDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 export const ClassManagementPage: React.FC = () => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+
   const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [teachers, setTeachers] = useState<any[]>([]);
@@ -196,13 +200,15 @@ export const ClassManagementPage: React.FC = () => {
                 >
                   <Edit3 className="w-4 h-4" />
                 </button>
-                <button
-                  onClick={() => handleDelete(cls.id)}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
-                  title="Delete class"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                {isSuperAdmin && (
+                  <button
+                    onClick={() => handleDelete(cls.id)}
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
+                    title="Delete class"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
               
               <div className="flex items-center gap-3">

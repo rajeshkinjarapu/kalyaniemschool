@@ -132,6 +132,17 @@ export const ExamListPage: React.FC = () => {
     }
   };
 
+  const handleDeleteExam = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this exam? This will remove all associated marks and plans.')) return;
+    try {
+      await api.delete(`/api/exams/${id}`);
+      toast.success('Exam deleted successfully');
+      fetchExams();
+    } catch (err: any) {
+      toast.error(err.message || 'Error deleting exam');
+    }
+  };
+
   // -------------------------------------------------------------
   // EXCEL UPLOAD Logic
   // -------------------------------------------------------------
@@ -843,24 +854,32 @@ export const ExamListPage: React.FC = () => {
 
       {/* Create Exam Modal */}
       {showExamModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
-          <div className="card w-full max-w-md p-6 space-y-5">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-bold">Configure Exam</h3>
-              <button onClick={() => setShowExamModal(false)} className="text-gray-400 hover:text-black dark:hover:text-white"><X className="w-5 h-5" /></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-indigo-900/40 backdrop-blur-md p-4">
+          <div className="bg-white/90 backdrop-blur-xl w-full max-w-md p-6 rounded-3xl shadow-2xl shadow-indigo-900/50 border border-indigo-100 flex flex-col max-h-[90vh]">
+            <div className="flex justify-between items-center mb-6 border-b border-indigo-100 pb-4 shrink-0">
+              <h3 className="text-xl font-black text-indigo-900 tracking-tight flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-md">
+                  <Edit3 className="w-4 h-4" />
+                </div>
+                Configure Exam
+              </h3>
+              <button onClick={() => setShowExamModal(false)} className="w-8 h-8 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-500 flex items-center justify-center transition-colors">
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <form onSubmit={handleCreateExam} className="space-y-4">
+            
+            <form onSubmit={handleCreateExam} className="space-y-5 overflow-y-auto pr-2 custom-scrollbar flex-1 pb-4">
               <div>
-                <label className="label">Exam Name / Title</label>
-                <input type="text" required placeholder="e.g. Mid-Term 1" value={examName} onChange={e => setExamName(e.target.value)} className="input" />
+                <label className="block text-xs font-black text-indigo-900 mb-2 uppercase tracking-wide">Exam Name / Title</label>
+                <input type="text" required placeholder="e.g. Mid-Term 1" value={examName} onChange={e => setExamName(e.target.value)} className="w-full px-4 py-3 bg-white border-2 border-indigo-100 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm" />
               </div>
               <div>
-                <label className="label">Select Classes</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2 max-h-40 overflow-y-auto p-2 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <label className="block text-xs font-black text-indigo-900 mb-2 uppercase tracking-wide">Select Classes</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-3 border-2 border-indigo-100 bg-white rounded-xl shadow-inner">
                   {classes.map(c => {
                     const isSelected = examClassIds.includes(c.id);
                     return (
-                      <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer select-none">
+                      <label key={c.id} className={`flex items-center gap-2 text-sm cursor-pointer select-none px-3 py-2 rounded-lg font-bold transition-all border ${isSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-slate-50 border-transparent text-slate-600 hover:bg-indigo-50/50 hover:border-indigo-100'}`}>
                         <input 
                           type="checkbox" 
                           checked={isSelected}
@@ -871,6 +890,7 @@ export const ExamListPage: React.FC = () => {
                               setExamClassIds(examClassIds.filter(id => id !== c.id));
                             }
                           }}
+                          className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
                         />
                         {c.name}-{c.section}
                       </label>
@@ -878,71 +898,66 @@ export const ExamListPage: React.FC = () => {
                   })}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="label">Exam Date</label>
-                  <input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} className="input" />
+                  <label className="block text-xs font-black text-indigo-900 mb-2 uppercase tracking-wide">Exam Date</label>
+                  <input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} className="w-full px-4 py-3 bg-white border-2 border-indigo-100 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-indigo-400 shadow-sm" />
                 </div>
                 <div>
-                  <label className="label">Total Marks (Auto)</label>
-                  <input type="number" readOnly value={totalMarks} className="input bg-gray-50 dark:bg-gray-800" />
+                  <label className="block text-xs font-black text-indigo-900 mb-2 uppercase tracking-wide">Total Marks</label>
+                  <input type="number" readOnly value={totalMarks} className="w-full px-4 py-3 bg-indigo-50 border-2 border-indigo-100 rounded-xl text-sm font-bold text-indigo-900 outline-none shadow-sm cursor-not-allowed" />
                 </div>
               </div>
 
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="label !mb-0">Subjects & Max Marks</label>
+              <div className="pt-2">
+                <div className="flex justify-between items-center mb-3">
+                  <label className="block text-xs font-black text-indigo-900 uppercase tracking-wide">Subjects & Max Marks</label>
                   <button 
                     type="button" 
                     onClick={() => setSelectedExamSubjects([...selectedExamSubjects, { id: Date.now().toString() + Math.random(), name: '', maxMarks: 100 }])}
-                    className="text-xs bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 transition-colors"
+                    className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 transition-colors shadow-sm"
                   >
-                    + Add Subject
+                    <Plus className="w-3 h-3" /> Add Subject
                   </button>
                 </div>
-                <div className="flex flex-col gap-2 max-h-60 overflow-y-auto p-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50/50 dark:bg-gray-800/20">
-                  {selectedExamSubjects.map((sub, index) => (
-                    <div key={sub.id} className="flex items-center gap-3 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
-                      <div className="flex-1">
-                        <input
-                          type="text"
-                          placeholder="Subject Name (e.g. Maths)"
-                          value={sub.name}
+                
+                <div className="space-y-3">
+                  {selectedExamSubjects.map((sub, i) => (
+                    <div key={sub.id} className="flex gap-2 items-center bg-indigo-50/50 p-2 rounded-xl border border-indigo-100 shadow-sm">
+                      <input 
+                        type="text" 
+                        required 
+                        placeholder="Subject Name" 
+                        value={sub.name}
+                        onChange={(e) => {
+                          const newSubs = [...selectedExamSubjects];
+                          newSubs[i].name = e.target.value;
+                          setSelectedExamSubjects(newSubs);
+                        }}
+                        className="flex-1 min-w-0 px-3 py-2 bg-white border-2 border-indigo-100 rounded-lg text-sm font-bold text-slate-800 outline-none focus:border-indigo-400"
+                      />
+                      <div className="flex items-center gap-2 bg-white px-2 py-1.5 rounded-lg border-2 border-indigo-100 shrink-0">
+                        <span className="text-[10px] font-black text-slate-400 uppercase">Max:</span>
+                        <input 
+                          type="number" 
                           required
-                          onChange={(e) => {
-                            const newName = e.target.value;
-                            setSelectedExamSubjects(selectedExamSubjects.map(s => 
-                              s.id === sub.id ? { ...s, name: newName } : s
-                            ));
-                          }}
-                          className="input !py-1.5 !px-3 w-full text-sm font-semibold"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 font-bold uppercase">Max:</span>
-                        <input
-                          type="number"
                           min={1}
-                          required
-                          value={sub.maxMarks || ''}
+                          value={sub.maxMarks}
                           onChange={(e) => {
-                            const val = e.target.value;
-                            const newMax = val ? Number(val) : 0;
-                            setSelectedExamSubjects(selectedExamSubjects.map(s => 
-                              s.id === sub.id ? { ...s, maxMarks: newMax } : s
-                            ));
+                            const newSubs = [...selectedExamSubjects];
+                            newSubs[i].maxMarks = Number(e.target.value);
+                            setSelectedExamSubjects(newSubs);
                           }}
-                          className="input !py-1.5 !px-2 w-20 text-sm font-bold text-center"
+                          className="w-14 text-sm font-bold text-indigo-900 outline-none text-center bg-transparent"
                         />
-                        <button
-                          type="button"
-                          onClick={() => setSelectedExamSubjects(selectedExamSubjects.filter(s => s.id !== sub.id))}
-                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-colors"
-                          title="Remove subject"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                        </button>
                       </div>
+                      <button 
+                        type="button"
+                        onClick={() => setSelectedExamSubjects(selectedExamSubjects.filter((_, idx) => idx !== i))}
+                        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
                   ))}
                   {selectedExamSubjects.length === 0 && (
@@ -1602,49 +1617,54 @@ export const ExamListPage: React.FC = () => {
       {/* ══ TAB 7: EXAMINATIONS LIST ══ */}
       {activeTab === 'examination' && (
         <div className="space-y-6">
-          <div className="flex justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-150 dark:border-gray-800">
-            <span className="text-xs font-extrabold uppercase text-gray-400">Examinations List</span>
+          <div className="flex justify-between items-center bg-gradient-to-r from-indigo-500 to-purple-600 p-5 rounded-2xl shadow-xl shadow-indigo-500/20 text-white">
+            <span className="text-sm font-extrabold uppercase tracking-wider">Examinations List</span>
             {isAdmin && (
-              <button onClick={openCreateModal} className="btn-primary flex items-center gap-2 text-xs font-bold">
+              <button onClick={openCreateModal} className="bg-white/20 hover:bg-white/30 backdrop-blur-md px-4 py-2 rounded-xl flex items-center gap-2 text-xs font-bold transition-all shadow-sm border border-white/20">
                 <Plus className="w-4 h-4" /> Create Exam
               </button>
             )}
           </div>
 
-          <div className="card p-6 overflow-hidden">
+          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-6 overflow-hidden shadow-xl border border-indigo-100">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
-                  <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40">
-                    <th className="p-3.5 font-extrabold text-gray-400 text-xs uppercase tracking-wider">Exam Title</th>
-                    <th className="p-3.5 font-extrabold text-gray-400 text-xs uppercase tracking-wider">Target Classes</th>
-                    <th className="p-3.5 font-extrabold text-gray-400 text-xs uppercase tracking-wider">Term</th>
-                    <th className="p-3.5 font-extrabold text-gray-400 text-xs uppercase tracking-wider">Date</th>
-                    <th className="p-3.5 font-extrabold text-gray-400 text-xs uppercase tracking-wider text-right">Actions</th>
+                  <tr className="border-b border-indigo-100 bg-indigo-50/50">
+                    <th className="p-4 font-extrabold text-indigo-900 text-xs uppercase tracking-wider rounded-tl-xl">Exam Title</th>
+                    <th className="p-4 font-extrabold text-indigo-900 text-xs uppercase tracking-wider">Target Classes</th>
+                    <th className="p-4 font-extrabold text-indigo-900 text-xs uppercase tracking-wider">Term</th>
+                    <th className="p-4 font-extrabold text-indigo-900 text-xs uppercase tracking-wider">Date</th>
+                    <th className="p-4 font-extrabold text-indigo-900 text-xs uppercase tracking-wider text-right rounded-tr-xl">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-150 dark:divide-gray-800">
+                <tbody className="divide-y divide-indigo-50">
                   {exams.map(e => (
-                    <tr key={e.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/10">
-                      <td className="p-3.5 font-bold text-gray-900 dark:text-white">{e.name}</td>
-                      <td className="p-3.5 text-xs font-semibold text-gray-600">
-                        <div className="flex flex-wrap gap-1">
+                    <tr key={e.id} className="hover:bg-indigo-50/30 transition-colors">
+                      <td className="p-4 font-black text-slate-800">{e.name}</td>
+                      <td className="p-4 text-xs font-bold text-slate-600">
+                        <div className="flex flex-wrap gap-1.5">
                           {(e.classes || []).map((c: any) => (
-                            <span key={c.id} className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700">
+                            <span key={c.id} className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md border border-indigo-200">
                               {c.name}-{c.section}
                             </span>
                           ))}
                         </div>
                       </td>
-                      <td className="p-3.5 text-xs text-gray-450 font-bold">{e.term}</td>
-                      <td className="p-3.5 text-xs text-gray-500 font-semibold">{new Date(e.examDate).toLocaleDateString()}</td>
-                      <td className="p-3.5 text-right flex justify-end gap-2">
+                      <td className="p-4 text-xs text-slate-500 font-bold">{e.term}</td>
+                      <td className="p-4 text-xs text-slate-600 font-extrabold">{new Date(e.examDate).toLocaleDateString()}</td>
+                      <td className="p-4 text-right flex justify-end gap-2">
                         {isAdmin && (
-                          <button onClick={() => openEditModal(e)} className="btn-secondary text-[11px] font-bold px-3 py-1.5 flex items-center gap-1">
+                          <button onClick={() => openEditModal(e)} className="bg-white hover:bg-slate-50 text-indigo-600 border border-indigo-100 text-[11px] font-bold px-3 py-1.5 flex items-center gap-1 rounded-lg shadow-sm transition-all">
                             <Edit3 className="w-3 h-3" /> Edit
                           </button>
                         )}
-                        <button onClick={() => setActiveTab('written-exam')} className="btn-secondary text-[11px] font-bold px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border-indigo-200 dark:bg-indigo-900/30 dark:border-indigo-800 dark:hover:bg-indigo-900/50 dark:text-indigo-400">
+                        {user?.role === 'SUPER_ADMIN' && (
+                          <button onClick={() => handleDeleteExam(e.id)} className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-100 text-[11px] font-bold px-3 py-1.5 flex items-center gap-1 rounded-lg shadow-sm transition-all">
+                            <Trash2 className="w-3 h-3" /> Delete
+                          </button>
+                        )}
+                        <button onClick={() => setActiveTab('written-exam')} className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white text-[11px] font-bold px-4 py-1.5 rounded-lg shadow-md transition-all transform hover:-translate-y-0.5">
                           Enter Grades
                         </button>
                       </td>

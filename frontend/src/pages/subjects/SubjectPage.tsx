@@ -5,8 +5,12 @@ import { Badge } from '../../components/UI/Badge';
 import { Plus, Edit, Trash2, School, Upload, FileDown } from 'lucide-react';
 import { Avatar } from '../../components/UI/Avatar';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../hooks/useAuth';
 
 export const SubjectPage: React.FC = () => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+
   const [subjects, setSubjects] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
@@ -243,13 +247,15 @@ export const SubjectPage: React.FC = () => {
                       >
                         <Edit className="w-4.5 h-4.5" />
                       </button>
-                      <button
-                        onClick={() => handleDelete(sub.id)}
-                        className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all cursor-pointer"
-                        title="Delete Subject"
-                      >
-                        <Trash2 className="w-4.5 h-4.5" />
-                      </button>
+                      {isSuperAdmin && (
+                        <button
+                          onClick={() => handleDelete(sub.id)}
+                          className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all cursor-pointer"
+                          title="Delete Subject"
+                        >
+                          <Trash2 className="w-4.5 h-4.5" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
