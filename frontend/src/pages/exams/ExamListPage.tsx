@@ -774,90 +774,90 @@ export const ExamListPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="px-3 sm:px-0 space-y-4 sm:space-y-6 md:space-y-8">
+        <div className="space-y-4 sm:space-y-6 md:space-y-8">
         {!activeTab && (
-          <div className="rounded-[2rem] border border-white/50 bg-white/80 backdrop-blur-xl p-5 sm:p-8 md:p-10 shadow-2xl">
+          <div className="rounded-none sm:rounded-[2rem] border-y sm:border border-white/50 bg-white/80 backdrop-blur-xl p-5 sm:p-8 md:p-10 shadow-2xl">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {/* Examinations List - Visible to all, but Create Exam is only for Admin */}
-              <button onClick={() => setActiveTab('examination')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] border-2 border-slate-100 bg-white hover:border-indigo-200 transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <button onClick={() => setActiveTab('examination')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-indigo-500 to-indigo-600 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-indigo-500/30 hover:-translate-y-1 shadow-md">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <ClipboardList className="w-7 h-7" />
                 </div>
-                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 text-center leading-tight">Examinations List</span>
+                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Examinations List</span>
               </button>
 
               {isAdmin && (
                 <>
-                  <button onClick={() => setActiveTab('exam-plan')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] border-2 border-slate-100 bg-white hover:border-purple-200 transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1">
-                    <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <button onClick={() => setActiveTab('exam-plan')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-purple-500 to-purple-600 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-purple-500/30 hover:-translate-y-1 shadow-md">
+                    <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Calendar className="w-7 h-7" />
                     </div>
-                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 text-center leading-tight">Exam Plan</span>
+                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Exam Plan</span>
                   </button>
 
-                  <button onClick={() => setActiveTab('admit-card')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] border-2 border-slate-100 bg-white hover:border-amber-200 transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1">
-                    <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <button onClick={() => setActiveTab('admit-card')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-amber-500 to-orange-500 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-amber-500/30 hover:-translate-y-1 shadow-md">
+                    <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <FileText className="w-7 h-7" />
                     </div>
-                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 text-center leading-tight">Admit Card</span>
+                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Admit Card</span>
                   </button>
 
-                  <button onClick={() => setActiveTab('add-online-exam')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] border-2 border-slate-100 bg-white hover:border-violet-200 transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-violet-500/10 hover:-translate-y-1">
-                    <div className="w-14 h-14 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <button onClick={() => setActiveTab('add-online-exam')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-violet-500/30 hover:-translate-y-1 shadow-md">
+                    <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Plus className="w-7 h-7" />
                     </div>
-                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 text-center leading-tight">Add Online Exam</span>
+                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Add Online Exam</span>
                   </button>
                 </>
               )}
 
               {/* Common: Marks Upload, Results, Progress Card, Question Papers */}
-              <button onClick={() => setActiveTab('written-exam')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] border-2 border-slate-100 bg-white hover:border-emerald-200 transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <button onClick={() => setActiveTab('written-exam')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-emerald-500 to-teal-500 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-1 shadow-md">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Edit3 className="w-7 h-7" />
                 </div>
-                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 text-center leading-tight">Marks Upload</span>
+                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Marks Upload</span>
               </button>
 
-              <button onClick={() => setActiveTab('results')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] border-2 border-slate-100 bg-white hover:border-blue-200 transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1">
-                <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <button onClick={() => setActiveTab('results')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-blue-500 to-cyan-500 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-1 shadow-md">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Award className="w-7 h-7" />
                 </div>
-                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 text-center leading-tight">Results</span>
+                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Results</span>
               </button>
 
-              <button onClick={() => setActiveTab('progress-card')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] border-2 border-slate-100 bg-white hover:border-rose-200 transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-rose-500/10 hover:-translate-y-1">
-                <div className="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <button onClick={() => setActiveTab('progress-card')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-rose-500 to-pink-500 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-rose-500/30 hover:-translate-y-1 shadow-md">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Award className="w-7 h-7" />
                 </div>
-                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 text-center leading-tight">Progress Card</span>
+                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Progress Card</span>
               </button>
 
               {isAdminOrTeacher && (
                 <>
-                  <button onClick={() => setActiveTab('question-bank')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] border-2 border-slate-100 bg-white hover:border-slate-300 transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-slate-500/10 hover:-translate-y-1">
-                    <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <button onClick={() => setActiveTab('question-bank')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-slate-600 to-slate-700 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-slate-500/30 hover:-translate-y-1 shadow-md">
+                    <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Layers className="w-7 h-7" />
                     </div>
-                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 text-center leading-tight">Question Papers</span>
+                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Question Papers</span>
                   </button>
               </>
             )}
 
               {isAdmin && (
                 <>
-                  <button onClick={() => setActiveTab('slip-tests')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] border-2 border-slate-100 bg-white hover:border-cyan-200 transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-1">
-                    <div className="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <button onClick={() => setActiveTab('slip-tests')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-cyan-500 to-blue-500 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-cyan-500/30 hover:-translate-y-1 shadow-md">
+                    <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Clock className="w-7 h-7" />
                     </div>
-                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 text-center leading-tight">Slip Tests</span>
+                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Slip Tests</span>
                   </button>
 
-                  <button onClick={() => setActiveTab('settings')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] border-2 border-slate-100 bg-white hover:border-gray-300 transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-gray-500/10 hover:-translate-y-1">
-                    <div className="w-14 h-14 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <button onClick={() => setActiveTab('settings')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-gray-600 to-gray-700 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-gray-500/30 hover:-translate-y-1 shadow-md">
+                    <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Settings className="w-7 h-7" />
                     </div>
-                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 text-center leading-tight">Settings</span>
+                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Settings</span>
                   </button>
                 </>
               )}
