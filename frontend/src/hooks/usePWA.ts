@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -42,7 +43,15 @@ export function usePWA() {
   }, []);
 
   const installApp = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      if (isIOS) {
+        toast('To install on iOS, tap the Share icon and select "Add to Home Screen".', { icon: '🍎', duration: 6000 });
+      } else {
+        toast('Your browser might not support direct installation, or it is already installed.', { icon: 'ℹ️', duration: 4000 });
+      }
+      return;
+    }
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {

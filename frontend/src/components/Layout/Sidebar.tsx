@@ -180,7 +180,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       {/* User */}
       <div className="px-3 pb-4 pt-3 border-t border-white/8">
         {/* PWA Install */}
-        {isInstallable && (
+        {!isInstalled && (
           <div className="px-4 mb-4">
             <button
               onClick={installApp}
