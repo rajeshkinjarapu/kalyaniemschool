@@ -770,7 +770,6 @@ export const ExamListPage: React.FC = () => {
                 <ClipboardList className="h-6 w-6 sm:hidden shrink-0" />
                 Examinations Suite
               </h2>
-              <p className="text-indigo-100 mt-1 sm:mt-2 font-medium text-sm sm:text-lg opacity-90 leading-snug">Select a module below to manage exams, grading, and online tests.</p>
             </div>
           </div>
         </div>
