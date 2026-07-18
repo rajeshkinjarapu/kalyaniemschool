@@ -46,14 +46,15 @@ export const MarksEntryPage: React.FC = () => {
       const examSubjects = Array.isArray(examObj.subjects) ? examObj.subjects : [];
       setSubjects(examSubjects);
 
-      // 5. Get existing flat marks
-      const flatMarks = examObj.marks || [];
+      // 5. Get existing flat marks from marks API
+      const marksRes: any = await api.get(`/api/marks/exam/${id}`);
+      const flatMarks = marksRes.data || [];
       
       const initialMarks: { [key: string]: number } = {};
       const initialRemarks: { [key: string]: string } = {};
 
       flatMarks.forEach((m: any) => {
-        if (m.student.classId === classId || (currentClass && m.student.rollNo)) { 
+        if (m.student?.classId === classId || (currentClass && m.student?.rollNo)) { 
           initialMarks[`${m.studentId}_${m.subjectId}`] = m.marksObtained;
           initialRemarks[`${m.studentId}_${m.subjectId}`] = m.remarks || '';
         }
@@ -125,22 +126,23 @@ export const MarksEntryPage: React.FC = () => {
     : subjects.filter(s => s.id === selectedSubjectId);
 
   return (
-    <div className="space-y-4 sm:space-y-6 md:space-y-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-0 sm:p-4 md:p-8 pb-28 font-sans overflow-x-hidden">
+  return (
+    <div className="bg-slate-50 dark:bg-slate-900 min-h-screen font-sans overflow-x-hidden flex flex-col">
       
       {/* Header Section */}
-      <div className="rounded-none sm:rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 shadow-xl text-white transform transition-all sm:hover:scale-[1.01] flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <Link to="/exams?tab=written-exam" className="p-3 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-2xl transition-all cursor-pointer">
-            <ArrowLeft className="w-6 h-6 text-white" />
+      <div className="bg-white dark:bg-slate-800 p-4 md:p-6 shadow-sm border-b border-slate-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4 z-10 sticky top-0">
+        <div className="flex items-center gap-3">
+          <Link to="/exams?tab=written-exam" className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-xl transition-all cursor-pointer">
+            <ArrowLeft className="w-5 h-5 text-slate-700 dark:text-slate-200" />
           </Link>
           <div>
-            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">{exam?.name}</h2>
-            <div className="flex flex-wrap items-center gap-2 mt-2">
-              <span className="bg-white/20 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+            <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">{exam?.name}</h2>
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              <span className="text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
                 Class: {currentClass?.name}-{currentClass?.section}
               </span>
-              <span className="bg-white/20 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                Max Marks: {exam?.maxMarks}
+              <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">
+                | Max Marks: {exam?.maxMarks}
               </span>
             </div>
           </div>
@@ -162,8 +164,8 @@ export const MarksEntryPage: React.FC = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="px-3 sm:px-0 space-y-6">
-      <div className="rounded-3xl border border-white/50 bg-white/80 backdrop-blur-lg p-4 md:p-8 shadow-2xl">
+      <div className="flex-1 w-full p-0 sm:p-4 md:p-6 space-y-0 sm:space-y-6 bg-slate-50 dark:bg-slate-900 pb-32">
+      <div className="w-full sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 p-4 md:p-6 shadow-sm">
         
         {/* Toolbar */}
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-indigo-100 pb-6">
@@ -253,25 +255,23 @@ export const MarksEntryPage: React.FC = () => {
         </div>
 
         {/* Mobile / Tablet Card View */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:hidden">
+        {/* Mobile View */}
+        <div className="lg:hidden space-y-4">
           {students.map((student, index) => (
-            <div key={student.id} className="bg-white rounded-3xl border-2 border-indigo-50 p-5 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all relative overflow-hidden group">
-              
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-indigo-100/50 to-transparent rounded-bl-full -z-10 transition-transform group-hover:scale-110"></div>
-              
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-black text-lg shrink-0 shadow-lg shadow-indigo-200">
+            <div key={student.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+              <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center shrink-0">
                   {index + 1}
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-slate-900 text-lg leading-tight">{student.user.name}</h4>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] font-black text-indigo-600 tracking-wider uppercase bg-indigo-50 px-2 py-1 rounded-md border border-indigo-100">Roll: {student.rollNo || 'N/A'}</span>
-                  </div>
+                  <h4 className="font-extrabold text-slate-900 dark:text-white uppercase tracking-wide text-sm">{student.user.name}</h4>
+                  <span className="px-2 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded text-[10px] font-bold mt-1 inline-block">
+                    ROLL: {student.rollNo || 'N/A'}
+                  </span>
                 </div>
               </div>
-
-              <div className="space-y-4">
+              
+              <div className="p-4 space-y-4">
                 {filteredSubjects.map((sub) => {
                   const key = `${student.id}_${sub.id}`;
                   return (
