@@ -51,12 +51,43 @@ export const bulkCreate = async (req: AuthRequest, res: Response, next: NextFunc
     };
     if (!marks?.length) return next(createError('marks array is required', 400));
 
+    // Get the exam to read the JSON subjects
+    const examId = marks[0]?.examId;
+    if (!examId) return next(createError('Exam ID is required', 400));
+
+    const exam = await prisma.exam.findUnique({ where: { id: examId } });
+    const examSubjects: any[] = Array.isArray(exam?.subjects) ? exam.subjects : [];
+
+    // Pre-fetch all students to get their classIds
+    const studentIds = [...new Set(marks.map(m => m.studentId))];
+    const students = await prisma.student.findMany({ where: { id: { in: studentIds } }, select: { id: true, classId: true } });
+    const studentClassMap = new Map(students.map(s => [s.id, s.classId]));
+
+    // Pre-fetch all real subjects for those classes
+    const classIds = [...new Set(students.map(s => s.classId))];
+    const realSubjects = await prisma.subject.findMany({ where: { classId: { in: classIds } } });
+
     const upsertOps = marks.map((m) => {
+      // Resolve fake subject ID to real subject ID
+      let realSubjectId = m.subjectId;
+      const fakeSubject = examSubjects.find(s => s.id === m.subjectId);
+      
+      if (fakeSubject) {
+        // Find a real subject in the student's class with the same name
+        const classId = studentClassMap.get(m.studentId);
+        const matchingRealSubject = realSubjects.find(
+          s => s.classId === classId && s.name.toLowerCase() === fakeSubject.name.toLowerCase()
+        );
+        if (matchingRealSubject) {
+          realSubjectId = matchingRealSubject.id;
+        }
+      }
+
       const grade = calculateGrade(m.marksObtained, m.maxMarks);
       return prisma.mark.upsert({
-        where: { studentId_examId_subjectId: { studentId: m.studentId, examId: m.examId, subjectId: m.subjectId } },
+        where: { studentId_examId_subjectId: { studentId: m.studentId, examId: m.examId, subjectId: realSubjectId } },
         update: { marksObtained: m.marksObtained, maxMarks: m.maxMarks, grade, remarks: m.remarks },
-        create: { studentId: m.studentId, examId: m.examId, subjectId: m.subjectId, marksObtained: m.marksObtained, maxMarks: m.maxMarks, grade, remarks: m.remarks },
+        create: { studentId: m.studentId, examId: m.examId, subjectId: realSubjectId, marksObtained: m.marksObtained, maxMarks: m.maxMarks, grade, remarks: m.remarks },
       });
     });
 

@@ -126,22 +126,26 @@ export const MarksEntryPage: React.FC = () => {
     : subjects.filter(s => s.id === selectedSubjectId);
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 min-h-screen font-sans overflow-x-hidden flex flex-col">
+    <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen font-sans overflow-x-hidden flex flex-col pb-20 md:pb-0">
       
       {/* Header Section */}
-      <div className="bg-white dark:bg-slate-800 p-4 md:p-6 shadow-sm border-b border-slate-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4 z-10 sticky top-0">
-        <div className="flex items-center gap-3">
-          <Link to="/exams?tab=written-exam" className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-xl transition-all cursor-pointer">
-            <ArrowLeft className="w-5 h-5 text-slate-700 dark:text-slate-200" />
+      <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white p-4 md:p-6 shadow-2xl shadow-purple-500/20 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 z-10 sticky top-0 rounded-b-3xl mb-6 relative overflow-hidden">
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+
+        <div className="flex items-center gap-4 z-10">
+          <Link to="/exams?tab=written-exam" className="w-10 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-xl transition-all cursor-pointer">
+            <ArrowLeft className="w-5 h-5 text-white" />
           </Link>
           <div>
-            <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">{exam?.name}</h2>
-            <div className="flex flex-wrap items-center gap-2 mt-1">
-              <span className="text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
+            <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase drop-shadow-sm">{exam?.name}</h2>
+            <div className="flex flex-wrap items-center gap-3 mt-1">
+              <span className="bg-white/20 px-3 py-1 text-[11px] md:text-xs font-bold uppercase tracking-wider rounded-lg backdrop-blur-sm border border-white/10">
                 Class: {currentClass?.name}-{currentClass?.section}
               </span>
-              <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">
-                | Max Marks: {exam?.maxMarks}
+              <span className="bg-white/20 px-3 py-1 text-[11px] md:text-xs font-bold uppercase tracking-wider rounded-lg backdrop-blur-sm border border-white/10">
+                Max Marks: {exam?.maxMarks}
               </span>
             </div>
           </div>
@@ -149,13 +153,13 @@ export const MarksEntryPage: React.FC = () => {
         
         {/* Desktop Save Button */}
         {students.length > 0 && (
-          <div className="hidden md:flex items-center gap-3">
-            <button onClick={() => handleSave(false)} className="px-6 py-3.5 bg-white/20 hover:bg-white/30 text-white rounded-2xl font-bold text-sm shadow-xl shadow-indigo-900/10 transition-all flex items-center gap-2 cursor-pointer">
-              <Save className="w-5 h-5" />
+          <div className="hidden md:flex items-center gap-3 z-10">
+            <button onClick={() => handleSave(false)} className="px-6 py-2.5 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold text-sm shadow-sm transition-all flex items-center gap-2 backdrop-blur-md cursor-pointer border border-white/20">
+              <Save className="w-4 h-4" />
               SAVE DRAFT
             </button>
-            <button onClick={() => handleSave(true)} className="px-6 py-3.5 bg-white text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800 rounded-2xl font-bold text-sm shadow-xl shadow-indigo-900/20 transition-all transform hover:-translate-y-1 flex items-center gap-2 cursor-pointer">
-              <Lock className="w-5 h-5" />
+            <button onClick={() => handleSave(true)} className="px-6 py-2.5 bg-white text-indigo-700 hover:bg-indigo-50 rounded-xl font-bold text-sm shadow-xl transition-all flex items-center gap-2 cursor-pointer transform hover:-translate-y-0.5">
+              <Lock className="w-4 h-4" />
               FREEZE MARKS
             </button>
           </div>
@@ -163,11 +167,11 @@ export const MarksEntryPage: React.FC = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 w-full p-0 sm:p-4 md:p-6 space-y-0 sm:space-y-6 bg-slate-50 dark:bg-slate-900 pb-32">
-      <div className="w-full sm:rounded-3xl border-0 sm:border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 p-4 md:p-6 shadow-sm">
+      <div className="flex-1 w-full p-0 space-y-0 pb-32 bg-transparent">
+      <div className="w-full border-0 bg-transparent p-2 md:p-6">
         
         {/* Toolbar */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-indigo-100 pb-6">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-indigo-200/50 pb-6">
           <div className="flex items-center gap-4">
             <div className="bg-gradient-to-br from-indigo-500 to-purple-500 text-white p-3 rounded-2xl shadow-md shadow-indigo-200">
               <BookOpen className="w-6 h-6" />
@@ -257,14 +261,14 @@ export const MarksEntryPage: React.FC = () => {
         {/* Mobile View */}
         <div className="lg:hidden space-y-4">
           {students.map((student, index) => (
-            <div key={student.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden flex flex-col">
-              <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center shrink-0">
+            <div key={student.id} className="bg-white/80 backdrop-blur-md border border-indigo-100 rounded-3xl shadow-sm overflow-hidden flex flex-col">
+              <div className="p-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 border-b border-indigo-100 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 text-white font-bold flex items-center justify-center shrink-0 shadow-sm shadow-indigo-200">
                   {index + 1}
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-slate-900 dark:text-white uppercase tracking-wide text-sm">{student.user.name}</h4>
-                  <span className="px-2 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded text-[10px] font-bold mt-1 inline-block">
+                  <h4 className="font-extrabold text-slate-800 uppercase tracking-wide text-sm">{student.user.name}</h4>
+                  <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md text-[10px] font-bold mt-1 inline-block">
                     ROLL: {student.rollNo || 'N/A'}
                   </span>
                 </div>
@@ -274,10 +278,10 @@ export const MarksEntryPage: React.FC = () => {
                 {filteredSubjects.map((sub) => {
                   const key = `${student.id}_${sub.id}`;
                   return (
-                    <div key={sub.id} className="bg-slate-50 rounded-2xl p-4 border border-slate-100 relative">
+                    <div key={sub.id} className="bg-white rounded-2xl p-4 border border-indigo-50 shadow-sm relative">
                       <div className="flex items-center justify-between mb-3">
                         <span className="font-bold text-sm text-indigo-900">{sub.name}</span>
-                        <span className="text-[10px] font-black bg-slate-200 text-slate-500 px-2 py-1 rounded-md">MAX: {sub.maxMarks || 100}</span>
+                        <span className="text-[10px] font-black bg-indigo-50 text-indigo-600 px-2 py-1 rounded-md">MAX: {sub.maxMarks || 100}</span>
                       </div>
                       
                       <div className="space-y-3">
