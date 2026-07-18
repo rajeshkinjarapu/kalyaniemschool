@@ -126,19 +126,18 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
             </select>
           )}
         </div>
-        
-        {students.length > 0 && (
-          <div className="flex gap-2">
-            {isAdmin && (
-              <button onClick={() => setShowSettings(!showSettings)} className="btn-secondary flex items-center gap-2">
-                <Settings className="w-4 h-4" /> Settings
-              </button>
-            )}
+        <div className="flex gap-2">
+          {isAdmin && selectedExam && (
+            <button onClick={() => setShowSettings(!showSettings)} className="btn-secondary flex items-center gap-2">
+              <Settings className="w-4 h-4" /> Settings
+            </button>
+          )}
+          {students.length > 0 && (
             <button onClick={handlePrint} className="btn-primary flex items-center gap-2">
               <Printer className="w-4 h-4" /> Print All
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {showSettings && selectedExamId && isAdmin && (
