@@ -1695,22 +1695,7 @@ export const ExamListPage: React.FC = () => {
         </div>
       )}
 
-      {/* ══ NEW TABS ══ */}
-      {activeTab === 'admit-card' && (
-        <AdmitCardTab exams={exams} />
-      )}
-      
-      {activeTab === 'results' && (
-        <div className="bg-white dark:bg-gray-900 p-12 text-center rounded-xl border border-gray-150 dark:border-gray-800 space-y-4">
-          <Award className="w-12 h-12 text-gray-300 mx-auto" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Results Publishing</h3>
-          <p className="text-sm text-gray-500">Publish verified results and rank lists (Coming Soon).</p>
-        </div>
-      )}
 
-      {activeTab === 'progress-card' && (
-        <ProgressCardTab exams={exams} />
-      )}
       </div>
     </div>
     </div>
