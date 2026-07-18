@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
-import { Menu, Sun, Moon, Bell, ChevronDown, User, Key, LogOut, Search } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Menu, Sun, Moon, Bell, ChevronDown, User, Key, LogOut, Search, ArrowLeft } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -30,7 +30,11 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, title }) => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
   const meta = pageMeta[title] || { emoji: '📋', desc: 'School Management' };
+  
+  const showBackButton = location.pathname !== '/dashboard' && location.pathname !== '/';
 
   return (
     <header className="print:hidden sticky top-0 z-30 flex items-center justify-between gap-4 px-5 py-3.5 bg-white/70 dark:bg-[#1e1b4b]/60 backdrop-blur-xl border-b border-white/20 dark:border-indigo-500/20 shadow-[0_1px_0_rgba(0,0,0,0.04)] dark:shadow-none">
@@ -43,6 +47,15 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, title }) => {
         >
           <Menu className="w-5 h-5" />
         </button>
+        {showBackButton && (
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all duration-200 cursor-pointer shrink-0 hidden sm:flex items-center justify-center mr-1"
+            title="Go Back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+        )}
         <div className="flex items-center gap-2.5 min-w-0">
           <span className="text-xl leading-none shrink-0">{meta.emoji}</span>
           <div className="min-w-0">
