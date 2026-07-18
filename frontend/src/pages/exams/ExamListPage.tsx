@@ -760,20 +760,7 @@ export const ExamListPage: React.FC = () => {
   return (
     <div className="space-y-4 sm:space-y-6 md:space-y-8 p-0 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen overflow-x-hidden">
       <div className="space-y-4 sm:space-y-6 md:space-y-8">
-        {/* ══ TOP NAVIGATION HEADER ══ */}
-        <div className="rounded-none sm:rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 shadow-xl text-white transform transition-all sm:hover:scale-[1.01]">
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:block rounded-2xl bg-white/20 p-3 backdrop-blur-md">
-              <ClipboardList className="h-8 w-8 text-white" />
-            </div>
-            <div className="min-w-0">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight whitespace-nowrap overflow-hidden text-ellipsis flex items-center gap-2">
-                <ClipboardList className="h-6 w-6 sm:hidden shrink-0" />
-                Examinations Suite
-              </h2>
-            </div>
-          </div>
-        </div>
+        {/* ══ TOP NAVIGATION HEADER REMOVED ══ */}
 
         <div className="space-y-4 sm:space-y-6 md:space-y-8">
         {!activeTab && (
@@ -789,13 +776,6 @@ export const ExamListPage: React.FC = () => {
 
               {isAdmin && (
                 <>
-                  <button onClick={() => setActiveTab('exam-plan')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-purple-500 to-purple-600 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-purple-500/30 hover:-translate-y-1 shadow-md">
-                    <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Calendar className="w-7 h-7" />
-                    </div>
-                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Exam Plan</span>
-                  </button>
-
                   <button onClick={() => setActiveTab('admit-card')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-amber-500 to-orange-500 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-amber-500/30 hover:-translate-y-1 shadow-md">
                     <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <FileText className="w-7 h-7" />
@@ -803,12 +783,7 @@ export const ExamListPage: React.FC = () => {
                     <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Admit Card</span>
                   </button>
 
-                  <button onClick={() => setActiveTab('add-online-exam')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-violet-500/30 hover:-translate-y-1 shadow-md">
-                    <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Plus className="w-7 h-7" />
-                    </div>
-                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Add Online Exam</span>
-                  </button>
+                  {/* Add Online Exam button removed */}
                 </>
               )}
 
