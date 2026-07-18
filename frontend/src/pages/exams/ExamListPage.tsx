@@ -1201,8 +1201,8 @@ export const ExamListPage: React.FC = () => {
       )}
 
       {/* ══ TAB 5: PROGRESS CARD ══ */}
-      {activeTab === 'progress-card' && (
-        <div className="card p-2 h-[80vh] overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+      {activeTab === 'progress-card' && user?.role !== 'TEACHER' && (
+        <div className="card p-2 h-[80vh] overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 mb-6">
           <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800 mb-2">
             <div>
               <h3 className="font-bold text-gray-900 dark:text-white">Progress Card Generator</h3>
