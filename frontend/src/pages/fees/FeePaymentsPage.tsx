@@ -244,61 +244,63 @@ export const FeePaymentsPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="px-3 sm:px-0">
-      {loading ? (
-        <LoadingSpinner size="lg" className="py-12" />
-      ) : (
-        <div className="rounded-3xl border border-white/50 bg-white/80 backdrop-blur-lg overflow-hidden shadow-2xl">
-          <div className="overflow-x-auto w-full max-w-full block"><table className="w-full text-sm text-left">
-            <thead className="bg-indigo-50/50 text-indigo-900 font-bold border-b border-indigo-100">
-              <tr>
-                <th className="px-6 py-4">Student</th>
-                <th className="px-6 py-4">Fee Structure</th>
-                <th className="px-6 py-4">Amount Paid</th>
-                <th className="px-6 py-4">Date</th>
-                <th className="px-6 py-4">Method</th>
-                <th className="px-6 py-4">Receipt No</th>
-                <th className="px-6 py-4 text-right">Invoice</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {payments.map((p) => (
-                <tr key={p.id} className="hover:bg-indigo-50/30 transition-colors">
-                  <td className="px-6 py-4 font-bold text-slate-800">{p.student?.user?.name || 'Unknown student'}</td>
-                  <td className="px-6 py-4 text-slate-500">{p.feeStructure?.name || 'Deleted structure'}</td>
-                  <td className="px-6 py-4 font-bold">₹{p.amountPaid.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-gray-500">
-                    {new Date(p.paymentDate).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4">
-                    <Badge variant={p.method === 'UPI' ? 'danger' : 'info'}>{p.method}</Badge>
-                  </td>
-                  <td className="px-6 py-4 font-mono text-xs text-gray-400 opacity-70 truncate max-w-[120px]">{p.receiptNo}</td>
-                  <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
-                    <button
-                      onClick={() => handlePrintReceipt(p.id)}
-                      className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 cursor-pointer"
-                      title="Print Dual Receipt"
-                    >
-                      <FileDown className="w-4 h-4" />
-                    </button>
-                    {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT') && (
-                      <button
-                        onClick={() => handleDeletePayment(p.id)}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
-                        title="Delete Payment"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
-                  </td>
+      {user?.role !== 'TEACHER' && (
+        <div className="px-3 sm:px-0">
+        {loading ? (
+          <LoadingSpinner size="lg" className="py-12" />
+        ) : (
+          <div className="rounded-3xl border border-white/50 bg-white/80 backdrop-blur-lg overflow-hidden shadow-2xl">
+            <div className="overflow-x-auto w-full max-w-full block"><table className="w-full text-sm text-left">
+              <thead className="bg-indigo-50/50 text-indigo-900 font-bold border-b border-indigo-100">
+                <tr>
+                  <th className="px-6 py-4">Student</th>
+                  <th className="px-6 py-4">Fee Structure</th>
+                  <th className="px-6 py-4">Amount Paid</th>
+                  <th className="px-6 py-4">Date</th>
+                  <th className="px-6 py-4">Method</th>
+                  <th className="px-6 py-4">Receipt No</th>
+                  <th className="px-6 py-4 text-right">Invoice</th>
                 </tr>
-              ))}
-            </tbody>
-          </table></div>
+              </thead>
+              <tbody className="divide-y">
+                {payments.map((p) => (
+                  <tr key={p.id} className="hover:bg-indigo-50/30 transition-colors">
+                    <td className="px-6 py-4 font-bold text-slate-800">{p.student?.user?.name || 'Unknown student'}</td>
+                    <td className="px-6 py-4 text-slate-500">{p.feeStructure?.name || 'Deleted structure'}</td>
+                    <td className="px-6 py-4 font-bold">₹{p.amountPaid.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-gray-500">
+                      {new Date(p.paymentDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <Badge variant={p.method === 'UPI' ? 'danger' : 'info'}>{p.method}</Badge>
+                    </td>
+                    <td className="px-6 py-4 font-mono text-xs text-gray-400 opacity-70 truncate max-w-[120px]">{p.receiptNo}</td>
+                    <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => handlePrintReceipt(p.id)}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 cursor-pointer"
+                        title="Print Dual Receipt"
+                      >
+                        <FileDown className="w-4 h-4" />
+                      </button>
+                      {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT') && (
+                        <button
+                          onClick={() => handleDeletePayment(p.id)}
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
+                          title="Delete Payment"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table></div>
+          </div>
+        )}
         </div>
       )}
-      </div>
 
       {/* Record Payment Modal */}
       {showModal && (
