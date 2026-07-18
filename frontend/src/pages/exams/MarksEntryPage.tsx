@@ -55,8 +55,12 @@ export const MarksEntryPage: React.FC = () => {
 
       flatMarks.forEach((m: any) => {
         if (m.student?.classId === classId || (currentClass && m.student?.rollNo)) { 
-          initialMarks[`${m.studentId}_${m.subjectId}`] = m.marksObtained;
-          initialRemarks[`${m.studentId}_${m.subjectId}`] = m.remarks || '';
+          // Match the real subject from DB to the fake subject in exam.subjects by name
+          const fakeSub = examSubjects.find((s: any) => s.name?.toLowerCase() === m.subject?.name?.toLowerCase());
+          const fakeSubId = fakeSub ? fakeSub.id : m.subjectId;
+
+          initialMarks[`${m.studentId}_${fakeSubId}`] = m.marksObtained;
+          initialRemarks[`${m.studentId}_${fakeSubId}`] = m.remarks || '';
         }
       });
 
