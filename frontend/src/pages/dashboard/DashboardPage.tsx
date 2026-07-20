@@ -89,52 +89,35 @@ const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }>
       }} />
       
       {/* Glass Panel Content */}
-      <div className="relative z-10 p-3 sm:p-5 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-6">
-        <div className="flex items-center gap-3 md:gap-5">
-          <div className="w-10 h-10 md:w-16 md:h-16 rounded-[1rem] md:rounded-[1.2rem] flex items-center justify-center text-xl md:text-3xl shrink-0 shadow-2xl relative overflow-hidden group"
-            style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.15)' }}>
-            {photoUrl ? (
-              <img src={photoUrl.startsWith('http') ? photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${photoUrl.startsWith('/') ? photoUrl : `/${photoUrl}`}`} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              <>
-                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                <span className="relative z-10 group-hover:scale-110 transition-transform duration-500">{emoji}</span>
-              </>
-            )}
-          </div>
+      <div className="relative z-10 p-4 sm:p-5 md:p-6 flex items-center justify-between gap-3 md:gap-6 h-full">
+        <div className="flex flex-col justify-center">
+          <p className="text-indigo-300/80 text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em] mb-1 md:mb-2 flex items-center gap-1.5 md:gap-2">
+            <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-400 animate-ping absolute" />
+            <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-400 relative" />
+            {greeting}
+          </p>
+          <h1 className="text-[26px] sm:text-4xl md:text-5xl font-black text-white mb-1.5 md:mb-2 tracking-tight">
+            <span className="hidden sm:inline">Welcome back, </span>{name.split(' ')[0]} 👋
+          </h1>
+          <p className="text-indigo-100/90 text-[10px] sm:text-sm md:text-base font-semibold mb-3 md:mb-4">{roleLabel[role] || role} <span className="mx-1.5 md:mx-2 opacity-50">•</span> JY School</p>
+          
           <div>
-            <p className="text-indigo-300/80 text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em] mb-0.5 md:mb-2 flex items-center gap-1.5 md:gap-2">
-              <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-400 animate-ping absolute" />
-              <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-400 relative" />
-              {greeting}
-            </p>
-            <h1 className="text-[28px] sm:text-4xl md:text-5xl font-black text-white mb-2 tracking-tight">
-              Welcome back, {name.split(' ')[0]} 👋
-            </h1>
-            <p className="text-indigo-100/90 text-[10px] sm:text-sm md:text-base font-semibold">{roleLabel[role] || role} <span className="mx-1.5 md:mx-2 opacity-50">•</span> JY School</p>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2.5 rounded-[0.8rem] md:rounded-[1rem] bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors shadow-inner">
+              <CalendarDays className="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-300" />
+              <span className="text-[10px] md:text-xs font-bold text-white tracking-wide">{today}</span>
+            </div>
           </div>
         </div>
         
-        <div className="flex flex-row gap-2 md:gap-3 shrink-0 mt-1 md:mt-0">
-          <div className="flex items-center gap-2 px-3 py-2 md:px-4 md:py-3 rounded-[0.8rem] md:rounded-[1rem] bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors shadow-inner justify-center sm:justify-start">
-            <CalendarDays className="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-300" />
-            <span className="text-[10px] md:text-xs font-bold text-white tracking-wide">{today}</span>
-          </div>
-          <div className="flex items-center gap-1.5 md:gap-3 px-2 py-1.5 md:px-3 md:py-2 rounded-[0.8rem] md:rounded-[1rem] bg-white/5 backdrop-blur-md border border-white/10 shadow-inner justify-center sm:justify-start">
-            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full overflow-hidden border-2 border-emerald-400/50 flex-shrink-0 bg-indigo-500 flex items-center justify-center text-white text-xs font-bold">
-              {photoUrl ? (
-                <img src={photoUrl.startsWith('http') ? photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${photoUrl.startsWith('/') ? photoUrl : `/${photoUrl}`}`} alt={name} className="w-full h-full object-cover" />
-              ) : (
-                name.charAt(0)
-              )}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="relative flex h-1.5 w-1.5 md:h-2 md:w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 md:h-2 md:w-2 bg-emerald-500"></span>
-              </div>
-              <span className="text-[9px] md:text-[10px] font-black text-emerald-300 tracking-wider uppercase hidden sm:block">Active</span>
-            </div>
+        {/* Photo Box on Right Side */}
+        <div className="shrink-0 flex items-center justify-center">
+          <div className="w-[72px] h-[72px] sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-[1rem] md:rounded-[1.5rem] flex items-center justify-center text-3xl md:text-5xl shadow-2xl relative overflow-hidden border-2 md:border-[3px] border-indigo-400/40"
+            style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(16px)' }}>
+            {photoUrl ? (
+              <img src={photoUrl.startsWith('http') ? photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${photoUrl.startsWith('/') ? photoUrl : `/${photoUrl}`}`} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <span className="relative z-10 drop-shadow-lg">{emoji}</span>
+            )}
           </div>
         </div>
       </div>
