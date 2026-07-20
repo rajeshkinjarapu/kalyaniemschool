@@ -4,7 +4,7 @@ import { Award, Medal, Printer, Download, Star, TrendingUp, Trophy } from 'lucid
 import toast from 'react-hot-toast';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 
 export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   const [selectedExamId, setSelectedExamId] = useState('');
@@ -49,15 +49,13 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
       const scroller = element.querySelector('.overflow-x-auto');
       if (scroller) scroller.classList.remove('overflow-x-auto');
       
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true, logging: false });
+      const imgData = await toPng(element, { cacheBust: true, pixelRatio: 2 });
       
       if (scroller) scroller.classList.add('overflow-x-auto');
       
-      const imgData = canvas.toDataURL('image/png');
-      
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = (element.offsetHeight * pdfWidth) / element.offsetWidth;
       const pageHeight = pdf.internal.pageSize.getHeight();
       
       let heightLeft = pdfHeight;

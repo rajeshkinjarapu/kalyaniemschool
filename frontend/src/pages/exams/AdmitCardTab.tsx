@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import { Printer, User, Calendar, MapPin, Phone, Mail, Globe, Settings, Upload, CheckCircle, Save, ExternalLink, Download } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import toast from 'react-hot-toast';
@@ -102,12 +102,11 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         const el = templates[i] as HTMLElement;
         const student = students[i];
         
-        const canvas = await html2canvas(el, { scale: 2, useCORS: true, allowTaint: false, logging: false });
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = await toPng(el, { cacheBust: true, pixelRatio: 2 });
         
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        const pdfHeight = (el.offsetHeight * pdfWidth) / el.offsetWidth;
         
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
         const fileName = `${student.user?.name || student.name || `Student_${i+1}`}.pdf`;
