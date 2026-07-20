@@ -96,7 +96,7 @@ const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }>
             <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-400 relative" />
             {greeting}
           </p>
-          <h1 className="text-[26px] sm:text-4xl md:text-5xl font-black text-white mb-1.5 md:mb-2 tracking-tight">
+          <h1 className="text-[26px] sm:text-4xl md:text-5xl font-black text-white mb-1.5 md:mb-2 tracking-tight break-words max-w-[85%]">
             <span className="hidden sm:inline">Welcome back, </span>{name.split(' ')[0]} 👋
           </h1>
           <p className="text-indigo-100/90 text-[10px] sm:text-sm md:text-base font-semibold mb-3 md:mb-4">{roleLabel[role] || role} <span className="mx-1.5 md:mx-2 opacity-50">•</span> JY School</p>
@@ -111,7 +111,7 @@ const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }>
         
         {/* Photo Box on Right Side */}
         <div className="shrink-0 flex items-center justify-center">
-          <div className="w-[72px] h-[72px] sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-[1rem] md:rounded-[1.5rem] flex items-center justify-center text-3xl md:text-5xl shadow-2xl relative overflow-hidden border-2 md:border-[3px] border-indigo-400/40"
+          <div className="w-[80px] h-[90px] sm:w-[110px] sm:h-[120px] md:w-[140px] md:h-[150px] rounded-[1rem] md:rounded-[1.5rem] flex items-center justify-center text-3xl md:text-5xl shadow-2xl relative overflow-hidden border-2 md:border-[3px] border-indigo-400/40"
             style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(16px)' }}>
             {photoUrl ? (
               <img src={photoUrl.startsWith('http') ? photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${photoUrl.startsWith('/') ? photoUrl : `/${photoUrl}`}`} alt="Profile" className="w-full h-full object-cover" />
@@ -428,14 +428,14 @@ const TeacherView: React.FC<{ data: any }> = ({ data }) => {
       {/* Teacher Quick Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
         {[
-          { label: 'Daily Attendance', value: 'Mark', icon: UserCheck, gradient: 'linear-gradient(135deg,#0ea5e9 0%,#2563eb 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Students Attendance', link: '/attendance-marking' },
-          { label: 'Total Students', value: data.totalStudents || 0, icon: Users, gradient: 'linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Across all classes' },
+          { label: 'Daily Attendance', value: 'Mark', icon: UserCheck, gradient: 'linear-gradient(135deg,#0ea5e9 0%,#2563eb 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Students Attendance', link: '/attendance' },
+          { label: 'Total Students', value: data.totalStudents || 0, icon: Users, gradient: 'linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Across all classes', link: '/teachers/students' },
           { label: "Today's Att.", value: `${rate}%`, icon: Clock, gradient: 'linear-gradient(135deg,#10b981 0%,#059669 100%)', glow: 'rgba(255,255,255,0.2)', sub: `${present}P · ${absent}A`, link: '/teacher-attendance' },
           { label: 'My Timetable', value: 'View', icon: School, gradient: 'linear-gradient(135deg,#f59e0b 0%,#d97706 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Weekly Schedule', link: '/timetable' },
           { label: 'Marks Entry', value: 'Enter', icon: PenTool, gradient: 'linear-gradient(135deg,#ec4899 0%,#e11d48 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Update grades', link: '/exams?tab=written-exam' },
           { label: 'Result Cards', value: 'View', icon: FileText, gradient: 'linear-gradient(135deg,#14b8a6 0%,#0f766e 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Progress Cards', link: '/exams?tab=jee-progress-card' },
           { label: 'Admit Cards', value: 'View', icon: BookMarked, gradient: 'linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Students Admit Cards', link: '/teacher/admit-cards' },
-          { label: 'Leave Apply', value: 'Apply', icon: FileText, gradient: 'linear-gradient(135deg,#06b6d4 0%,#2563eb 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Request leave', link: '/leave/request-log' },
+          { label: 'Leave Apply', value: 'Apply', icon: FileText, gradient: 'linear-gradient(135deg,#06b6d4 0%,#2563eb 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Request leave', link: '/leave' },
           { label: 'Salary Status', value: pendingSalary ? `₹${pendingSalary.netSalary}` : 'All Paid', icon: Wallet, gradient: 'linear-gradient(135deg,#f43f5e 0%,#e11d48 100%)', glow: 'rgba(255,255,255,0.2)', sub: pendingSalary ? 'Pending' : 'No dues' },
         ].map((stat, i) => <StatCard key={i} {...(stat as StatCardProps)} />)}
       </div>
