@@ -5,9 +5,11 @@ interface AdmitCardTemplateProps {
   student: any;
   exam: any;
   examPlans: any[];
+  className?: string;
+  section?: string;
 }
 
-export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, exam, examPlans }) => {
+export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, exam, examPlans, className, section }) => {
   const settings = exam?.admitCardSettings || {};
   const instructions = settings.instructions || 'Candidate must carry this Admit Card to the examination hall.\nElectronic devices including calculators and mobile phones are strictly prohibited.\nCandidate should report to the examination center 30 minutes before commencement.';
   
@@ -23,7 +25,7 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
   const logoUrl = resolveUrl(settings.logoUrl || '');
 
   return (
-    <div className="admit-card-wrapper bg-white rounded-none sm:rounded-xl">
+    <div className="admit-card-wrapper bg-white rounded-none sm:rounded-xl p-4 sm:p-6">
       <div className="w-full h-full border-[6px] border-double border-indigo-900 rounded-3xl relative flex flex-col bg-white overflow-hidden">
         
         {/* Watermark removed as requested */}
@@ -61,7 +63,7 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
             <div className="flex-1 grid grid-cols-2 gap-x-8 gap-y-6">
               <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
                 <p className="text-[10px] uppercase font-bold text-indigo-400 tracking-wider mb-1">Candidate Name</p>
-                <p className="text-xl font-black text-indigo-950 uppercase">{student?.user?.name || student?.name}</p>
+                <p className="text-xl font-black text-indigo-950 uppercase whitespace-nowrap overflow-hidden text-ellipsis">{student?.user?.name || student?.name}</p>
               </div>
               <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
                 <p className="text-[10px] uppercase font-bold text-indigo-400 tracking-wider mb-1">Roll Number</p>
@@ -69,7 +71,7 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
               </div>
               <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
                 <p className="text-[10px] uppercase font-bold text-indigo-400 tracking-wider mb-1">Class & Section</p>
-                <p className="text-lg font-bold text-indigo-900">{student?.class?.name || student?.className || ''} - {student?.class?.section || student?.section || ''}</p>
+                <p className="text-lg font-bold text-indigo-900">{className || student?.class?.name || student?.className || '-'} {section || student?.class?.section || student?.section ? `- ${section || student?.class?.section || student?.section}` : ''}</p>
               </div>
               <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
                 <p className="text-[10px] uppercase font-bold text-indigo-400 tracking-wider mb-1">Date of Birth</p>
@@ -145,8 +147,8 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
               </ul>
             </div>
             <div className="text-center">
-              <div className="w-40 mx-auto border-b-2 border-indigo-800 mb-2 h-12 flex items-end justify-center">
-                {signatureUrl && <img src={signatureUrl} alt="Signature" crossOrigin="anonymous" className="h-10 object-contain" />}
+              <div className="w-48 mx-auto border-b-2 border-indigo-800 mb-2 h-16 flex items-end justify-center">
+                {signatureUrl && <img src={signatureUrl} alt="Signature" crossOrigin="anonymous" className="h-14 object-contain" />}
               </div>
               <p className="text-[10px] uppercase font-black tracking-widest text-indigo-900 mt-1">Principal Signature</p>
             </div>

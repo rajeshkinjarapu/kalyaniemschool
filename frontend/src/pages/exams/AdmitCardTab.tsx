@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import { Printer, User, Calendar, MapPin, Phone, Mail, Globe, Settings, Upload, CheckCircle, Save, ExternalLink, Download } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-import { toPng } from 'html-to-image';
+import { toJpeg } from 'html-to-image';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import toast from 'react-hot-toast';
@@ -23,6 +23,7 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   
   const selectedExam = exams.find(e => e.id === selectedExamId);
+  const selectedClass = selectedExam?.classes?.find((c: any) => c.id === selectedClassId);
 
   const [published, setPublished] = useState(false);
   const [instructions, setInstructions] = useState('Candidate must carry this Admit Card to the examination hall.\nElectronic devices including calculators and mobile phones are strictly prohibited.\nCandidate should report to the examination center 30 minutes before commencement.');
@@ -102,13 +103,13 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         const el = templates[i] as HTMLElement;
         const student = students[i];
         
-        const imgData = await toPng(el, { cacheBust: true, pixelRatio: 2 });
+        const imgData = await toJpeg(el, { cacheBust: true, pixelRatio: 1.5, quality: 0.75 });
         
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (el.offsetHeight * pdfWidth) / el.offsetWidth;
         
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
         const fileName = `${student.user?.name || student.name || `Student_${i+1}`}.pdf`;
         zip.file(fileName, pdf.output('blob'));
       }
@@ -459,7 +460,7 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
           `}} />
           
             {students.map((student) => (
-              <AdmitCardTemplate key={student.id} student={student} exam={selectedExam} examPlans={examPlans} />
+              <AdmitCardTemplate key={student.id} student={student} exam={selectedExam} examPlans={examPlans} className={selectedClass?.name} section={selectedClass?.section} />
             ))}
           </div>
         </>
