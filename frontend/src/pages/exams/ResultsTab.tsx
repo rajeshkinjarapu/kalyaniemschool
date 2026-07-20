@@ -54,15 +54,24 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
             @media print {
               @page { margin: 8mm; size: A4 portrait; }
               body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: white; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-              table { width: 100% !important; border-collapse: collapse !important; table-layout: auto; margin-top: 10px; page-break-inside: auto; }
+              table { width: 100% !important; border-collapse: collapse !important; table-layout: auto; margin-top: 5px; page-break-inside: auto; }
               tr { page-break-inside: avoid; page-break-after: auto; }
               thead { display: table-header-group; }
               tfoot { display: table-footer-group; }
-              th, td { padding: 4px 6px !important; font-size: 9px !important; border: 1px solid #e5e7eb !important; text-align: center; white-space: nowrap !important; }
+              th, td { padding: 2px 4px !important; font-size: 9px !important; border: 1px solid #e5e7eb !important; text-align: center; white-space: nowrap !important; }
               th:nth-child(2), td:nth-child(2) { text-align: left; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
               /* Override overflow for printing so it spans multiple pages */
-              .overflow-x-auto, .overflow-hidden { overflow: visible !important; }
-              /* Keep rounded corners and gradients in print */
+              .overflow-x-auto, .overflow-hidden, #results-print-area { overflow: visible !important; height: auto !important; border: none !important; border-radius: 0 !important; shadow: none !important; }
+              /* Shrink the big header box */
+              .print-header-box { padding: 10px !important; background: linear-gradient(to right, #7c3aed, #ea580c) !important; border-radius: 0 !important; }
+              .print-title { font-size: 16px !important; margin-bottom: 4px !important; }
+              .print-subtitle span { padding: 2px 6px !important; font-size: 10px !important; border: none !important; }
+              /* Simplify rank badge to save space */
+              .rank-badge { width: auto !important; height: auto !important; background: transparent !important; color: #000 !important; box-shadow: none !important; border: none !important; display: inline !important; padding: 0 !important; font-size: 10px !important; }
+              .rank-badge svg { display: none !important; }
+              .rank-num { display: inline !important; }
+              /* Hide specific columns/elements */
+              .hide-in-print { display: none !important; }
               svg { stroke: currentColor !important; }
               .no-print { display: none !important; }
             }
@@ -139,10 +148,10 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   };
 
   const getRankBadge = (rank: number) => {
-    if (rank === 1) return <div className="bg-yellow-400 text-yellow-900 rounded-full w-8 h-8 flex items-center justify-center shadow-lg border-2 border-white"><Trophy className="w-4 h-4"/></div>;
-    if (rank === 2) return <div className="bg-gray-300 text-gray-700 rounded-full w-8 h-8 flex items-center justify-center shadow-md border-2 border-white"><Medal className="w-4 h-4"/></div>;
-    if (rank === 3) return <div className="bg-amber-600 text-amber-100 rounded-full w-8 h-8 flex items-center justify-center shadow-md border-2 border-white"><Medal className="w-4 h-4"/></div>;
-    return <div className="bg-indigo-100 text-indigo-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm border-2 border-white">{rank}</div>;
+    if (rank === 1) return <div className="bg-yellow-400 text-yellow-900 rounded-full w-8 h-8 flex items-center justify-center shadow-lg border-2 border-white rank-badge"><span className="no-print"><Trophy className="w-4 h-4"/></span><span className="hidden rank-num" style={{ display: 'none' }}>{rank}</span></div>;
+    if (rank === 2) return <div className="bg-gray-300 text-gray-700 rounded-full w-8 h-8 flex items-center justify-center shadow-md border-2 border-white rank-badge"><span className="no-print"><Medal className="w-4 h-4"/></span><span className="hidden rank-num" style={{ display: 'none' }}>{rank}</span></div>;
+    if (rank === 3) return <div className="bg-amber-600 text-amber-100 rounded-full w-8 h-8 flex items-center justify-center shadow-md border-2 border-white rank-badge"><span className="no-print"><Medal className="w-4 h-4"/></span><span className="hidden rank-num" style={{ display: 'none' }}>{rank}</span></div>;
+    return <div className="bg-indigo-100 text-indigo-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm border-2 border-white rank-badge">{rank}</div>;
   };
 
   return (
@@ -194,17 +203,17 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
       {!loading && results.length > 0 && (
         <div id="results-print-area" className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl overflow-hidden border border-indigo-50">
           {/* Colorful Header */}
-          <div className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-orange-500 p-8 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-black/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+          <div className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-orange-500 p-8 text-white relative overflow-hidden print-header-box">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 no-print" />
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-black/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2 no-print" />
             
             <div className="relative z-10 flex items-center justify-between">
               <div>
-                <h2 className="text-3xl font-black tracking-tight mb-2 flex items-center gap-3">
-                  <Award className="w-8 h-8 text-yellow-300" />
+                <h2 className="text-3xl font-black tracking-tight mb-2 flex items-center gap-3 print-title">
+                  <Award className="w-8 h-8 text-yellow-300 no-print" />
                   Examination Results
                 </h2>
-                <div className="flex gap-4 text-white/90 font-medium">
+                <div className="flex gap-4 text-white/90 font-medium print-subtitle">
                   <span className="bg-white/20 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10">{selectedExam?.name}</span>
                   <span className="bg-white/20 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10">{results[0]?.className}</span>
                 </div>
@@ -225,7 +234,7 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                     ))}
                     <th className="p-4 font-black text-indigo-900 text-xs uppercase tracking-wider text-center w-20">Total</th>
                     <th className="p-4 font-black text-indigo-900 text-xs uppercase tracking-wider text-center w-24">Percentage</th>
-                    <th className="p-4 font-black text-indigo-900 text-xs uppercase tracking-wider text-center rounded-tr-xl w-20">Grade</th>
+                    <th className="p-4 font-black text-indigo-900 text-xs uppercase tracking-wider text-center rounded-tr-xl w-20 hide-in-print">Grade</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -255,7 +264,7 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                           {student.percentage}%
                         </div>
                       </td>
-                      <td className="p-4 text-center">
+                      <td className="p-4 text-center hide-in-print">
                         <span className="inline-block px-3 py-1 rounded-full font-black text-sm text-fuchsia-700 bg-fuchsia-50 border border-fuchsia-200">
                           {student.grade || '-'}
                         </span>
