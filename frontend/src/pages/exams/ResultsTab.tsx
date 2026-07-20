@@ -84,7 +84,8 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     setIsDownloading(true);
     const toastId = toast.loading('Generating Professional PDF...');
     try {
-      const doc = new jsPDF('p', 'mm', 'a4');
+      // Use landscape to prevent text wrapping for wide tables
+      const doc = new jsPDF('l', 'mm', 'a4');
       const title = `Examination Results - ${selectedExam?.name}`;
       const subtitle = `Class: ${results[0]?.className}`;
       
@@ -119,12 +120,12 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         head: head,
         body: body,
         theme: 'grid',
-        headStyles: { fillColor: [139, 92, 246], textColor: 255, fontStyle: 'bold', halign: 'center' }, // Purple color to match UI
+        headStyles: { fillColor: [139, 92, 246], textColor: 255, fontStyle: 'bold', halign: 'center', minCellHeight: 10 }, 
         bodyStyles: { halign: 'center', textColor: 50 },
         columnStyles: {
           1: { halign: 'left', fontStyle: 'bold' }
         },
-        styles: { fontSize: 9, cellPadding: 4 }
+        styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak', minCellWidth: 15 }
       });
       
       doc.save(`Results_${selectedExam?.name || 'Exam'}_Class_${selectedClassId}.pdf`);
