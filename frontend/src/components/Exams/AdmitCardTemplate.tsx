@@ -25,130 +25,152 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
   const logoUrl = resolveUrl(settings.logoUrl || '');
 
   return (
-    <div className="admit-card-wrapper bg-white p-4 sm:p-6" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <div className="w-full h-full border-4 border-indigo-900 rounded-2xl relative flex flex-col bg-white overflow-hidden shadow-sm">
+    <div className="admit-card-wrapper bg-white p-4 sm:p-8" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <div className="w-full h-full border border-gray-200 rounded-3xl relative flex flex-col bg-white overflow-hidden shadow-sm">
         
-        {/* Header - Colorful & Professional */}
-        <div className="bg-gradient-to-r from-indigo-900 via-blue-900 to-indigo-900 p-4 sm:p-6 flex items-center justify-between border-b-4 border-amber-400">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-full flex items-center justify-center shrink-0 border-2 border-amber-400 shadow-md p-1">
+        {/* Top Accent Bar */}
+        <div className="h-3 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+
+        {/* Header - Modern & Clean */}
+        <div className="p-6 sm:p-8 flex items-center justify-between bg-slate-50 border-b border-gray-200">
+          <div className="flex-1">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-tight text-slate-800 mb-1">
+              SRI VENKATESWARA JY SCHOOL
+            </h1>
+            <p className="text-sm font-bold uppercase text-blue-600 mb-2 tracking-wide">
+              (IIT-JEE/NEET Foundation – Olympiads)
+            </p>
+            <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+              <MapPin className="w-3.5 h-3.5" />
+              Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta
+            </div>
+          </div>
+          <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white rounded-2xl flex items-center justify-center shrink-0 border shadow-sm p-2 ml-4">
             {logoUrl ? (
               <img src={logoUrl} alt="Logo" crossOrigin="anonymous" className="w-full h-full object-contain" />
             ) : (
-              <span className="text-xl font-black text-indigo-900">LOGO</span>
+              <span className="text-xl font-black text-slate-300">LOGO</span>
             )}
           </div>
-          <div className="flex-1 text-center px-4">
-            <h1 className="text-lg sm:text-2xl lg:text-3xl font-black uppercase tracking-wide text-white mb-1 whitespace-nowrap drop-shadow-md">
-              SRI VENKATESWARA JY SCHOOL
-            </h1>
-            <p className="text-xs sm:text-sm font-bold uppercase text-amber-300 mb-1 tracking-wider">
-              (IIT-JEE/NEET Foundation – Olympiads)
-            </p>
-            <p className="text-xs font-medium text-blue-100">
-              Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta
-            </p>
-          </div>
-          <div className="w-20 sm:w-24 shrink-0"></div> {/* Spacer for centering */}
         </div>
 
-        {/* Title */}
-        <div className="text-center py-4 bg-indigo-50 border-b border-indigo-100 shadow-sm relative z-10">
-          <h2 className="text-2xl font-black uppercase tracking-[0.15em] text-indigo-900 drop-shadow-sm">
-            Admit Card
-          </h2>
-          <div className="inline-block mt-1 px-6 py-1 bg-amber-400 text-indigo-950 font-bold text-xs rounded-full uppercase tracking-widest shadow-sm">
-            {settings.examTitleOverride || `${exam?.name} (2026-2027)`}
+        {/* Title Badge */}
+        <div className="flex justify-center -mt-5 relative z-10">
+          <div className="bg-white border border-gray-200 shadow-md rounded-full px-8 py-2 flex flex-col items-center">
+            <h2 className="text-xl font-black uppercase tracking-widest text-indigo-600">
+              Admit Card
+            </h2>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
+              {settings.examTitleOverride || `${exam?.name} (2026-2027)`}
+            </span>
           </div>
         </div>
 
         {/* Main Body */}
-        <div className="flex-1 flex flex-col gap-6 p-6">
-          <div className="flex gap-6 items-start">
-            {/* Student Info Table */}
-            <div className="flex-1 border-2 border-indigo-100 rounded-xl overflow-hidden shadow-sm">
-              <table className="w-full text-sm text-left border-collapse">
-                <tbody>
-                  <tr className="border-b border-indigo-100">
-                    <td className="p-3 sm:p-4 font-bold bg-indigo-50 border-r border-indigo-100 w-1/3 text-indigo-900 text-xs uppercase tracking-wider">Candidate Name</td>
-                    <td className="p-3 sm:p-4 font-black text-gray-800 uppercase text-base" colSpan={3}>
-                      {student?.user?.name || student?.name}
-                    </td>
-                  </tr>
-                  <tr className="border-b border-indigo-100">
-                    <td className="p-3 sm:p-4 font-bold bg-indigo-50 border-r border-indigo-100 text-indigo-900 text-xs uppercase tracking-wider">Roll Number</td>
-                    <td className="p-3 sm:p-4 font-bold text-gray-800 border-r border-indigo-100 w-1/4 text-base">
-                      {student?.rollNo || 'N/A'}
-                    </td>
-                    <td className="p-3 sm:p-4 font-bold bg-indigo-50 border-r border-indigo-100 text-indigo-900 text-xs uppercase tracking-wider">Class & Section</td>
-                    <td className="p-3 sm:p-4 font-bold text-gray-800 text-base">
-                      {className || student?.class?.name || student?.className || '-'} {section || student?.class?.section || student?.section ? `- ${section || student?.class?.section || student?.section}` : ''}
-                    </td>
-                  </tr>
-                  <tr className="border-b border-indigo-100">
-                    <td className="p-3 sm:p-4 font-bold bg-indigo-50 border-r border-indigo-100 text-indigo-900 text-xs uppercase tracking-wider">Date of Birth</td>
-                    <td className="p-3 sm:p-4 font-bold text-gray-800 border-r border-indigo-100">
-                      12/05/2010
-                    </td>
-                    <td className="p-3 sm:p-4 font-bold bg-indigo-50 border-r border-indigo-100 text-indigo-900 text-xs uppercase tracking-wider">Gender</td>
-                    <td className="p-3 sm:p-4 font-bold text-gray-800">
-                      {student?.gender || 'Male'}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 sm:p-4 font-bold bg-indigo-50 border-r border-indigo-100 text-indigo-900 text-xs uppercase tracking-wider">Exam Center</td>
-                    <td className="p-3 sm:p-4 font-bold text-gray-800" colSpan={3}>
-                      {settings.examCenterOverride || 'JY School Main Campus, Hall A'}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+        <div className="flex-1 flex flex-col gap-8 p-6 sm:p-8 mt-2">
+          
+          <div className="flex flex-col sm:flex-row gap-8 items-start">
+            
+            {/* Student Info - One by One Vertical List */}
+            <div className="flex-1 w-full bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+              <div className="bg-slate-50 px-5 py-3 border-b border-gray-200">
+                <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                  <User className="w-4 h-4 text-blue-500" /> Candidate Details
+                </h3>
+              </div>
+              <div className="divide-y divide-gray-100 text-sm">
+                <div className="grid grid-cols-3 hover:bg-slate-50/50 transition-colors">
+                  <div className="p-3 px-5 font-bold text-slate-500 uppercase text-[11px] tracking-wider flex items-center">Candidate Name</div>
+                  <div className="col-span-2 p-3 px-5 font-black text-slate-800 text-base uppercase">
+                    {student?.user?.name || student?.name}
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 hover:bg-slate-50/50 transition-colors bg-slate-50/30">
+                  <div className="p-3 px-5 font-bold text-slate-500 uppercase text-[11px] tracking-wider flex items-center">Roll Number</div>
+                  <div className="col-span-2 p-3 px-5 font-bold text-slate-800 text-base">
+                    {student?.rollNo || 'N/A'}
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 hover:bg-slate-50/50 transition-colors">
+                  <div className="p-3 px-5 font-bold text-slate-500 uppercase text-[11px] tracking-wider flex items-center">Class</div>
+                  <div className="col-span-2 p-3 px-5 font-bold text-slate-800">
+                    {className || student?.class?.name || student?.className || '-'}
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 hover:bg-slate-50/50 transition-colors bg-slate-50/30">
+                  <div className="p-3 px-5 font-bold text-slate-500 uppercase text-[11px] tracking-wider flex items-center">Section</div>
+                  <div className="col-span-2 p-3 px-5 font-bold text-slate-800">
+                    {section || student?.class?.section || student?.section || '-'}
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 hover:bg-slate-50/50 transition-colors">
+                  <div className="p-3 px-5 font-bold text-slate-500 uppercase text-[11px] tracking-wider flex items-center">Gender</div>
+                  <div className="col-span-2 p-3 px-5 font-bold text-slate-800">
+                    {student?.gender || 'Male'}
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 hover:bg-slate-50/50 transition-colors bg-slate-50/30">
+                  <div className="p-3 px-5 font-bold text-slate-500 uppercase text-[11px] tracking-wider flex items-center">Date of Birth</div>
+                  <div className="col-span-2 p-3 px-5 font-bold text-slate-800">
+                    12/05/2010
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 hover:bg-slate-50/50 transition-colors">
+                  <div className="p-3 px-5 font-bold text-slate-500 uppercase text-[11px] tracking-wider flex items-center">Exam Center</div>
+                  <div className="col-span-2 p-3 px-5 font-bold text-indigo-600">
+                    {settings.examCenterOverride || 'JY School Main Campus, Hall A'}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Photo Area */}
-            <div className="w-[120px] h-[150px] border-2 border-indigo-200 rounded-xl flex flex-col items-center justify-center text-indigo-400 shrink-0 relative p-1.5 bg-indigo-50/50 shadow-inner">
-              {student?.user?.photoUrl ? (
-                <img src={student.user.photoUrl} alt="Student" crossOrigin="anonymous" className="w-full h-full object-cover rounded-lg" />
-              ) : (
-                <div className="w-full h-full border border-dashed border-indigo-300 rounded-lg flex flex-col items-center justify-center text-center p-2 bg-white">
-                  <User className="w-8 h-8 mb-2 opacity-40 text-indigo-500" />
-                  <span className="text-[9px] uppercase font-bold leading-tight text-indigo-600">Affix<br/>Passport<br/>Size Photo</span>
-                </div>
-              )}
+            <div className="w-[140px] shrink-0 flex flex-col gap-3">
+              <div className="w-full aspect-[3/4] border-2 border-gray-200 rounded-2xl flex flex-col items-center justify-center text-slate-400 relative p-2 bg-slate-50 shadow-sm overflow-hidden">
+                {student?.user?.photoUrl ? (
+                  <img src={student.user.photoUrl} alt="Student" crossOrigin="anonymous" className="w-full h-full object-cover rounded-xl" />
+                ) : (
+                  <div className="w-full h-full border border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-center p-2 bg-white">
+                    <User className="w-10 h-10 mb-2 opacity-30 text-slate-400" />
+                    <span className="text-[10px] uppercase font-bold leading-tight text-slate-400">Affix<br/>Passport<br/>Photo</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Exam Schedule */}
           <div>
-            <h4 className="text-sm font-bold text-indigo-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <span className="bg-indigo-600 p-1.5 rounded-md text-white shadow-sm">
-                <Calendar className="w-4 h-4" /> 
-              </span>
-              Examination Schedule
-            </h4>
-            <div className="border border-indigo-200 rounded-xl overflow-hidden shadow-sm">
+            <div className="flex items-center gap-2 mb-3 px-2">
+              <Calendar className="w-5 h-5 text-indigo-500" />
+              <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider">
+                Examination Schedule
+              </h4>
+            </div>
+            <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
               <table className="w-full text-sm text-left border-collapse">
-                <thead className="bg-indigo-600 text-white">
+                <thead className="bg-slate-50 text-slate-500 border-b border-gray-200">
                   <tr>
-                    <th className="py-2.5 px-4 font-bold uppercase text-[11px] tracking-wider border-r border-indigo-500 text-center w-12">S.No</th>
-                    <th className="py-2.5 px-4 font-bold uppercase text-[11px] tracking-wider border-r border-indigo-500">Date</th>
-                    <th className="py-2.5 px-4 font-bold uppercase text-[11px] tracking-wider border-r border-indigo-500">Subject</th>
-                    <th className="py-2.5 px-4 font-bold uppercase text-[11px] tracking-wider border-r border-indigo-500">Time</th>
-                    <th className="py-2.5 px-4 font-bold uppercase text-[11px] tracking-wider">Invigilator Sign</th>
+                    <th className="py-3 px-5 font-black uppercase text-[11px] tracking-widest text-center w-14">S.No</th>
+                    <th className="py-3 px-5 font-black uppercase text-[11px] tracking-widest">Date</th>
+                    <th className="py-3 px-5 font-black uppercase text-[11px] tracking-widest">Subject</th>
+                    <th className="py-3 px-5 font-black uppercase text-[11px] tracking-widest">Time</th>
+                    <th className="py-3 px-5 font-black uppercase text-[11px] tracking-widest text-center">Invigilator Sign</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-indigo-100 bg-white">
+                <tbody className="divide-y divide-gray-100 bg-white">
                   {(settings.schedule?.length > 0 ? settings.schedule : examPlans)?.map((plan: any, i: number) => (
-                    <tr key={plan.id || i} className="hover:bg-indigo-50/50 transition-colors">
-                      <td className="py-2.5 px-4 font-bold text-center border-r border-indigo-100 text-gray-600">{i + 1}</td>
-                      <td className="py-2.5 px-4 font-bold border-r border-indigo-100 text-gray-800">{plan.date || plan.examDate ? new Date(plan.date || plan.examDate).toLocaleDateString('en-GB') : '-'}</td>
-                      <td className="py-2.5 px-4 font-black border-r border-indigo-100 text-indigo-950">{plan.subject?.name || plan.subject}</td>
-                      <td className="py-2.5 px-4 font-bold border-r border-indigo-100 text-gray-700">{plan.timing || `${plan.startTime || ''} ${plan.startTime && plan.endTime ? '-' : ''} ${plan.endTime || ''}`}</td>
-                      <td className="py-2.5 px-4"></td>
+                    <tr key={plan.id || i} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="py-3 px-5 font-bold text-center text-slate-400">{i + 1}</td>
+                      <td className="py-3 px-5 font-bold text-slate-700">{plan.date || plan.examDate ? new Date(plan.date || plan.examDate).toLocaleDateString('en-GB') : '-'}</td>
+                      <td className="py-3 px-5 font-black text-slate-900">{plan.subject?.name || plan.subject}</td>
+                      <td className="py-3 px-5 font-bold text-indigo-600">{plan.timing || `${plan.startTime || ''} ${plan.startTime && plan.endTime ? '-' : ''} ${plan.endTime || ''}`}</td>
+                      <td className="py-3 px-5 text-center text-gray-300">...............</td>
                     </tr>
                   ))}
                   {(!settings.schedule?.length && (!examPlans || examPlans.length === 0)) && (
                     <tr>
-                      <td colSpan={5} className="py-6 text-center text-gray-400 font-medium bg-gray-50">No schedule mapped for this class.</td>
+                      <td colSpan={5} className="py-8 text-center text-slate-400 font-medium bg-slate-50/50">No schedule mapped for this class.</td>
                     </tr>
                   )}
                 </tbody>
@@ -158,22 +180,22 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
         </div>
 
         {/* Footer Notes & Signatures */}
-        <div className="mt-6 mx-6 mb-6 p-6 bg-indigo-50/50 rounded-xl border border-indigo-100 flex flex-col sm:flex-row justify-between gap-8">
+        <div className="mt-4 mx-6 mb-6 pt-6 border-t border-gray-200 flex flex-col sm:flex-row justify-between gap-8 px-2">
           <div className="flex-1">
-            <h5 className="text-[11px] font-black uppercase tracking-wider text-indigo-900 mb-3 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Important Instructions
+            <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-800 mb-3 flex items-center gap-2">
+              <span className="bg-red-500 w-1.5 h-4 rounded-full"></span> Important Instructions
             </h5>
-            <ul className="text-[10.5px] text-gray-700 font-medium space-y-1.5 list-decimal pl-4 pr-4 text-justify leading-relaxed">
+            <ul className="text-[10.5px] text-slate-600 font-medium space-y-1.5 list-decimal pl-4 pr-4 text-justify leading-relaxed">
               {instructions.split('\n').filter(Boolean).map((line: string, idx: number) => (
                 <li key={idx} className="pl-1">{line}</li>
               ))}
             </ul>
           </div>
           <div className="text-center w-56 shrink-0 flex flex-col items-center justify-end">
-            <div className="w-full h-24 flex items-end justify-center mb-2 border-b-2 border-indigo-200 border-dashed pb-1">
-              {signatureUrl && <img src={signatureUrl} alt="Signature" crossOrigin="anonymous" className="h-20 object-contain" />}
+            <div className="w-full h-20 flex items-end justify-center mb-2 border-b border-gray-300 border-dashed pb-1">
+              {signatureUrl && <img src={signatureUrl} alt="Signature" crossOrigin="anonymous" className="h-16 object-contain" />}
             </div>
-            <p className="text-[11px] uppercase font-black tracking-widest text-indigo-900">Principal Signature</p>
+            <p className="text-[11px] uppercase font-black tracking-widest text-slate-800">Principal Signature</p>
           </div>
         </div>
       </div>
