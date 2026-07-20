@@ -14,6 +14,7 @@ import * as XLSX from 'xlsx';
 import { SlipTestsTab } from './SlipTestsTab';
 import { AdmitCardTab } from './AdmitCardTab';
 import { ProgressCardTab } from './ProgressCardTab';
+import { ResultsTab } from './ResultsTab';
 import { JEEProgressCardTab } from './JEEProgressCardTab';
 
 export const ExamListPage: React.FC = () => {
@@ -1569,6 +1570,11 @@ export const ExamListPage: React.FC = () => {
       {/* ══ TAB 10: SLIP TESTS ══ */}
       {activeTab === 'slip-tests' && (
         <SlipTestsTab />
+      )}
+
+      {/* ══ TAB 11: RESULTS ══ */}
+      {activeTab === 'results' && (
+        <ResultsTab exams={exams} />
       )}
 
       {/* ══ TAB 9: ONLINE EXAMS LIST ══ */}
