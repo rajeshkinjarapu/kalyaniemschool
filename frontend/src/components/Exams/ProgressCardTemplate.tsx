@@ -97,7 +97,10 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
                     <td className="border border-gray-400 bg-gray-100 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-700">Exam Name</td>
                     <td className="border border-gray-400 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-900">{exam?.name}</td>
                   </tr>
-
+                  <tr>
+                    <td className="border border-gray-400 bg-gray-100 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-700">Contact Number</td>
+                    <td className="border border-gray-400 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-900">{data.mobile || '-'}</td>
+                  </tr>
                   <tr>
                     <td className="border border-gray-400 bg-gray-100 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-700">Class Rank</td>
                     <td className="border border-gray-400 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-[#1e2a5c]">#{data.rank || '-'}</td>
