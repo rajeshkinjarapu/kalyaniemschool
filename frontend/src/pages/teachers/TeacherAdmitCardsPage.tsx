@@ -18,6 +18,7 @@ export const TeacherAdmitCardsPage: React.FC = () => {
   useEffect(() => {
     const fetchExams = async () => {
       try {
+        const res = await api.get('/api/exams');
         const examsList = res.data?.data || res.data || [];
         const publishedExams = examsList.filter((e: any) => e.admitCardPublished);
         setExams(publishedExams);
