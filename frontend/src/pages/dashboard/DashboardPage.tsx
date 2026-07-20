@@ -94,7 +94,7 @@ const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }>
           <div className="w-10 h-10 md:w-16 md:h-16 rounded-[1rem] md:rounded-[1.2rem] flex items-center justify-center text-xl md:text-3xl shrink-0 shadow-2xl relative overflow-hidden group"
             style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.15)' }}>
             {photoUrl ? (
-              <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
+              <img src={photoUrl.startsWith('http') ? photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${photoUrl.startsWith('/') ? photoUrl : `/${photoUrl}`}`} alt="Profile" className="w-full h-full object-cover" />
             ) : (
               <>
                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
@@ -120,15 +120,22 @@ const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }>
             <CalendarDays className="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-300" />
             <span className="text-[10px] md:text-xs font-bold text-white tracking-wide">{today}</span>
           </div>
-          {role !== 'TEACHER' && (
-            <div className="flex items-center gap-1.5 md:gap-2 px-3 py-2 md:px-4 md:py-3 rounded-[0.8rem] md:rounded-[1rem] bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.15)] justify-center sm:justify-start">
-              <div className="relative flex h-2 w-2 md:h-2.5 md:w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5 bg-emerald-500"></span>
-              </div>
-              <span className="text-[10px] md:text-xs font-black text-emerald-300 tracking-wider uppercase">System Active</span>
+          <div className="flex items-center gap-1.5 md:gap-3 px-2 py-1.5 md:px-3 md:py-2 rounded-[0.8rem] md:rounded-[1rem] bg-white/5 backdrop-blur-md border border-white/10 shadow-inner justify-center sm:justify-start">
+            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full overflow-hidden border-2 border-emerald-400/50 flex-shrink-0 bg-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+              {photoUrl ? (
+                <img src={photoUrl.startsWith('http') ? photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${photoUrl.startsWith('/') ? photoUrl : `/${photoUrl}`}`} alt={name} className="w-full h-full object-cover" />
+              ) : (
+                name.charAt(0)
+              )}
             </div>
-          )}
+            <div className="flex items-center gap-1.5">
+              <div className="relative flex h-1.5 w-1.5 md:h-2 md:w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 md:h-2 md:w-2 bg-emerald-500"></span>
+              </div>
+              <span className="text-[9px] md:text-[10px] font-black text-emerald-300 tracking-wider uppercase hidden sm:block">Active</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

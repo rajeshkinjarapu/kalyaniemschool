@@ -13,6 +13,7 @@ import { useAuth } from '../../hooks/useAuth';
 export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   const { user } = useAuth();
   const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+  const isTeacher = user?.role === 'TEACHER';
   
   const [selectedExamId, setSelectedExamId] = useState('');
   const [selectedClassId, setSelectedClassId] = useState('');
@@ -396,41 +397,48 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
       {!loading && studentsData.length > 0 && (
         <>
           {/* Table View of Students for Progress Cards */}
-          <div className="card print:hidden overflow-hidden">
+          <div className="card print:hidden overflow-hidden w-full">
             <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
               <div>
                 <h3 className="font-bold text-gray-800">Class Progress Cards</h3>
                 <p className="text-xs text-gray-500">Generated {studentsData.length} cards based on exam results.</p>
               </div>
             </div>
-            <table className="w-full text-sm text-left">
-              <thead className="bg-white border-b border-gray-100 text-gray-500 font-bold uppercase text-xs">
-                <tr>
-                  <th className="py-3 px-6 w-16">Rank</th>
-                  <th className="py-3 px-6">Student Name</th>
-                  <th className="py-3 px-6">Roll Number</th>
-                  <th className="py-3 px-6 text-center">Score</th>
-                  <th className="py-3 px-6 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {studentsData.map((data, idx) => (
-                  <tr key={data.studentId} className="hover:bg-gray-50 transition-colors bg-white">
-                    <td className="py-3 px-6">
-                      <span className="font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">#{data.rank}</span>
-                    </td>
-                    <td className="py-3 px-6 font-bold text-gray-900">{data.studentName}</td>
-                    <td className="py-3 px-6 text-gray-600 font-medium">{data.rollNo || '-'}</td>
-                    <td className="py-3 px-6 text-center font-bold text-emerald-600">{data.total}</td>
-                    <td className="py-3 px-6 text-right">
-                      <button onClick={() => handleDownloadSingle(data.studentId, data.studentName, idx)} className="btn-secondary text-xs flex items-center gap-1 ml-auto hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-                        <FileText className="w-3.5 h-3.5" /> Download PDF
-                      </button>
-                    </td>
+            <div className="overflow-x-auto w-full">
+              <table className="w-full text-sm text-left whitespace-nowrap">
+                <thead className="bg-gray-50 text-gray-600 font-bold uppercase text-xs">
+                  <tr>
+                    <th className="py-3 px-4 w-16">Rank</th>
+                    <th className="py-3 px-4">Student Name</th>
+                    {!isTeacher && <th className="py-3 px-4">Roll Number</th>}
+                    <th className="py-3 px-4 text-center">Score</th>
+                    <th className="py-3 px-4 text-right">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {studentsData.map((data, idx) => (
+                    <tr key={data.studentId} className="hover:bg-gray-50 transition-colors bg-white">
+                      <td className="py-3 px-4">
+                        <span className="font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">#{data.rank}</span>
+                      </td>
+                      <td className="py-3 px-4 font-bold text-gray-900 flex items-center gap-2 max-w-[150px] sm:max-w-[200px] overflow-hidden text-ellipsis">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold shrink-0">
+                          {data.studentName?.[0] || 'S'}
+                        </div>
+                        <span className="truncate">{data.studentName}</span>
+                      </td>
+                      {!isTeacher && <td className="py-3 px-4 text-gray-600 font-medium">{data.rollNo || '-'}</td>}
+                      <td className="py-3 px-4 text-center font-bold text-emerald-600">{data.total}</td>
+                      <td className="py-3 px-4 text-right">
+                        <button onClick={() => handleDownloadSingle(data.studentId, data.studentName, idx)} className="btn-secondary text-xs flex items-center gap-1 ml-auto hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                          <Download className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Download</span> PDF
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Hidden Container for Printing & PDF Generation */}

@@ -14,6 +14,7 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+  const isTeacher = user?.role === 'TEACHER';
   const [selectedExamId, setSelectedExamId] = useState('');
   const [selectedClassId, setSelectedClassId] = useState('');
   const [students, setStudents] = useState<any[]>([]);
@@ -447,36 +448,38 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
 
       {!loading && students.length > 0 && (
         <>
-          <div className="card print:hidden overflow-hidden w-full overflow-x-auto">
-            <table className="w-full text-sm text-left whitespace-nowrap">
-              <thead className="bg-gray-50 text-gray-600 font-bold uppercase text-xs">
-                <tr>
-                  <th className="py-3 px-4">S.No</th>
-                  <th className="py-3 px-4">Student Name</th>
-                  <th className="py-3 px-4">Roll Number</th>
-                  <th className="py-3 px-4 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {students.map((student, idx) => (
-                  <tr key={student.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-4 font-bold text-gray-500">{idx + 1}</td>
-                    <td className="py-3 px-4 font-bold text-gray-900 flex items-center gap-2 max-w-[200px] overflow-hidden text-ellipsis">
-                      <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold shrink-0">
-                        {student.user?.name?.[0] || 'S'}
-                      </div>
-                      <span className="truncate">{student.user?.name || student.name}</span>
-                    </td>
-                    <td className="py-3 px-4 text-gray-600 font-medium">{student.rollNo || '-'}</td>
-                    <td className="py-3 px-4 text-right">
-                      <button onClick={() => handleDownloadSingle(student.user?.name || student.name, idx)} className="btn-secondary text-xs flex items-center gap-1 ml-auto">
-                        <Download className="w-3.5 h-3.5" /> Download PDF
-                      </button>
-                    </td>
+          <div className="card print:hidden overflow-hidden w-full">
+            <div className="overflow-x-auto w-full">
+              <table className="w-full text-sm text-left whitespace-nowrap">
+                <thead className="bg-gray-50 text-gray-600 font-bold uppercase text-xs">
+                  <tr>
+                    <th className="py-3 px-4">S.No</th>
+                    <th className="py-3 px-4">Student Name</th>
+                    {!isTeacher && <th className="py-3 px-4">Roll Number</th>}
+                    <th className="py-3 px-4 text-right">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {students.map((student, idx) => (
+                    <tr key={student.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="py-3 px-4 font-bold text-gray-500">{idx + 1}</td>
+                      <td className="py-3 px-4 font-bold text-gray-900 flex items-center gap-2 max-w-[150px] sm:max-w-[200px] overflow-hidden text-ellipsis">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold shrink-0">
+                          {student.user?.name?.[0] || 'S'}
+                        </div>
+                        <span className="truncate">{student.user?.name || student.name}</span>
+                      </td>
+                      {!isTeacher && <td className="py-3 px-4 text-gray-600 font-medium">{student.rollNo || '-'}</td>}
+                      <td className="py-3 px-4 text-right">
+                        <button onClick={() => handleDownloadSingle(student.user?.name || student.name, idx)} className="btn-secondary text-xs flex items-center gap-1 ml-auto">
+                          <Download className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Download</span> PDF
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <div id="admit-cards-print-container" className="hidden print:block print-area space-y-12 bg-gray-50 dark:bg-gray-900 p-4 print:p-0 rounded-xl flex flex-col items-center">
