@@ -42,7 +42,7 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
-    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]')).map(el => el.outerHTML).join('\\n');
+    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]')).map(el => el.outerHTML).join('\n');
     
     printWindow.document.write(`
       <!DOCTYPE html>
@@ -52,14 +52,14 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
           ${styles}
           <style>
             @media print {
-              @page { margin: 10mm; size: auto; }
+              @page { margin: 8mm; size: A4 portrait; }
               body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: white; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-              table { width: 100% !important; border-collapse: collapse !important; table-layout: auto; margin-top: 20px; page-break-inside: auto; }
+              table { width: 100% !important; border-collapse: collapse !important; table-layout: auto; margin-top: 10px; page-break-inside: auto; }
               tr { page-break-inside: avoid; page-break-after: auto; }
               thead { display: table-header-group; }
               tfoot { display: table-footer-group; }
-              th, td { padding: 10px 8px !important; font-size: 10pt !important; border: 1px solid #e5e7eb !important; text-align: center; }
-              th:nth-child(2), td:nth-child(2) { text-align: left; }
+              th, td { padding: 4px 6px !important; font-size: 9px !important; border: 1px solid #e5e7eb !important; text-align: center; white-space: nowrap !important; }
+              th:nth-child(2), td:nth-child(2) { text-align: left; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
               /* Override overflow for printing so it spans multiple pages */
               .overflow-x-auto, .overflow-hidden { overflow: visible !important; }
               /* Keep rounded corners and gradients in print */
