@@ -52,20 +52,21 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
           ${styles}
           <style>
             @media print {
-              @page { margin: 8mm; size: A4 portrait; }
-              body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: white; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-              table { width: 100% !important; border-collapse: collapse !important; table-layout: auto; margin-top: 5px; page-break-inside: auto; }
+              @page { margin: 10mm; size: A4 portrait; }
+              html, body { height: auto !important; overflow: visible !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: white; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+              table { width: 100% !important; border-collapse: collapse !important; table-layout: auto; margin-top: 10px; page-break-inside: auto; }
               tr { page-break-inside: avoid; page-break-after: auto; }
               thead { display: table-header-group; }
               tfoot { display: table-footer-group; }
-              th, td { padding: 2px 4px !important; font-size: 9px !important; border: 1px solid #e5e7eb !important; text-align: center; white-space: nowrap !important; }
-              th:nth-child(2), td:nth-child(2) { text-align: left; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
+              th, td { padding: 4px 6px !important; font-size: 11px !important; border: 1px solid #d1d5db !important; text-align: center; white-space: nowrap !important; color: #000 !important; }
+              th { font-size: 12px !important; font-weight: 800 !important; background-color: #f3f4f6 !important; }
+              th:nth-child(2), td:nth-child(2) { text-align: left; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
               /* Override overflow for printing so it spans multiple pages */
-              .overflow-x-auto, .overflow-hidden, #results-print-area { overflow: visible !important; height: auto !important; border: none !important; border-radius: 0 !important; shadow: none !important; }
+              .overflow-x-auto, .overflow-hidden, #results-print-area { overflow: visible !important; height: auto !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; display: block !important; }
               /* Shrink the big header box */
-              .print-header-box { padding: 10px !important; background: linear-gradient(to right, #7c3aed, #ea580c) !important; border-radius: 0 !important; }
-              .print-title { font-size: 16px !important; margin-bottom: 4px !important; }
-              .print-subtitle span { padding: 2px 6px !important; font-size: 10px !important; border: none !important; }
+              .print-header-box { padding: 10px !important; background: linear-gradient(to right, #7c3aed, #ea580c) !important; border-radius: 0 !important; margin-bottom: 5px !important; }
+              .print-title { font-size: 18px !important; margin-bottom: 4px !important; color: white !important; }
+              .print-subtitle span { padding: 2px 6px !important; font-size: 12px !important; border: none !important; color: white !important; }
               /* Simplify rank badge to save space */
               .rank-badge { width: auto !important; height: auto !important; background: transparent !important; color: #000 !important; box-shadow: none !important; border: none !important; display: inline !important; padding: 0 !important; font-size: 10px !important; }
               .rank-badge svg { display: none !important; }
