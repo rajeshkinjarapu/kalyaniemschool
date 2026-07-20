@@ -84,8 +84,8 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     setIsDownloading(true);
     const toastId = toast.loading('Generating Professional PDF...');
     try {
-      // Use landscape to prevent text wrapping for wide tables
-      const doc = new jsPDF('l', 'mm', 'a4');
+      // Use portrait as requested by user
+      const doc = new jsPDF('p', 'mm', 'a4');
       const title = `Examination Results - ${selectedExam?.name}`;
       const subtitle = `Class: ${results[0]?.className}`;
       
@@ -120,12 +120,12 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         head: head,
         body: body,
         theme: 'grid',
-        headStyles: { fillColor: [139, 92, 246], textColor: 255, fontStyle: 'bold', halign: 'center', minCellHeight: 10 }, 
+        headStyles: { fillColor: [139, 92, 246], textColor: 255, fontStyle: 'bold', halign: 'center', minCellHeight: 8 }, 
         bodyStyles: { halign: 'center', textColor: 50 },
         columnStyles: {
-          1: { halign: 'left', fontStyle: 'bold' }
+          1: { halign: 'left', fontStyle: 'bold', cellWidth: 45 } // Give name enough width
         },
-        styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak', minCellWidth: 15 }
+        styles: { fontSize: 7, cellPadding: 1.5, overflow: 'hidden' } // Tiny font and hidden overflow to force fit in portrait
       });
       
       doc.save(`Results_${selectedExam?.name || 'Exam'}_Class_${selectedClassId}.pdf`);
