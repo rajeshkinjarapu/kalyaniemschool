@@ -39,18 +39,18 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
         {/* Formal Colorful Header */}
         <div className="border-b-[4px] border-amber-400 pb-4 pt-6 px-4 sm:px-10 relative flex-shrink-0 flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-4 sm:gap-6 bg-gradient-to-r from-indigo-900 via-indigo-800 to-indigo-900 text-white">
           {/* Logo */}
-          <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 flex items-center justify-center bg-white rounded-xl border-2 border-amber-400 p-2">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 flex items-center justify-center">
             {logoUrl ? (
-              <img src={logoUrl} alt="Logo" className="max-w-full max-h-full object-contain" />
+              <img src={logoUrl} alt="Logo" className="max-w-full max-h-full object-contain" style={{ filter: 'drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.9))' }} />
             ) : (
-              <div className="text-[#1e2a5c] font-bold text-xl text-center leading-none flex items-center justify-center">
+              <div className="text-white font-bold text-xl text-center leading-none flex items-center justify-center">
                 LOGO
               </div>
             )}
           </div>
           
-          <div className="flex-grow text-center">
-            <h1 className="text-[20px] sm:text-[28px] md:text-[32px] font-black tracking-wide text-white mb-1 drop-shadow-md leading-tight" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
+          <div className="flex-grow text-center min-w-0">
+            <h1 className="text-[18px] sm:text-[24px] md:text-[26px] lg:text-[28px] font-black tracking-wide text-white mb-1 drop-shadow-md leading-tight whitespace-nowrap overflow-hidden text-ellipsis" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
               SRI VENKATESWARA JY SCHOOL
             </h1>
             <p className="text-[11px] sm:text-[13px] font-bold tracking-[0.05em] sm:tracking-[0.1em] text-amber-300 mb-2 uppercase drop-shadow-sm">
@@ -82,28 +82,28 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
               <table className="w-full text-[12px] sm:text-sm text-left border-collapse">
                 <tbody>
                   <tr>
-                    <td className="border border-gray-400 bg-gray-100 font-bold py-1.5 sm:py-2 px-2 sm:px-3 w-1/3 uppercase text-gray-700">Student Name</td>
-                    <td className="border border-gray-400 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-900">{data.studentName}</td>
+                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 w-1/3 uppercase text-indigo-900 tracking-wider">Student Name</td>
+                    <td className="border border-gray-300 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-900">{data.studentName}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-400 bg-gray-100 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-700">Student ID</td>
-                    <td className="border border-gray-400 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-900">{data.rollNo}</td>
+                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-indigo-900 tracking-wider">Student ID</td>
+                    <td className="border border-gray-300 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-800">{data.rollNo}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-400 bg-gray-100 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-700">Class & Section</td>
-                    <td className="border border-gray-400 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-900">{data.className} {data.section && `- ${data.section}`}</td>
+                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-indigo-900 tracking-wider">Class & Section</td>
+                    <td className="border border-gray-300 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-800">{data.className} {data.section && `- ${data.section}`}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-400 bg-gray-100 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-700">Exam Name</td>
-                    <td className="border border-gray-400 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-900">{exam?.name}</td>
+                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-indigo-900 tracking-wider">Exam Name</td>
+                    <td className="border border-gray-300 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-800">{exam?.name}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-400 bg-gray-100 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-700">Contact Number</td>
-                    <td className="border border-gray-400 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-900">{data.mobile || '-'}</td>
+                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-indigo-900 tracking-wider">Contact Number</td>
+                    <td className="border border-gray-300 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-800">{data.mobile || '-'}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-400 bg-gray-100 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-700">Class Rank</td>
-                    <td className="border border-gray-400 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-[#1e2a5c]">#{data.rank || '-'}</td>
+                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-indigo-900 tracking-wider">Class Rank</td>
+                    <td className="border border-gray-300 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-amber-600 bg-amber-50/50 text-[14px]">#{data.rank || '-'}</td>
                   </tr>
                 </tbody>
               </table>
@@ -127,7 +127,7 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
             
             <table className="w-full text-[11px] sm:text-[13px] border-collapse">
               <thead>
-                <tr className="bg-[#1e2a5c]">
+                <tr className="bg-gradient-to-r from-indigo-900 to-[#1e2a5c]">
                   <th className="border border-gray-400 py-1.5 sm:py-2 px-1 sm:px-2 uppercase text-center w-12 text-white">S.No</th>
                   <th className="border border-gray-400 py-1.5 sm:py-2 px-2 sm:px-4 uppercase text-left text-white">Subject</th>
                   <th className="border border-gray-400 py-1.5 sm:py-2 px-2 sm:px-4 uppercase text-center text-white">Max Marks</th>
@@ -139,21 +139,21 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
                 {data.marks.map((m: any, idx: number) => {
                   return (
                     <tr key={idx}>
-                      <td className="border border-gray-400 py-1 sm:py-2 px-1 sm:px-2 text-center font-bold text-gray-500">{idx + 1}</td>
-                      <td className="border border-gray-400 py-1 sm:py-2 px-2 sm:px-4 font-bold text-gray-900 uppercase">{m.subject}</td>
-                      <td className="border border-gray-400 py-1 sm:py-2 px-2 sm:px-4 text-center font-bold text-gray-600">{m.maxMarks || 100}</td>
-                      <td className="border border-gray-400 py-1 sm:py-2 px-2 sm:px-4 text-center font-black text-[#1e2a5c] text-[13px] sm:text-[15px]">{m.obtained}</td>
-                      <td className="border border-gray-400 py-1 sm:py-2 px-2 sm:px-4 text-center font-bold text-gray-800 text-[12px] sm:text-[13px]">{((m.obtained / (m.maxMarks || 100)) * 100).toFixed(1)}%</td>
+                      <td className="border border-gray-300 py-1 sm:py-2 px-1 sm:px-2 text-center font-bold text-gray-500 bg-gray-50/50">{idx + 1}</td>
+                      <td className="border border-gray-300 py-1 sm:py-2 px-2 sm:px-4 font-black text-indigo-900 uppercase">{m.subject}</td>
+                      <td className="border border-gray-300 py-1 sm:py-2 px-2 sm:px-4 text-center font-bold text-gray-700">{m.maxMarks || 100}</td>
+                      <td className="border border-gray-300 py-1 sm:py-2 px-2 sm:px-4 text-center font-black text-blue-600 text-[13px] sm:text-[15px] bg-blue-50/30">{m.obtained}</td>
+                      <td className="border border-gray-300 py-1 sm:py-2 px-2 sm:px-4 text-center font-black text-emerald-600 text-[12px] sm:text-[13px] bg-emerald-50/30">{((m.obtained / (m.maxMarks || 100)) * 100).toFixed(1)}%</td>
                     </tr>
                   );
                 })}
                 
                 {/* Grand Total Row */}
-                <tr className="bg-gray-100 border-t-2 border-t-gray-500">
-                  <td colSpan={2} className="border border-gray-400 py-1.5 sm:py-2 px-2 sm:px-4 text-right font-black uppercase text-gray-900">Grand Total</td>
-                  <td className="border border-gray-400 py-1.5 sm:py-2 px-2 sm:px-4 text-center font-black text-gray-900">{totalMaxMarks}</td>
-                  <td className="border border-gray-400 py-1.5 sm:py-2 px-2 sm:px-4 text-center font-black text-indigo-700 text-[14px] sm:text-[16px]">{totalObtained}</td>
-                  <td className="border border-gray-400 py-1.5 sm:py-2 px-2 sm:px-4 text-center font-black text-[#1fb981] text-[14px] sm:text-[16px]">{percentage}%</td>
+                <tr className="bg-gradient-to-r from-amber-50 to-amber-100 border-t-4 border-t-amber-400 shadow-[0_-2px_4px_rgba(0,0,0,0.05)]">
+                  <td colSpan={2} className="border border-amber-200 py-2 sm:py-3 px-2 sm:px-4 text-right font-black uppercase text-indigo-900 tracking-wider text-[13px] sm:text-[15px]">Grand Total</td>
+                  <td className="border border-amber-200 py-2 sm:py-3 px-2 sm:px-4 text-center font-black text-indigo-900 text-[13px] sm:text-[15px]">{totalMaxMarks}</td>
+                  <td className="border border-amber-200 py-2 sm:py-3 px-2 sm:px-4 text-center font-black text-blue-700 text-[15px] sm:text-[18px]">{totalObtained}</td>
+                  <td className="border border-amber-200 py-2 sm:py-3 px-2 sm:px-4 text-center font-black text-emerald-600 text-[15px] sm:text-[18px] drop-shadow-sm">{percentage}%</td>
                 </tr>
               </tbody>
             </table>
