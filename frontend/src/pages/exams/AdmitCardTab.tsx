@@ -9,7 +9,7 @@ import { AdmitCardTemplate } from '../../components/Exams/AdmitCardTemplate';
 export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN';
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
   const [selectedExamId, setSelectedExamId] = useState('');
   const [selectedClassId, setSelectedClassId] = useState('');
   const [students, setStudents] = useState<any[]>([]);
@@ -138,10 +138,37 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
           )}
         </div>
         <div className="flex gap-2">
-          {isAdmin && selectedExam && (
-            <button onClick={() => setShowSettings(!showSettings)} className="btn-secondary flex items-center gap-2">
-              <Settings className="w-4 h-4" /> Settings
-            </button>
+          {isSuperAdmin && selectedExam && (
+            <>
+              {!published ? (
+                <button 
+                  onClick={async () => {
+                    setPublished(true);
+                    try {
+                      await api.post(`/api/exams/${selectedExamId}/admit-card-settings`, {
+                        admitCardPublished: true,
+                        admitCardSettings: selectedExam.admitCardSettings || {}
+                      });
+                      toast.success('Admit Cards sent to Teachers, Students & Admins successfully!');
+                      if (selectedExam) selectedExam.admitCardPublished = true;
+                    } catch (e: any) {
+                      toast.error('Failed to send admit cards');
+                      setPublished(false);
+                    }
+                  }} 
+                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2"
+                >
+                  <CheckCircle className="w-4 h-4" /> Send to Teachers, Students & Admins
+                </button>
+              ) : (
+                <span className="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" /> Admit Cards Sent
+                </span>
+              )}
+              <button onClick={() => setShowSettings(!showSettings)} className="btn-secondary flex items-center gap-2">
+                <Settings className="w-4 h-4" /> Settings
+              </button>
+            </>
           )}
           {students.length > 0 && (
             <button onClick={handlePrint} className="btn-primary flex items-center gap-2">
@@ -151,16 +178,10 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         </div>
       </div>
 
-      {showSettings && selectedExamId && isAdmin && (
+      {showSettings && selectedExamId && isSuperAdmin && (
         <div className="bg-white dark:bg-gray-900 border border-indigo-100 dark:border-gray-800 p-6 rounded-xl shadow-sm mb-6 print:hidden flex flex-col gap-6">
           <div className="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-4">
             <h3 className="font-bold text-lg">Admit Card Configuration</h3>
-            <div className="flex items-center gap-2">
-              <label className="flex items-center gap-2 font-semibold text-sm cursor-pointer">
-                <input type="checkbox" checked={published} onChange={e => setPublished(e.target.checked)} className="w-4 h-4 accent-indigo-600" />
-                Publish to Students
-              </label>
-            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
