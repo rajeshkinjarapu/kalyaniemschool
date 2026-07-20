@@ -40,13 +40,13 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
             )}
           </div>
           <div className="flex-1 text-center px-4">
-            <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-wide text-black mb-1">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-wide text-black mb-1 whitespace-nowrap">
               SRI VENKATESWARA JY SCHOOL
             </h1>
             <p className="text-xs sm:text-sm font-bold uppercase text-gray-800 mb-1">
               (IIT-JEE/NEET Foundation – Olympiads)
             </p>
-            <p className="text-xs font-medium text-gray-700">
+            <p className="text-sm font-medium text-gray-700">
               Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta
             </p>
           </div>
@@ -71,34 +71,34 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
               <table className="w-full text-sm text-left border-collapse">
                 <tbody>
                   <tr className="border-b border-gray-300">
-                    <td className="p-3 font-bold bg-gray-100 border-r border-gray-300 w-1/3">Candidate Name</td>
-                    <td className="p-3 font-bold text-black uppercase" colSpan={3}>
+                    <td className="p-4 font-bold bg-gray-100 border-r border-gray-300 w-1/3">Candidate Name</td>
+                    <td className="p-4 font-bold text-black uppercase" colSpan={3}>
                       {student?.user?.name || student?.name}
                     </td>
                   </tr>
                   <tr className="border-b border-gray-300">
-                    <td className="p-3 font-bold bg-gray-100 border-r border-gray-300">Roll Number</td>
-                    <td className="p-3 font-bold text-black border-r border-gray-300 w-1/4">
+                    <td className="p-4 font-bold bg-gray-100 border-r border-gray-300">Roll Number</td>
+                    <td className="p-4 font-bold text-black border-r border-gray-300 w-1/4">
                       {student?.rollNo || 'N/A'}
                     </td>
-                    <td className="p-3 font-bold bg-gray-100 border-r border-gray-300">Class & Section</td>
-                    <td className="p-3 font-bold text-black">
+                    <td className="p-4 font-bold bg-gray-100 border-r border-gray-300">Class & Section</td>
+                    <td className="p-4 font-bold text-black">
                       {className || student?.class?.name || student?.className || '-'} {section || student?.class?.section || student?.section ? `- ${section || student?.class?.section || student?.section}` : ''}
                     </td>
                   </tr>
                   <tr className="border-b border-gray-300">
-                    <td className="p-3 font-bold bg-gray-100 border-r border-gray-300">Date of Birth</td>
-                    <td className="p-3 font-bold text-black border-r border-gray-300">
+                    <td className="p-4 font-bold bg-gray-100 border-r border-gray-300">Date of Birth</td>
+                    <td className="p-4 font-bold text-black border-r border-gray-300">
                       12/05/2010
                     </td>
-                    <td className="p-3 font-bold bg-gray-100 border-r border-gray-300">Gender</td>
-                    <td className="p-3 font-bold text-black">
+                    <td className="p-4 font-bold bg-gray-100 border-r border-gray-300">Gender</td>
+                    <td className="p-4 font-bold text-black">
                       {student?.gender || 'Male'}
                     </td>
                   </tr>
                   <tr>
-                    <td className="p-3 font-bold bg-gray-100 border-r border-gray-300">Exam Center</td>
-                    <td className="p-3 font-bold text-black" colSpan={3}>
+                    <td className="p-4 font-bold bg-gray-100 border-r border-gray-300">Exam Center</td>
+                    <td className="p-4 font-bold text-black" colSpan={3}>
                       {settings.examCenterOverride || 'JY School Main Campus, Hall A'}
                     </td>
                   </tr>
@@ -157,7 +157,7 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
         </div>
 
         {/* Footer Notes & Signatures */}
-        <div className="mt-auto pt-6 border-t-2 border-black flex flex-col sm:flex-row justify-between gap-8">
+        <div className="mt-8 pt-6 border-t-2 border-black flex flex-col sm:flex-row justify-between gap-8">
           <div className="flex-1">
             <h5 className="text-[11px] font-bold uppercase tracking-wider text-black mb-2 underline underline-offset-2">Important Instructions:</h5>
             <ul className="text-[10px] text-black font-medium space-y-1 list-decimal pl-4 pr-4 text-justify leading-relaxed">
@@ -166,9 +166,9 @@ export const AdmitCardTemplate: React.FC<AdmitCardTemplateProps> = ({ student, e
               ))}
             </ul>
           </div>
-          <div className="text-center w-48 shrink-0 flex flex-col items-center justify-end">
-            <div className="w-full h-16 flex items-end justify-center mb-1 border-b border-black border-dashed">
-              {signatureUrl && <img src={signatureUrl} alt="Signature" crossOrigin="anonymous" className="h-14 object-contain" />}
+          <div className="text-center w-56 shrink-0 flex flex-col items-center justify-end">
+            <div className="w-full h-24 flex items-end justify-center mb-1 border-b border-black border-dashed">
+              {signatureUrl && <img src={signatureUrl} alt="Signature" crossOrigin="anonymous" className="h-20 object-contain" />}
             </div>
             <p className="text-[10px] uppercase font-bold tracking-widest text-black">Principal Signature</p>
           </div>
