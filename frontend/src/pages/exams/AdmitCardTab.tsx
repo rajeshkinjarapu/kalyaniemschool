@@ -87,13 +87,14 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         printArea.classList.remove('hidden');
         printArea.classList.add('flex');
         printArea.style.position = 'absolute';
-        printArea.style.left = '-9999px';
+        printArea.style.left = '0';
         printArea.style.top = '0';
         printArea.style.width = '210mm';
+        printArea.style.zIndex = '-9999';
       }
 
-      // Allow DOM to update
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Allow DOM to update and images to load
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       const templates = document.querySelectorAll('.admit-card-wrapper');
       
@@ -101,7 +102,7 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         const el = templates[i] as HTMLElement;
         const student = students[i];
         
-        const canvas = await html2canvas(el, { scale: 2, useCORS: true });
+        const canvas = await html2canvas(el, { scale: 2, useCORS: true, allowTaint: false, logging: false });
         const imgData = canvas.toDataURL('image/png');
         
         const pdf = new jsPDF('p', 'mm', 'a4');
@@ -120,6 +121,7 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         printArea.style.left = '';
         printArea.style.top = '';
         printArea.style.width = '';
+        printArea.style.zIndex = '';
       }
 
       const content = await zip.generateAsync({ type: 'blob' });

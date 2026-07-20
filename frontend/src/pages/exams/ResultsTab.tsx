@@ -46,19 +46,38 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
       const element = document.getElementById('results-print-area');
       if (!element) return;
       
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+      const scroller = element.querySelector('.overflow-x-auto');
+      if (scroller) scroller.classList.remove('overflow-x-auto');
+      
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true, logging: false });
+      
+      if (scroller) scroller.classList.add('overflow-x-auto');
+      
       const imgData = canvas.toDataURL('image/png');
       
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
       
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      let heightLeft = pdfHeight;
+      let position = 0;
+      
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+      
+      while (heightLeft > 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+      
       pdf.save(`Results_${selectedExam?.name || 'Exam'}_Class_${selectedClassId}.pdf`);
       toast.success('PDF downloaded successfully!', { id: toastId });
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      toast.error('Failed to generate PDF', { id: toastId });
+      toast.error(`Failed to generate PDF: ${e.message || 'Unknown error'}`, { id: toastId });
     } finally {
       setIsDownloading(false);
     }
@@ -75,10 +94,17 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     <div className="space-y-6">
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
+          @page { size: A4 landscape; margin: 10mm; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white; }
           body * { visibility: hidden; }
           #results-print-area, #results-print-area * { visibility: visible; }
-          #results-print-area { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 20px; }
+          #results-print-area { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
           .no-print { display: none !important; }
+          .overflow-x-auto { overflow: visible !important; }
+          table { width: 100% !important; border-collapse: collapse !important; table-layout: fixed; }
+          th, td { padding: 8px 4px !important; font-size: 9pt !important; word-wrap: break-word; }
+          .bg-gradient-to-r { background: #8b5cf6 !important; color: white !important; }
+          .rounded-3xl { border-radius: 0 !important; box-shadow: none !important; }
         }
       `}} />
 
@@ -179,7 +205,6 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                       {student.marks.map((m: any, i: number) => (
                         <td key={i} className="p-4 text-center">
                           <span className="font-bold text-gray-700">{m.obtained}</span>
-                          <span className="text-xs text-gray-400 ml-1">/{m.max}</span>
                         </td>
                       ))}
                       <td className="p-4 text-center font-black text-indigo-600">
