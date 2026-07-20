@@ -13,9 +13,16 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
   const percentage = totalMaxMarks > 0 ? ((totalObtained / totalMaxMarks) * 100).toFixed(1) : "0.0";
   const percentNumber = Number(percentage);
   
-  const logoUrl = settings?.logoUrl || '/logo.png'; 
-  const principalSignatureUrl = settings?.signatureUrl || '';
-  const teacherSignatureUrl = settings?.teacherSignatureUrl || '';
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const resolveUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+    return `${API_BASE}${url}`;
+  };
+  
+  const logoUrl = resolveUrl(settings?.logoUrl) || '/logo.png'; 
+  const principalSignatureUrl = resolveUrl(settings?.signatureUrl || '');
+  const teacherSignatureUrl = resolveUrl(settings?.teacherSignatureUrl || '');
 
   // Determine Overall Performance
   let performanceRating = "Needs Improvement";
@@ -29,34 +36,34 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
     <div className="progress-card-wrapper w-[210mm] h-[297mm] overflow-hidden print:shadow-none print:m-0 mx-auto bg-white border border-gray-300 shadow-xl relative box-border flex flex-col" style={{ pageBreakInside: 'avoid', pageBreakAfter: 'always' }}>
       <div className="w-full h-full relative flex flex-col bg-white" style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}>
         
-        {/* Formal Header */}
-        <div className="border-b-[4px] border-[#1e2a5c] pb-4 pt-6 px-10 relative flex-shrink-0 flex items-center gap-6">
+        {/* Formal Colorful Header */}
+        <div className="border-b-[4px] border-amber-400 pb-4 pt-6 px-10 relative flex-shrink-0 flex items-center gap-6 bg-gradient-to-r from-indigo-900 via-indigo-800 to-indigo-900 text-white">
           {/* Logo */}
-          <div className="w-24 h-24 flex-shrink-0 flex items-center justify-center">
+          <div className="w-24 h-24 flex-shrink-0 flex items-center justify-center bg-white rounded-xl border-2 border-amber-400 p-2">
             {logoUrl ? (
-              <img src={logoUrl} crossOrigin="anonymous" alt="Logo" className="max-w-full max-h-full object-contain" />
+              <img src={logoUrl} alt="Logo" className="max-w-full max-h-full object-contain" />
             ) : (
-              <div className="text-[#1e2a5c] font-bold text-xl text-center leading-none border-2 border-[#1e2a5c] rounded-full w-20 h-20 flex items-center justify-center">
-                SJY
+              <div className="text-[#1e2a5c] font-bold text-xl text-center leading-none flex items-center justify-center">
+                LOGO
               </div>
             )}
           </div>
           
           <div className="flex-grow text-center">
-            <h1 className="text-[32px] font-black tracking-wide text-[#1e2a5c] mb-1" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
+            <h1 className="text-[28px] sm:text-[32px] font-black tracking-wide text-white mb-1 whitespace-nowrap drop-shadow-md" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
               SRI VENKATESWARA JY SCHOOL
             </h1>
-            <p className="text-[13px] font-bold tracking-[0.1em] text-gray-600 mb-3 uppercase">
+            <p className="text-[13px] font-bold tracking-[0.1em] text-amber-300 mb-3 uppercase drop-shadow-sm">
               (IIT-JEE / NEET Foundation • Olympiads)
             </p>
-            <div className="inline-block border border-gray-300 bg-gray-100 text-[#1e2a5c] px-6 py-1.5 font-bold text-[14px] tracking-wider uppercase">
+            <div className="inline-block border border-indigo-300 bg-indigo-50/20 text-white px-6 py-1.5 font-bold text-[14px] tracking-wider uppercase rounded-full shadow-sm">
               {exam?.name || 'EXAMINATION RESULT CARD'}
             </div>
           </div>
           
           {/* Decorative Right Element matching Logo width for balance */}
           <div className="w-24 flex-shrink-0 hidden sm:block text-right">
-             <div className="w-16 h-16 ml-auto border-[3px] border-[#1e2a5c]/20 rounded-lg flex items-center justify-center text-xs font-bold text-[#1e2a5c]/50 rotate-12">
+             <div className="w-16 h-16 ml-auto border-[3px] border-indigo-400/30 rounded-lg flex items-center justify-center text-xs font-bold text-indigo-200/50 rotate-12">
                SEAL
              </div>
           </div>
@@ -75,7 +82,7 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
                     <td className="border border-gray-400 font-bold py-2 px-3 uppercase text-gray-900">{data.studentName}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-400 bg-gray-100 font-bold py-2 px-3 uppercase text-gray-700">Student ID / Roll No</td>
+                    <td className="border border-gray-400 bg-gray-100 font-bold py-2 px-3 uppercase text-gray-700">Student ID</td>
                     <td className="border border-gray-400 font-bold py-2 px-3 uppercase text-gray-900">{data.rollNo}</td>
                   </tr>
                   <tr>
@@ -102,7 +109,7 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
             <div className="w-[120px] h-[150px] flex-shrink-0 border-2 border-gray-400 p-1 bg-white shadow-sm">
               <div className="w-full h-full bg-gray-100 overflow-hidden flex items-center justify-center">
                 {data.photo ? (
-                  <img src={data.photo} crossOrigin="anonymous" alt="Student" className="w-full h-full object-cover" />
+                  <img src={resolveUrl(data.photo)} alt="Student" className="w-full h-full object-cover" />
                 ) : (
                   <User className="w-12 h-12 text-gray-300" />
                 )}
@@ -180,7 +187,7 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
             <div className="text-center w-48">
               <div className="h-16 flex items-end justify-center mb-2 relative">
                 {teacherSignatureUrl ? (
-                  <img src={teacherSignatureUrl} crossOrigin="anonymous" alt="Teacher Signature" className="max-h-14 object-contain mix-blend-multiply" />
+                  <img src={teacherSignatureUrl} alt="Teacher Signature" className="max-h-14 object-contain mix-blend-multiply" />
                 ) : (
                   <div className="text-blue-800/60 font-signature text-[22px] transform -rotate-12" style={{ fontFamily: '"Brush Script MT", cursive' }}>Signature</div>
                 )}
@@ -201,7 +208,7 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
             <div className="text-center w-48">
               <div className="h-16 flex items-end justify-center mb-2 relative">
                 {principalSignatureUrl ? (
-                  <img src={principalSignatureUrl} crossOrigin="anonymous" alt="Principal Signature" className="max-h-14 object-contain mix-blend-multiply" />
+                  <img src={principalSignatureUrl} alt="Principal Signature" className="max-h-14 object-contain mix-blend-multiply" />
                 ) : (
                   <div className="text-green-800/60 font-signature text-[22px] transform -rotate-12" style={{ fontFamily: '"Brush Script MT", cursive' }}>Signature</div>
                 )}
