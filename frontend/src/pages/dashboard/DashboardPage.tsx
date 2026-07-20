@@ -108,8 +108,10 @@ const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }>
               <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-400 relative" />
               {greeting}
             </p>
-            <h1 className="text-xl sm:text-3xl md:text-5xl font-black text-white mb-0.5 md:mb-1.5 tracking-tight drop-shadow-md">{name}</h1>
-            <p className="text-indigo-100/90 text-[10px] sm:text-sm md:text-base font-semibold">{roleLabel[role] || role} <span className="mx-1.5 md:mx-2 opacity-50">•</span> JY School Operations</p>
+            <h1 className="text-[28px] sm:text-4xl md:text-5xl font-black text-white mb-2 tracking-tight">
+              Welcome back, {name.split(' ')[0]} 👋
+            </h1>
+            <p className="text-indigo-100/90 text-[10px] sm:text-sm md:text-base font-semibold">{roleLabel[role] || role} <span className="mx-1.5 md:mx-2 opacity-50">•</span> JY School</p>
           </div>
         </div>
         
@@ -436,15 +438,15 @@ const TeacherView: React.FC<{ data: any }> = ({ data }) => {
       {/* Teacher Quick Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
         {[
-          { label: 'My Attendance', value: `${myAttendance?.rate || 0}%`, icon: UserCheck, gradient: 'linear-gradient(135deg,#0ea5e9 0%,#2563eb 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'This month' },
-          { label: 'Salary Status', value: pendingSalary ? `₹${pendingSalary.netSalary}` : 'All Paid', icon: Wallet, gradient: 'linear-gradient(135deg,#f43f5e 0%,#e11d48 100%)', glow: 'rgba(255,255,255,0.2)', sub: pendingSalary ? 'Pending' : 'No dues' },
-          { label: 'My Students', value: data.totalStudents || 0, icon: Users, gradient: 'linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Across all classes' },
-          { label: 'Assigned Classes', value: data.assignedClasses?.length || 0, icon: School, gradient: 'linear-gradient(135deg,#f59e0b 0%,#d97706 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Active assignments' },
+          { label: 'Daily Attendance', value: 'Mark', icon: UserCheck, gradient: 'linear-gradient(135deg,#0ea5e9 0%,#2563eb 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Students Attendance', link: '/attendance-marking' },
+          { label: 'Total Students', value: data.totalStudents || 0, icon: Users, gradient: 'linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Across all classes' },
           { label: "Today's Att.", value: `${rate}%`, icon: Clock, gradient: 'linear-gradient(135deg,#10b981 0%,#059669 100%)', glow: 'rgba(255,255,255,0.2)', sub: `${present}P · ${absent}A`, link: '/teacher-attendance' },
+          { label: 'My Timetable', value: 'View', icon: School, gradient: 'linear-gradient(135deg,#f59e0b 0%,#d97706 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Weekly Schedule', link: '/timetable' },
           { label: 'Marks Entry', value: 'Enter', icon: PenTool, gradient: 'linear-gradient(135deg,#ec4899 0%,#e11d48 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Update grades', link: '/exams?tab=written-exam' },
-          { label: 'Fee Pay', value: 'Pay', icon: CreditCard, gradient: 'linear-gradient(135deg,#f97316 0%,#d97706 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Clear dues', link: '/fee-payment?action=collect' },
-          { label: 'Leave Apply', value: 'Apply', icon: FileText, gradient: 'linear-gradient(135deg,#06b6d4 0%,#2563eb 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Request leave', link: '/leave/request-log' },
+          { label: 'Result Cards', value: 'View', icon: FileText, gradient: 'linear-gradient(135deg,#14b8a6 0%,#0f766e 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Progress Cards', link: '/exams?tab=jee-progress-card' },
           { label: 'Admit Cards', value: 'View', icon: BookMarked, gradient: 'linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Students Admit Cards', link: '/teacher/admit-cards' },
+          { label: 'Leave Apply', value: 'Apply', icon: FileText, gradient: 'linear-gradient(135deg,#06b6d4 0%,#2563eb 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Request leave', link: '/leave/request-log' },
+          { label: 'Salary Status', value: pendingSalary ? `₹${pendingSalary.netSalary}` : 'All Paid', icon: Wallet, gradient: 'linear-gradient(135deg,#f43f5e 0%,#e11d48 100%)', glow: 'rgba(255,255,255,0.2)', sub: pendingSalary ? 'Pending' : 'No dues' },
         ].map((stat, i) => <StatCard key={i} {...(stat as StatCardProps)} />)}
       </div>
 

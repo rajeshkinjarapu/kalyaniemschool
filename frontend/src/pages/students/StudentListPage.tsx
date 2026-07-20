@@ -10,6 +10,7 @@ import { useAuth } from '../../hooks/useAuth';
 export const StudentListPage: React.FC = () => {
   const { user } = useAuth();
   const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+  const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN';
 
   const [search, setSearch] = useState('');
   const [classId, setClassId] = useState('');
@@ -197,9 +198,11 @@ export const StudentListPage: React.FC = () => {
             </>
           )}
 
-          <Link to="/students/new" className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-extrabold text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 rounded-xl shadow-md shadow-indigo-500/25 transition-all cursor-pointer">
-            <UserPlus className="w-4 h-4" /> Add Student
-          </Link>
+          {isAdmin && (
+            <Link to="/students/new" className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-extrabold text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 rounded-xl shadow-md shadow-indigo-500/25 transition-all cursor-pointer">
+              <UserPlus className="w-4 h-4" /> Add Student
+            </Link>
+          )}
         </div>
       </div>
 

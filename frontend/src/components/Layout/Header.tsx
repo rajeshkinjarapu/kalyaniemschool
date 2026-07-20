@@ -57,7 +57,16 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, title }) => {
           </button>
         )}
         <div className="flex items-center gap-2.5 min-w-0">
-          <span className="text-xl leading-none shrink-0">{meta.emoji}</span>
+          {user?.role === 'TEACHER' && (
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-sm shadow-sm sm:hidden overflow-hidden shrink-0 border-2 border-indigo-100">
+              {user.photoUrl ? (
+                <img src={user.photoUrl.startsWith('http') ? user.photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${user.photoUrl.startsWith('/') ? user.photoUrl : `/${user.photoUrl}`}`} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                user?.name?.charAt(0).toUpperCase() || 'U'
+              )}
+            </div>
+          )}
+          <span className="text-xl leading-none shrink-0 hidden sm:block">{meta.emoji}</span>
           <div className="min-w-0">
             <h1 className="text-base font-black text-slate-900 dark:text-white leading-tight truncate">{title}</h1>
             <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 leading-none hidden sm:block">{meta.desc}</p>
@@ -68,13 +77,15 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, title }) => {
       {/* Right: Actions */}
       <div className="flex items-center gap-2 shrink-0">
         {/* Notifications */}
-        <button
-          className="relative p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 cursor-pointer"
-          title="Notifications"
-        >
-          <Bell className="w-4.5 h-4.5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse" />
-        </button>
+        {user?.role !== 'TEACHER' && (
+          <button
+            className="relative p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 cursor-pointer"
+            title="Notifications"
+          >
+            <Bell className="w-4.5 h-4.5" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse" />
+          </button>
+        )}
 
         {/* Divider */}
         <div className="w-px h-5 bg-slate-200 dark:bg-slate-700/50 mx-1" />

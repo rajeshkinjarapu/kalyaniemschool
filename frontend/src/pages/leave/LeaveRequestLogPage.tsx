@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Trash2, CheckCircle, XCircle, Clock, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../api/axios';
+import { useAuth } from '../../hooks/useAuth';
 
 export const LeaveRequestLogPage: React.FC = () => {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN';
   const [requests, setRequests] = useState<any[]>([]);
   const [leaveTypes, setLeaveTypes] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
@@ -59,7 +62,7 @@ export const LeaveRequestLogPage: React.FC = () => {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formApplicant.trim() || !formStartDate || !formEndDate || !formReason.trim()) {
+    if ((isAdmin && !formApplicant.trim()) || !formStartDate || !formEndDate || !formReason.trim()) {
       toast.error('All fields are required.');
       return;
     }
@@ -68,7 +71,7 @@ export const LeaveRequestLogPage: React.FC = () => {
 
     const newReq = {
       id: Date.now().toString(),
-      applicant: formApplicant.trim(),
+      applicant: isAdmin ? formApplicant.trim() : user?.name || 'Unknown',
       typeName: type ? type.name : 'General Leave',
       startDate: formStartDate,
       endDate: formEndDate,
@@ -132,11 +135,11 @@ export const LeaveRequestLogPage: React.FC = () => {
                 <th className="pb-3">End Date</th>
                 <th className="pb-3">Reason</th>
                 <th className="pb-3">Status</th>
-                <th className="pb-3 text-right">Actions</th>
+                <th className="pb-3 text-right">{isAdmin && 'Actions'}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {requests.map((r) => (
+              {(isAdmin ? requests : requests.filter(r => r.applicant === user?.name)).map((r) => (
                 <tr key={r.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-855/10 transition-colors">
                   <td className="py-4 font-bold text-gray-900 dark:text-white">{r.applicant}</td>
                   <td className="py-4 text-gray-600 dark:text-gray-300 font-semibold">{r.typeName}</td>
@@ -160,7 +163,7 @@ export const LeaveRequestLogPage: React.FC = () => {
                     </span>
                   </td>
                   <td className="py-4 text-right flex justify-end gap-2">
-                    {r.status === 'Pending' && (
+                    {isAdmin && r.status === 'Pending' && (
                       <>
                         <button
                           onClick={() => handleUpdateStatus(r.id, 'Approved')}
@@ -176,17 +179,19 @@ export const LeaveRequestLogPage: React.FC = () => {
                         </button>
                       </>
                     )}
-                    <button
-                      onClick={() => handleDelete(r.id)}
-                      className="w-8 h-8 rounded-full bg-indigo-50 hover:bg-red-50 text-indigo-650 hover:text-red-600 flex items-center justify-center transition-colors cursor-pointer"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {isAdmin && (
+                      <button
+                        onClick={() => handleDelete(r.id)}
+                        className="w-8 h-8 rounded-full bg-indigo-50 hover:bg-red-50 text-indigo-650 hover:text-red-600 flex items-center justify-center transition-colors cursor-pointer"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
-              {requests.length === 0 && (
+              {(isAdmin ? requests : requests.filter(r => r.applicant === user?.name)).length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-8 text-center text-gray-400">No leave requests logged.</td>
                 </tr>
@@ -205,22 +210,24 @@ export const LeaveRequestLogPage: React.FC = () => {
               Request Leave
             </h4>
             <form onSubmit={handleCreate} className="space-y-4">
-              <div className="space-y-1">
-                <label className="label text-xs uppercase font-extrabold text-gray-400">Applicant Name (Teacher)</label>
-                <select
-                  className="input w-full bg-gray-50 dark:bg-gray-850 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold outline-none"
-                  value={formApplicant}
-                  onChange={e => setFormApplicant(e.target.value)}
-                  required
-                >
-                  <option value="">Select Teacher</option>
-                  {teachers.map(t => (
-                    <option key={t.id} value={t.user.name}>
-                      {t.user.name} ({t.employeeId})
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {isAdmin && (
+                <div className="space-y-1">
+                  <label className="label text-xs uppercase font-extrabold text-gray-400">Applicant Name (Teacher)</label>
+                  <select
+                    className="input w-full bg-gray-50 dark:bg-gray-850 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold outline-none"
+                    value={formApplicant}
+                    onChange={e => setFormApplicant(e.target.value)}
+                    required={isAdmin}
+                  >
+                    <option value="">Select Teacher</option>
+                    {teachers.map(t => (
+                      <option key={t.id} value={t.user.name}>
+                        {t.user.name} ({t.employeeId})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div className="space-y-1">
                 <label className="label text-xs uppercase font-extrabold text-gray-400">Leave Type</label>
