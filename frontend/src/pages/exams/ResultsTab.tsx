@@ -54,9 +54,14 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
             @media print {
               @page { margin: 10mm; size: auto; }
               body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: white; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-              table { width: 100% !important; border-collapse: collapse !important; table-layout: auto; margin-top: 20px; }
+              table { width: 100% !important; border-collapse: collapse !important; table-layout: auto; margin-top: 20px; page-break-inside: auto; }
+              tr { page-break-inside: avoid; page-break-after: auto; }
+              thead { display: table-header-group; }
+              tfoot { display: table-footer-group; }
               th, td { padding: 10px 8px !important; font-size: 10pt !important; border: 1px solid #e5e7eb !important; text-align: center; }
               th:nth-child(2), td:nth-child(2) { text-align: left; }
+              /* Override overflow for printing so it spans multiple pages */
+              .overflow-x-auto, .overflow-hidden { overflow: visible !important; }
               /* Keep rounded corners and gradients in print */
               svg { stroke: currentColor !important; }
               .no-print { display: none !important; }
