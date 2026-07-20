@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
-import { Printer, Download, FileText, CheckCircle } from 'lucide-react';
+import { Printer, Download, FileText, CheckCircle, Settings, Upload, Save } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { toJpeg } from 'html-to-image';
 import JSZip from 'jszip';
@@ -8,15 +8,30 @@ import { saveAs } from 'file-saver';
 import toast from 'react-hot-toast';
 import { ProgressCardTemplate } from '../../components/Exams/ProgressCardTemplate';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
+import { useAuth } from '../../hooks/useAuth';
 
 export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+  
   const [selectedExamId, setSelectedExamId] = useState('');
   const [selectedClassId, setSelectedClassId] = useState('');
   const [studentsData, setStudentsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  
+  const [showSettings, setShowSettings] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('');
+  const [signatureUrl, setSignatureUrl] = useState('');
 
   const selectedExam = exams.find(e => e.id === selectedExamId);
+
+  useEffect(() => {
+    if (selectedExam) {
+      setLogoUrl(selectedExam.admitCardSettings?.logoUrl || '');
+      setSignatureUrl(selectedExam.admitCardSettings?.signatureUrl || '');
+    }
+  }, [selectedExam]);
 
   useEffect(() => {
     const fetchExamData = async () => {
@@ -27,7 +42,30 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
       setLoading(true);
       try {
         const res: any = await api.get(`/api/exams/${selectedExamId}/results?classId=${selectedClassId}`);
-        setStudentsData(res.data?.data || res.data || []);
+        // Map the results to the data format expected by ProgressCardTemplate
+        // the API returns { studentId, name, rollNo, className, marks, total, percentage, grade, rank }
+        // We map it to { studentName, rollNo, className, section, mobile, rank, marks, photo }
+        const formattedData = (res.data?.data || res.data || []).map((s: any) => {
+           // extract section if it's combined in className like "10th - A"
+           let cName = s.className;
+           let sec = '';
+           if (cName.includes(' - ')) {
+              [cName, sec] = cName.split(' - ');
+           }
+           return {
+              studentId: s.studentId,
+              studentName: s.name,
+              rollNo: s.rollNo,
+              className: cName,
+              section: sec,
+              mobile: s.mobile || '-',
+              rank: s.rank,
+              total: s.total,
+              marks: s.marks,
+              photo: s.photo || ''
+           };
+        });
+        setStudentsData(formattedData);
       } catch (e) {
         console.error('Error fetching progress card data', e);
         toast.error('Failed to load student data');
@@ -37,6 +75,44 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     };
     fetchExamData();
   }, [selectedExamId, selectedClassId]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'signature' | 'logo') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await api.post('/api/uploads/image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (type === 'signature') setSignatureUrl(res.data.url);
+      if (type === 'logo') setLogoUrl(res.data.url);
+      toast.success(`${type === 'logo' ? 'Logo' : 'Signature'} uploaded!`);
+    } catch (err) {
+      toast.error('Failed to upload image');
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    if (!selectedExamId) return;
+    try {
+      const currentSettings = selectedExam?.admitCardSettings || {};
+      const newSettings = { ...currentSettings, logoUrl, signatureUrl };
+      
+      await api.post(`/api/exams/${selectedExamId}/admit-card-settings`, {
+        admitCardPublished: selectedExam?.admitCardPublished || false,
+        admitCardSettings: newSettings
+      });
+      
+      toast.success('Settings saved successfully!');
+      if (selectedExam) {
+        selectedExam.admitCardSettings = newSettings;
+      }
+      setShowSettings(false);
+    } catch (e: any) {
+      toast.error('Failed to save settings: ' + e.message);
+    }
+  };
 
   const handlePrint = () => {
     window.print();
@@ -171,18 +247,72 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
           )}
         </div>
         
-        {studentsData.length > 0 && (
-          <div className="flex gap-2">
-            <button onClick={handleDownloadAll} disabled={isDownloading} className="btn-secondary flex items-center gap-2">
-              {isDownloading ? <LoadingSpinner size="sm" /> : <Download className="w-4 h-4" />} 
-              {isDownloading ? 'Generating...' : 'Download ZIP'}
+        <div className="flex gap-2">
+          {isSuperAdmin && selectedExam && (
+            <button onClick={() => setShowSettings(!showSettings)} className="btn-secondary flex items-center gap-2">
+              <Settings className="w-4 h-4" /> Settings
             </button>
-            <button onClick={handlePrint} className="btn-primary flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 border-none shadow-lg shadow-blue-500/30">
-              <Printer className="w-4 h-4" /> Print All Cards
+          )}
+          {studentsData.length > 0 && (
+            <>
+              <button onClick={handleDownloadAll} disabled={isDownloading} className="btn-secondary flex items-center gap-2">
+                {isDownloading ? <LoadingSpinner size="sm" /> : <Download className="w-4 h-4" />} 
+                {isDownloading ? 'Generating...' : 'Download ZIP'}
+              </button>
+              <button onClick={handlePrint} className="btn-primary flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 border-none shadow-lg shadow-blue-500/30">
+                <Printer className="w-4 h-4" /> Print All Cards
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {showSettings && selectedExamId && isSuperAdmin && (
+        <div className="bg-white dark:bg-gray-900 border border-indigo-100 dark:border-gray-800 p-6 rounded-xl shadow-sm mb-6 print:hidden">
+          <div className="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-4 mb-6">
+            <h3 className="font-bold text-lg text-indigo-900">Progress Card Settings</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">School Logo Image</label>
+              <div className="flex items-center gap-4">
+                {logoUrl ? (
+                  <img src={logoUrl} alt="Logo" className="h-16 object-contain border border-gray-200 rounded p-1" />
+                ) : (
+                  <div className="h-16 w-16 border-2 border-dashed border-gray-300 rounded flex items-center justify-center text-xs text-gray-400 bg-gray-50">No Logo</div>
+                )}
+                <label className="btn-secondary cursor-pointer flex items-center gap-2">
+                  <Upload className="w-4 h-4" /> Upload Logo
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'logo')} />
+                </label>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Principal Signature Image</label>
+              <div className="flex items-center gap-4">
+                {signatureUrl ? (
+                  <img src={signatureUrl} alt="Signature" className="h-16 object-contain border border-gray-200 rounded p-1" />
+                ) : (
+                  <div className="h-16 w-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center text-xs text-gray-400 bg-gray-50">No Signature</div>
+                )}
+                <label className="btn-secondary cursor-pointer flex items-center gap-2">
+                  <Upload className="w-4 h-4" /> Upload Signature
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'signature')} />
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-end pt-6 mt-4 border-t border-gray-100">
+            <button onClick={handleSaveSettings} className="btn-primary flex items-center gap-2">
+              <Save className="w-4 h-4" /> Save Configuration
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
 
       {loading && <div className="p-12 flex justify-center"><LoadingSpinner size="lg" /></div>}
 
