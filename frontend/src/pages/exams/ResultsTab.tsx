@@ -64,9 +64,10 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
               /* Override overflow for printing so it spans multiple pages */
               .overflow-x-auto, .overflow-hidden, #results-print-area { overflow: visible !important; height: auto !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; display: block !important; }
               /* Shrink the big header box */
-              .print-header-box { padding: 10px !important; background: linear-gradient(to right, #7c3aed, #ea580c) !important; border-radius: 0 !important; margin-bottom: 5px !important; }
-              .print-title { font-size: 18px !important; margin-bottom: 4px !important; color: white !important; }
-              .print-subtitle span { padding: 2px 6px !important; font-size: 12px !important; border: none !important; color: white !important; }
+              .print-header-box { padding: 18px 24px !important; background: linear-gradient(to right, #7c3aed, #ea580c) !important; border-radius: 12px !important; margin-bottom: 15px !important; }
+              .print-title { font-size: 26px !important; margin-bottom: 8px !important; color: white !important; font-weight: 900 !important; }
+              .print-subtitle span { padding: 4px 12px !important; font-size: 15px !important; border: 1px solid rgba(255,255,255,0.3) !important; border-radius: 6px !important; color: white !important; background: rgba(255,255,255,0.15) !important; font-weight: bold !important; }
+              .print-roll-no { font-size: 13px !important; font-weight: 800 !important; color: #111827 !important; }
               /* Simplify rank badge to save space */
               .rank-badge { width: auto !important; height: auto !important; background: transparent !important; color: #000 !important; box-shadow: none !important; border: none !important; display: inline !important; padding: 0 !important; font-size: 10px !important; }
               .rank-badge svg { display: none !important; }
@@ -251,7 +252,7 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                         <p className="font-bold text-gray-900 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">{student.name}</p>
                       </td>
                       <td className="p-4">
-                        <p className="text-xs text-gray-500 font-semibold">{student.rollNo || '-'}</p>
+                        <p className="text-xs text-gray-500 font-semibold print-roll-no">{student.rollNo || '-'}</p>
                       </td>
                       {student.marks.map((m: any, i: number) => (
                         <td key={i} className="p-4 text-center">
