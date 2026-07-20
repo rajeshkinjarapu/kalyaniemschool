@@ -779,13 +779,15 @@ export const ExamListPage: React.FC = () => {
         {!activeTab && (
           <div className="rounded-none sm:rounded-[2rem] border-y sm:border border-white/50 bg-white/80 backdrop-blur-xl p-5 sm:p-8 md:p-10 shadow-2xl">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-              {/* Examinations List - Visible to all, but Create Exam is only for Admin */}
-              <button onClick={() => setActiveTab('examination')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-indigo-500 to-indigo-600 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-indigo-500/30 hover:-translate-y-1 shadow-md">
-                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <ClipboardList className="w-7 h-7" />
-                </div>
-                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Examinations List</span>
-              </button>
+              {/* Examinations List - Visible only for Admin */}
+              {isAdmin && (
+                <button onClick={() => setActiveTab('examination')} className="group flex flex-col items-center justify-center p-6 rounded-[1.5rem] bg-gradient-to-br from-indigo-500 to-indigo-600 text-white transition-all gap-3 sm:gap-4 hover:shadow-xl hover:shadow-indigo-500/30 hover:-translate-y-1 shadow-md">
+                  <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <ClipboardList className="w-7 h-7" />
+                  </div>
+                  <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-white text-center leading-tight">Examinations List</span>
+                </button>
+              )}
 
               {isAdminOrTeacher && (
                 <>
