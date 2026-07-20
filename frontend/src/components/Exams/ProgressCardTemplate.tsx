@@ -13,105 +13,94 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
   const percentage = totalMaxMarks > 0 ? ((totalObtained / totalMaxMarks) * 100).toFixed(1) : "0.0";
   const percentNumber = Number(percentage);
   
-  const logoUrl = settings?.logoUrl || '/logo.png'; // Assuming logo might come from settings
+  const logoUrl = settings?.logoUrl || '/logo.png'; 
   const principalSignatureUrl = settings?.signatureUrl || '';
+  const teacherSignatureUrl = settings?.teacherSignatureUrl || '';
 
   // Determine Overall Performance
   let performanceRating = "Needs Improvement";
-  let performanceColor = "bg-red-500";
-  if (percentNumber >= 90) { performanceRating = "Outstanding"; performanceColor = "bg-emerald-500"; }
-  else if (percentNumber >= 75) { performanceRating = "Excellent"; performanceColor = "bg-green-500"; }
-  else if (percentNumber >= 60) { performanceRating = "Very Good"; performanceColor = "bg-blue-500"; }
-  else if (percentNumber >= 40) { performanceRating = "Good"; performanceColor = "bg-amber-500"; }
+  let performanceColor = "text-red-600 border-red-600 bg-red-50";
+  if (percentNumber >= 90) { performanceRating = "Outstanding"; performanceColor = "text-emerald-600 border-emerald-600 bg-emerald-50"; }
+  else if (percentNumber >= 75) { performanceRating = "Excellent"; performanceColor = "text-green-600 border-green-600 bg-green-50"; }
+  else if (percentNumber >= 60) { performanceRating = "Very Good"; performanceColor = "text-blue-600 border-blue-600 bg-blue-50"; }
+  else if (percentNumber >= 40) { performanceRating = "Good"; performanceColor = "text-amber-600 border-amber-600 bg-amber-50"; }
 
   return (
-    <div className="progress-card-wrapper w-[210mm] h-[297mm] overflow-hidden print:shadow-none print:m-0 mx-auto bg-white mb-8 border shadow-xl relative box-border flex flex-col" style={{ pageBreakInside: 'avoid', pageBreakAfter: 'always' }}>
-      <div className="w-full h-full relative flex flex-col" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div className="progress-card-wrapper w-[210mm] h-[297mm] overflow-hidden print:shadow-none print:m-0 mx-auto bg-white border border-gray-300 shadow-xl relative box-border flex flex-col" style={{ pageBreakInside: 'avoid', pageBreakAfter: 'always' }}>
+      <div className="w-full h-full relative flex flex-col bg-white" style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}>
         
-        {/* Top Dark Header */}
-        <div className="bg-[#1e2a5c] text-white pt-8 pb-10 px-8 relative overflow-hidden flex-shrink-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 no-print" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 no-print" />
-          
-          <div className="flex items-center gap-6 relative z-10">
-            {/* Logo */}
-            <div className="w-24 h-24 bg-white rounded-full p-2 flex-shrink-0 shadow-lg border-2 border-indigo-200 flex items-center justify-center overflow-hidden">
-              {logoUrl ? (
-                <img src={logoUrl} crossOrigin="anonymous" alt="Logo" className="w-full h-full object-contain" />
-              ) : (
-                <div className="text-blue-800 font-bold text-2xl text-center leading-none">
-                  SJY<br/><span className="text-[7px]">Minds Shaping Future</span>
-                </div>
-              )}
-            </div>
-            
-            <div className="flex-grow text-center pr-12">
-              <h1 className="text-[32px] font-black tracking-wider mb-2 drop-shadow-md" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
-                SRI VENKATESWARA JY SCHOOL
-              </h1>
-              <p className="text-[13px] font-semibold tracking-[0.2em] text-indigo-200 mb-5 uppercase drop-shadow">
-                (IIT-JEE / NEET Foundation • Olympiads)
-              </p>
-              <div className="inline-block bg-[#da9f47] text-[#1e2a5c] px-8 py-2 rounded-full font-black text-[15px] tracking-widest uppercase shadow-md border border-[#edba6e]">
-                {exam?.name || 'EXAMINATION RESULT'}
+        {/* Formal Header */}
+        <div className="border-b-[4px] border-[#1e2a5c] pb-4 pt-6 px-10 relative flex-shrink-0 flex items-center gap-6">
+          {/* Logo */}
+          <div className="w-24 h-24 flex-shrink-0 flex items-center justify-center">
+            {logoUrl ? (
+              <img src={logoUrl} crossOrigin="anonymous" alt="Logo" className="max-w-full max-h-full object-contain" />
+            ) : (
+              <div className="text-[#1e2a5c] font-bold text-xl text-center leading-none border-2 border-[#1e2a5c] rounded-full w-20 h-20 flex items-center justify-center">
+                SJY
               </div>
+            )}
+          </div>
+          
+          <div className="flex-grow text-center">
+            <h1 className="text-[32px] font-black tracking-wide text-[#1e2a5c] mb-1" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
+              SRI VENKATESWARA JY SCHOOL
+            </h1>
+            <p className="text-[13px] font-bold tracking-[0.1em] text-gray-600 mb-3 uppercase">
+              (IIT-JEE / NEET Foundation • Olympiads)
+            </p>
+            <div className="inline-block border border-gray-300 bg-gray-100 text-[#1e2a5c] px-6 py-1.5 font-bold text-[14px] tracking-wider uppercase">
+              {exam?.name || 'EXAMINATION RESULT CARD'}
             </div>
+          </div>
+          
+          {/* Decorative Right Element matching Logo width for balance */}
+          <div className="w-24 flex-shrink-0 hidden sm:block text-right">
+             <div className="w-16 h-16 ml-auto border-[3px] border-[#1e2a5c]/20 rounded-lg flex items-center justify-center text-xs font-bold text-[#1e2a5c]/50 rotate-12">
+               SEAL
+             </div>
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="flex-grow p-10 flex flex-col gap-10 bg-white">
+        <div className="flex-grow p-10 flex flex-col gap-6 bg-white z-10">
           
-          {/* Student Info & Photo Row */}
-          <div className="flex gap-10">
-            <div className="flex-grow grid grid-cols-2 gap-x-6 gap-y-5 h-max">
-              {/* Box 1: Student Name */}
-              <div className="bg-[#fafbfc] rounded-xl px-5 py-4 shadow-sm border border-gray-100 flex items-center border-l-4 border-l-[#415fd7]">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Student Name</span>
-                  <span className="text-[15px] font-black text-gray-800 uppercase">{data.studentName}</span>
-                </div>
-              </div>
-              {/* Box 2: Student ID */}
-              <div className="bg-[#fafbfc] rounded-xl px-5 py-4 shadow-sm border border-gray-100 flex items-center border-l-4 border-l-[#e1526f]">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Student ID</span>
-                  <span className="text-[15px] font-black text-gray-800 uppercase">{data.rollNo}</span>
-                </div>
-              </div>
-              {/* Box 3: Class & Section */}
-              <div className="bg-[#fafbfc] rounded-xl px-5 py-4 shadow-sm border border-gray-100 flex items-center border-l-4 border-l-[#1fb981]">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Class & Section</span>
-                  <span className="text-[15px] font-black text-gray-800 uppercase">{data.className} - {data.section || 'A'}</span>
-                </div>
-              </div>
-              {/* Box 4: Contact */}
-              <div className="bg-[#fafbfc] rounded-xl px-5 py-4 shadow-sm border border-gray-100 flex items-center border-l-4 border-l-[#da9f47]">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Contact / Mobile</span>
-                  <span className="text-[15px] font-black text-gray-800 uppercase">{data.mobile || '-'}</span>
-                </div>
-              </div>
-              {/* Box 5: Academic Year */}
-              <div className="bg-[#fafbfc] rounded-xl px-5 py-4 shadow-sm border border-gray-100 flex items-center border-l-4 border-l-[#7344c2]">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Academic Year</span>
-                  <span className="text-[15px] font-black text-gray-800 uppercase">2026 - 2027</span>
-                </div>
-              </div>
-              {/* Box 6: Class Rank */}
-              <div className="bg-[#fafbfc] rounded-xl px-5 py-4 shadow-sm border border-gray-100 flex items-center border-l-4 border-l-[#0ca4a5]">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Class Rank</span>
-                  <span className="text-[15px] font-black text-[#da9f47]">#{data.rank || '-'}</span>
-                </div>
-              </div>
+          {/* Professional Student Details Table Row */}
+          <div className="flex gap-6 items-start">
+            <div className="flex-grow">
+              <table className="w-full border-collapse text-[13px]">
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-400 bg-gray-100 font-bold py-2 px-3 w-1/3 uppercase text-gray-700">Student Name</td>
+                    <td className="border border-gray-400 font-bold py-2 px-3 uppercase text-gray-900">{data.studentName}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 bg-gray-100 font-bold py-2 px-3 uppercase text-gray-700">Student ID / Roll No</td>
+                    <td className="border border-gray-400 font-bold py-2 px-3 uppercase text-gray-900">{data.rollNo}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 bg-gray-100 font-bold py-2 px-3 uppercase text-gray-700">Class & Section</td>
+                    <td className="border border-gray-400 font-bold py-2 px-3 uppercase text-gray-900">{data.className} - {data.section || 'A'}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 bg-gray-100 font-bold py-2 px-3 uppercase text-gray-700">Academic Year</td>
+                    <td className="border border-gray-400 font-bold py-2 px-3 uppercase text-gray-900">2026 - 2027</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 bg-gray-100 font-bold py-2 px-3 uppercase text-gray-700">Contact Number</td>
+                    <td className="border border-gray-400 font-bold py-2 px-3 uppercase text-gray-900">{data.mobile || '-'}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 bg-gray-100 font-bold py-2 px-3 uppercase text-gray-700">Class Rank</td>
+                    <td className="border border-gray-400 font-black py-2 px-3 uppercase text-[#1e2a5c]">#{data.rank || '-'}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             
-            {/* Photo */}
-            <div className="w-36 h-[170px] flex-shrink-0 rounded-[16px] p-1.5 bg-gradient-to-tr from-[#1e2a5c] via-purple-500 to-pink-500 shadow-xl">
-              <div className="w-full h-full bg-white rounded-xl overflow-hidden flex items-center justify-center">
+            {/* Professional Passport Size Photo */}
+            <div className="w-[120px] h-[150px] flex-shrink-0 border-2 border-gray-400 p-1 bg-white shadow-sm">
+              <div className="w-full h-full bg-gray-100 overflow-hidden flex items-center justify-center">
                 {data.photo ? (
                   <img src={data.photo} crossOrigin="anonymous" alt="Student" className="w-full h-full object-cover" />
                 ) : (
@@ -121,113 +110,107 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
             </div>
           </div>
 
-          {/* Academic Performance Header */}
-          <div className="flex items-center gap-3">
-            <div className="w-6 h-1.5 bg-[#da9f47] rounded-full"></div>
-            <h3 className="font-black text-[#1e2a5c] text-[20px] tracking-wide">Academic Performance</h3>
-          </div>
-
-          {/* Performance Table */}
-          <div className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden">
-            <table className="w-full text-sm">
+          {/* Academic Performance Section */}
+          <div className="mt-2">
+            <h3 className="font-bold text-[#1e2a5c] text-[15px] tracking-widest uppercase border-b-2 border-[#1e2a5c] inline-block mb-3">Academic Performance Record</h3>
+            
+            <table className="w-full border-collapse border-2 border-gray-400 text-sm">
               <thead>
-                <tr className="bg-[#2d3a4c] text-white">
-                  <th className="py-4 px-6 text-left font-black text-[12px] uppercase tracking-widest w-2/5">Subject</th>
-                  <th className="py-4 px-6 text-center font-black text-[12px] uppercase tracking-widest">Marks Obtained</th>
-                  <th className="py-4 px-6 text-center font-black text-[12px] uppercase tracking-widest">Max Marks</th>
-                  <th className="py-4 px-6 text-center font-black text-[12px] uppercase tracking-widest">Percentage</th>
+                <tr className="bg-[#1e2a5c] text-white">
+                  <th className="border border-gray-400 py-2.5 px-4 text-left font-bold text-[12px] uppercase tracking-wider w-2/5">Subject</th>
+                  <th className="border border-gray-400 py-2.5 px-4 text-center font-bold text-[12px] uppercase tracking-wider">Marks Obtained</th>
+                  <th className="border border-gray-400 py-2.5 px-4 text-center font-bold text-[12px] uppercase tracking-wider">Max Marks</th>
+                  <th className="border border-gray-400 py-2.5 px-4 text-center font-bold text-[12px] uppercase tracking-wider">Percentage</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="bg-white">
                 {data.marks.map((m: any, idx: number) => {
-                  const subPercent = m.maxMarks ? ((m.obtained / m.maxMarks) * 100).toFixed(0) : 0;
-                  const dotColors = ['bg-pink-500', 'bg-purple-500', 'bg-[#0ca4a5]', 'bg-amber-500', 'bg-[#415fd7]'];
-                  const dotColor = dotColors[idx % dotColors.length];
-                  
+                  const subPercent = m.maxMarks ? ((m.obtained / m.maxMarks) * 100).toFixed(1) : 0;
                   return (
-                    <tr key={idx} className="hover:bg-gray-50 bg-white">
-                      <td className="py-4 px-6 font-bold text-gray-700 flex items-center gap-3 text-[14px]">
-                        <div className={`w-2.5 h-2.5 rounded-full ${dotColor}`}></div> {m.subject}
-                      </td>
-                      <td className="py-4 px-6 text-center font-black text-gray-900 text-[14px]">{m.obtained}</td>
-                      <td className="py-4 px-6 text-center font-bold text-gray-500 text-[14px]">{m.maxMarks || 100}</td>
-                      <td className="py-4 px-6 text-center font-black text-gray-700 text-[14px]">{subPercent}%</td>
+                    <tr key={idx}>
+                      <td className="border border-gray-400 py-2.5 px-4 font-bold text-gray-800 text-[13px] uppercase">{m.subject}</td>
+                      <td className="border border-gray-400 py-2.5 px-4 text-center font-bold text-gray-900 text-[13px]">{m.obtained}</td>
+                      <td className="border border-gray-400 py-2.5 px-4 text-center font-semibold text-gray-600 text-[13px]">{m.maxMarks || 100}</td>
+                      <td className="border border-gray-400 py-2.5 px-4 text-center font-bold text-gray-800 text-[13px]">{subPercent}%</td>
                     </tr>
                   );
                 })}
                 
                 {/* Grand Total Row */}
-                <tr className="bg-[#fffdf3] border-t-2 border-t-[#da9f47]/50 shadow-[inset_0_0_15px_rgba(218,159,71,0.05)] border-b border-b-gray-100">
-                  <td className="py-5 px-6 font-black text-[#da9f47] text-[15px] uppercase tracking-wider">Grand Total</td>
-                  <td className="py-5 px-6 text-center font-black text-[#da9f47] text-xl">{totalObtained}</td>
-                  <td className="py-5 px-6 text-center font-bold text-gray-600 text-[15px]">{totalMaxMarks}</td>
-                  <td className="py-5 px-6 text-center font-black text-[#1fb981] text-xl">{percentage}%</td>
+                <tr className="bg-gray-100 border-t-2 border-t-gray-500">
+                  <td className="border border-gray-400 py-3 px-4 font-black text-gray-900 text-[14px] uppercase tracking-wider text-right">Grand Total</td>
+                  <td className="border border-gray-400 py-3 px-4 text-center font-black text-[#1e2a5c] text-lg">{totalObtained}</td>
+                  <td className="border border-gray-400 py-3 px-4 text-center font-bold text-gray-700 text-[14px]">{totalMaxMarks}</td>
+                  <td className="border border-gray-400 py-3 px-4 text-center font-black text-[#1fb981] text-lg">{percentage}%</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          {/* Performance Summary Details */}
+          <div className="flex gap-6 mt-4">
+            <div className="w-1/2 border border-gray-400 p-4">
+               <span className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2">Overall Performance Grade</span>
+               <div className={`inline-block border-2 px-6 py-2 ${performanceColor} font-black uppercase tracking-wider text-sm`}>
+                 {performanceRating}
+               </div>
+            </div>
             
-            {/* Overall Performance Badge inside Table Wrapper */}
-            <div className="bg-[#f8f9fc] px-6 py-4 flex items-center justify-between border-t border-gray-100">
-              <span className="font-bold text-[#415fd7] text-[13px] uppercase tracking-widest">Overall Performance</span>
-              <span className={`${performanceColor} text-white px-5 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-md`}>
-                {performanceRating}
-              </span>
-            </div>
-          </div>
-
-          {/* Progress Bar Score Indicator */}
-          <div className="bg-[#f8f9fc] border border-gray-100 rounded-2xl p-6 shadow-sm mt-2">
-            <div className="flex justify-between text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">
-              <span>0</span>
-              <span className="text-gray-400">Score Indicator</span>
-              <span>{totalMaxMarks}</span>
-            </div>
-            <div className="h-3 w-full bg-white border border-gray-200 rounded-full overflow-hidden flex shadow-inner">
-              <div 
-                className="h-full bg-gradient-to-r from-[#0ca4a5] via-[#415fd7] to-[#1e2a5c]" 
-                style={{ width: `${percentNumber}%` }}
-              ></div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Footer Area with Signatures - Absolutely positioned at bottom to ensure consistency */}
-        <div className="absolute bottom-0 w-full px-10 pb-12 pt-6 bg-white">
-          <div className="border-t-2 border-dashed border-gray-200 mb-8 w-full relative">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4">
-               <Award className="w-5 h-5 text-gray-300" />
+            <div className="w-1/2 border border-gray-400 p-4 flex flex-col justify-center">
+              <div className="flex justify-between text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1.5">
+                <span>0</span>
+                <span>Score Graph</span>
+                <span>{totalMaxMarks}</span>
+              </div>
+              <div className="h-4 w-full border border-gray-300 bg-gray-100 flex p-0.5">
+                <div 
+                  className="h-full bg-[#1e2a5c]" 
+                  style={{ width: `${percentNumber}%` }}
+                ></div>
+              </div>
             </div>
           </div>
           
+        </div>
+
+        {/* Footer Area with Signatures - Kept at bottom */}
+        <div className="w-full px-10 pb-16 pt-8 bg-white border-t border-gray-200 mt-auto">
           <div className="flex justify-between items-end">
-            <div className="text-center w-48">
-              <div className="h-20 flex items-end justify-center mb-2">
-                {/* Class Teacher Signature Placeholder */}
-                <div className="text-blue-800/60 font-signature text-[28px] transform -rotate-12" style={{ fontFamily: '"Brush Script MT", cursive' }}>Signature</div>
-              </div>
-              <div className="border-t-2 border-dashed border-gray-300 pt-2">
-                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Class Teacher</p>
-              </div>
-            </div>
-            
-            <div className="text-center pb-2">
-              <h2 className="text-2xl font-black text-[#1e2a5c] tracking-tight">{totalObtained} <span className="text-lg text-gray-400">/ {totalMaxMarks}</span></h2>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Overall Score</p>
-            </div>
             
             <div className="text-center w-48">
-              <div className="h-20 flex items-end justify-center mb-2 relative">
-                {principalSignatureUrl ? (
-                  <img src={principalSignatureUrl} crossOrigin="anonymous" alt="Principal Signature" className="max-h-16 object-contain mix-blend-multiply" />
+              <div className="h-16 flex items-end justify-center mb-2 relative">
+                {teacherSignatureUrl ? (
+                  <img src={teacherSignatureUrl} crossOrigin="anonymous" alt="Teacher Signature" className="max-h-14 object-contain mix-blend-multiply" />
                 ) : (
-                  <div className="text-green-800/60 font-signature text-[28px] transform -rotate-12" style={{ fontFamily: '"Brush Script MT", cursive' }}>Principal</div>
+                  <div className="text-blue-800/60 font-signature text-[22px] transform -rotate-12" style={{ fontFamily: '"Brush Script MT", cursive' }}>Signature</div>
                 )}
               </div>
-              <div className="border-t-2 border-dashed border-gray-300 pt-2">
-                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Principal</p>
+              <div className="border-t border-gray-800 pt-1">
+                <p className="text-[12px] font-bold text-gray-800 uppercase tracking-widest">Class Teacher</p>
               </div>
             </div>
+            
+            {/* Authenticity Stamp / Note */}
+            <div className="text-center pb-1">
+               <div className="w-16 h-16 rounded-full border-2 border-gray-300 flex items-center justify-center mx-auto mb-2 opacity-50">
+                 <span className="text-[10px] font-bold text-gray-400 uppercase rotate-[-30deg] tracking-wider">Valid</span>
+               </div>
+               <p className="text-[9px] text-gray-400 uppercase tracking-wider">System Generated Result</p>
+            </div>
+            
+            <div className="text-center w-48">
+              <div className="h-16 flex items-end justify-center mb-2 relative">
+                {principalSignatureUrl ? (
+                  <img src={principalSignatureUrl} crossOrigin="anonymous" alt="Principal Signature" className="max-h-14 object-contain mix-blend-multiply" />
+                ) : (
+                  <div className="text-green-800/60 font-signature text-[22px] transform -rotate-12" style={{ fontFamily: '"Brush Script MT", cursive' }}>Signature</div>
+                )}
+              </div>
+              <div className="border-t border-gray-800 pt-1">
+                <p className="text-[12px] font-bold text-gray-800 uppercase tracking-widest">Principal</p>
+              </div>
+            </div>
+            
           </div>
         </div>
         

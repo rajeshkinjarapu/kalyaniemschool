@@ -28,6 +28,7 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   const [published, setPublished] = useState(false);
   const [instructions, setInstructions] = useState('Candidate must carry this Admit Card to the examination hall.\nElectronic devices including calculators and mobile phones are strictly prohibited.\nCandidate should report to the examination center 30 minutes before commencement.');
   const [signatureUrl, setSignatureUrl] = useState('');
+  const [teacherSignatureUrl, setTeacherSignatureUrl] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [examTitleOverride, setExamTitleOverride] = useState('');
   const [examCenterOverride, setExamCenterOverride] = useState('');
@@ -39,6 +40,7 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
       const settings = selectedExam.admitCardSettings || {};
       setInstructions(settings.instructions || 'Candidate must carry this Admit Card to the examination hall.\nElectronic devices including calculators and mobile phones are strictly prohibited.\nCandidate should report to the examination center 30 minutes before commencement.');
       setSignatureUrl(settings.signatureUrl || '');
+      setTeacherSignatureUrl(settings.teacherSignatureUrl || '');
       setLogoUrl(settings.logoUrl || '');
       setExamTitleOverride(settings.examTitleOverride || '');
       setExamCenterOverride(settings.examCenterOverride || '');
@@ -72,6 +74,33 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const generatePDFForElement = async (el: HTMLElement, fileName: string) => {
+    const originalDisplay = el.style.display;
+    el.style.display = 'flex';
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const imgData = await toJpeg(el, { cacheBust: true, pixelRatio: 2, quality: 0.95, backgroundColor: '#ffffff' });
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (el.offsetHeight * pdfWidth) / el.offsetWidth;
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+    el.style.display = originalDisplay;
+    return pdf;
+  };
+
+  const handleDownloadSingle = async (studentName: string, index: number) => {
+    const el = document.getElementById(`admit-card-${index}`);
+    if (!el) return toast.error('Could not find card element');
+    const toastId = toast.loading(`Generating PDF for ${studentName}...`);
+    try {
+      const pdf = await generatePDFForElement(el, studentName);
+      pdf.save(`${studentName}_AdmitCard.pdf`);
+      toast.success('Downloaded successfully!', { id: toastId });
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Failed to generate PDF', { id: toastId });
+    }
   };
 
   const handleDownloadAll = async () => {
@@ -143,6 +172,7 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         admitCardSettings: {
           instructions,
           signatureUrl,
+          teacherSignatureUrl,
           logoUrl,
           examTitleOverride,
           examCenterOverride,
@@ -153,14 +183,14 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
       // Update local object to avoid fetching again
       if (selectedExam) {
         selectedExam.admitCardPublished = published;
-        selectedExam.admitCardSettings = { instructions, signatureUrl, logoUrl, examTitleOverride, examCenterOverride, schedule };
+        selectedExam.admitCardSettings = { instructions, signatureUrl, teacherSignatureUrl, logoUrl, examTitleOverride, examCenterOverride, schedule };
       }
     } catch (e: any) {
       toast.error('Failed to save settings: ' + e.message);
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'signature' | 'logo') => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'signature' | 'teacherSignature' | 'logo') => {
     const file = e.target.files?.[0];
     if (!file) return;
     const formData = new FormData();
@@ -170,8 +200,9 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       if (type === 'signature') setSignatureUrl(res.data.url);
+      if (type === 'teacherSignature') setTeacherSignatureUrl(res.data.url);
       if (type === 'logo') setLogoUrl(res.data.url);
-      toast.success(`${type === 'logo' ? 'Logo' : 'Signature'} uploaded!`);
+      toast.success(`${type === 'logo' ? 'Logo' : type === 'signature' ? 'Principal Signature' : 'Teacher Signature'} uploaded!`);
     } catch (err) {
       toast.error('Failed to upload image');
     }
@@ -320,6 +351,19 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                 </label>
               </div>
 
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mt-4">Teacher Signature Image</label>
+              <div className="flex items-center gap-4">
+                {teacherSignatureUrl ? (
+                  <img src={teacherSignatureUrl} alt="Teacher Signature" className="h-16 object-contain border border-gray-200 rounded p-1" />
+                ) : (
+                  <div className="h-16 w-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center text-xs text-gray-400">No Image</div>
+                )}
+                <label className="btn-secondary cursor-pointer flex items-center gap-2">
+                  <Upload className="w-4 h-4" /> Upload
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'teacherSignature')} />
+                </label>
+              </div>
+
               <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mt-4">School Logo Image</label>
               <div className="flex items-center gap-4">
                 {logoUrl ? (
@@ -403,30 +447,30 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
 
       {!loading && students.length > 0 && (
         <>
-          <div className="card print:hidden overflow-hidden">
-            <table className="w-full text-sm text-left">
+          <div className="card print:hidden overflow-hidden w-full overflow-x-auto">
+            <table className="w-full text-sm text-left whitespace-nowrap">
               <thead className="bg-gray-50 text-gray-600 font-bold uppercase text-xs">
                 <tr>
-                  <th className="py-3 px-4 hidden sm:table-cell">S.No</th>
+                  <th className="py-3 px-4">S.No</th>
                   <th className="py-3 px-4">Student Name</th>
-                  <th className="py-3 px-4 hidden sm:table-cell">Roll Number</th>
-                  <th className="py-3 px-4 text-right hidden sm:table-cell">Action</th>
+                  <th className="py-3 px-4">Roll Number</th>
+                  <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {students.map((student, idx) => (
                   <tr key={student.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-4 font-bold text-gray-500 hidden sm:table-cell">{idx + 1}</td>
-                    <td className="py-3 px-4 font-bold text-gray-900 flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">
+                    <td className="py-3 px-4 font-bold text-gray-500">{idx + 1}</td>
+                    <td className="py-3 px-4 font-bold text-gray-900 flex items-center gap-2 max-w-[200px] overflow-hidden text-ellipsis">
+                      <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold shrink-0">
                         {student.user?.name?.[0] || 'S'}
                       </div>
-                      {student.user?.name || student.name}
+                      <span className="truncate">{student.user?.name || student.name}</span>
                     </td>
-                    <td className="py-3 px-4 text-gray-600 font-medium hidden sm:table-cell">{student.rollNo || '-'}</td>
+                    <td className="py-3 px-4 text-gray-600 font-medium">{student.rollNo || '-'}</td>
                     <td className="py-3 px-4 text-right">
-                      <button onClick={() => window.open(`/admit-card-view/${selectedExamId}?studentId=${student.id}`, '_blank')} className="btn-secondary text-xs flex items-center gap-1 ml-auto">
-                        <ExternalLink className="w-3.5 h-3.5" /> View Admit Card
+                      <button onClick={() => handleDownloadSingle(student.user?.name || student.name, idx)} className="btn-secondary text-xs flex items-center gap-1 ml-auto">
+                        <Download className="w-3.5 h-3.5" /> Download PDF
                       </button>
                     </td>
                   </tr>
@@ -459,8 +503,10 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
             }
           `}} />
           
-            {students.map((student) => (
-              <AdmitCardTemplate key={student.id} student={student} exam={selectedExam} examPlans={examPlans} className={selectedClass?.name} section={selectedClass?.section} />
+            {students.map((student, idx) => (
+              <div key={student.id} id={`admit-card-${idx}`} className="w-full flex justify-center bg-white">
+                <AdmitCardTemplate student={student} exam={selectedExam} examPlans={examPlans} className={selectedClass?.name} section={selectedClass?.section} />
+              </div>
             ))}
           </div>
         </>

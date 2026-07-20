@@ -23,6 +23,8 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   const [showSettings, setShowSettings] = useState(false);
   const [logoUrl, setLogoUrl] = useState('');
   const [signatureUrl, setSignatureUrl] = useState('');
+  const [teacherSignatureUrl, setTeacherSignatureUrl] = useState('');
+  const [published, setPublished] = useState(false);
 
   const selectedExam = exams.find(e => e.id === selectedExamId);
 
@@ -30,6 +32,8 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     if (selectedExam) {
       setLogoUrl(selectedExam.admitCardSettings?.logoUrl || '');
       setSignatureUrl(selectedExam.admitCardSettings?.signatureUrl || '');
+      setTeacherSignatureUrl(selectedExam.admitCardSettings?.teacherSignatureUrl || '');
+      setPublished(selectedExam.progressCardPublished || false);
     }
   }, [selectedExam]);
 
@@ -76,7 +80,7 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     fetchExamData();
   }, [selectedExamId, selectedClassId]);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'signature' | 'logo') => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'signature' | 'teacherSignature' | 'logo') => {
     const file = e.target.files?.[0];
     if (!file) return;
     const formData = new FormData();
@@ -86,8 +90,9 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       if (type === 'signature') setSignatureUrl(res.data.url);
+      if (type === 'teacherSignature') setTeacherSignatureUrl(res.data.url);
       if (type === 'logo') setLogoUrl(res.data.url);
-      toast.success(`${type === 'logo' ? 'Logo' : 'Signature'} uploaded!`);
+      toast.success(`${type === 'logo' ? 'Logo' : type === 'signature' ? 'Principal Signature' : 'Teacher Signature'} uploaded!`);
     } catch (err) {
       toast.error('Failed to upload image');
     }
@@ -97,16 +102,18 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     if (!selectedExamId) return;
     try {
       const currentSettings = selectedExam?.admitCardSettings || {};
-      const newSettings = { ...currentSettings, logoUrl, signatureUrl };
+      const newSettings = { ...currentSettings, logoUrl, signatureUrl, teacherSignatureUrl };
       
       await api.post(`/api/exams/${selectedExamId}/admit-card-settings`, {
         admitCardPublished: selectedExam?.admitCardPublished || false,
-        admitCardSettings: newSettings
+        admitCardSettings: newSettings,
+        progressCardPublished: published
       });
       
       toast.success('Settings saved successfully!');
       if (selectedExam) {
         selectedExam.admitCardSettings = newSettings;
+        selectedExam.progressCardPublished = published;
       }
       setShowSettings(false);
     } catch (e: any) {
@@ -249,9 +256,59 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         
         <div className="flex gap-2">
           {isSuperAdmin && selectedExam && (
-            <button onClick={() => setShowSettings(!showSettings)} className="btn-secondary flex items-center gap-2">
-              <Settings className="w-4 h-4" /> Settings
-            </button>
+            <>
+              {!published ? (
+                <button 
+                  onClick={async () => {
+                    setPublished(true);
+                    try {
+                      await api.post(`/api/exams/${selectedExamId}/admit-card-settings`, {
+                        admitCardPublished: selectedExam.admitCardPublished || false,
+                        admitCardSettings: selectedExam.admitCardSettings || {},
+                        progressCardPublished: true
+                      });
+                      toast.success('Progress Cards published to Teachers & Students!');
+                      if (selectedExam) selectedExam.progressCardPublished = true;
+                    } catch (e: any) {
+                      toast.error('Failed to publish');
+                      setPublished(false);
+                    }
+                  }} 
+                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2"
+                >
+                  <CheckCircle className="w-4 h-4" /> Publish Cards
+                </button>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" /> Published
+                  </span>
+                  <button 
+                    onClick={async () => {
+                      setPublished(false);
+                      try {
+                        await api.post(`/api/exams/${selectedExamId}/admit-card-settings`, {
+                          admitCardPublished: selectedExam.admitCardPublished || false,
+                          admitCardSettings: selectedExam.admitCardSettings || {},
+                          progressCardPublished: false
+                        });
+                        toast.success('Progress Cards unpublished!');
+                        if (selectedExam) selectedExam.progressCardPublished = false;
+                      } catch (e: any) {
+                        toast.error('Failed to unpublish');
+                        setPublished(true);
+                      }
+                    }}
+                    className="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2"
+                  >
+                    Unpublish
+                  </button>
+                </div>
+              )}
+              <button onClick={() => setShowSettings(!showSettings)} className="btn-secondary flex items-center gap-2">
+                <Settings className="w-4 h-4" /> Settings
+              </button>
+            </>
           )}
           {studentsData.length > 0 && (
             <>
@@ -300,6 +357,19 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                 <label className="btn-secondary cursor-pointer flex items-center gap-2">
                   <Upload className="w-4 h-4" /> Upload Signature
                   <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'signature')} />
+                </label>
+              </div>
+
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mt-4">Teacher Signature Image</label>
+              <div className="flex items-center gap-4">
+                {teacherSignatureUrl ? (
+                  <img src={teacherSignatureUrl} alt="Teacher Signature" className="h-16 object-contain border border-gray-200 rounded p-1" />
+                ) : (
+                  <div className="h-16 w-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center text-xs text-gray-400 bg-gray-50">No Signature</div>
+                )}
+                <label className="btn-secondary cursor-pointer flex items-center gap-2">
+                  <Upload className="w-4 h-4" /> Upload Signature
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'teacherSignature')} />
                 </label>
               </div>
             </div>
