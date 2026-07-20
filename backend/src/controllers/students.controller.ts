@@ -11,6 +11,7 @@ import { Readable } from 'stream';
 import AdmZip from 'adm-zip';
 import path from 'path';
 import fs from 'fs';
+import { clearDashboardCache } from './dashboard.controller';
 
 export const getAll = async (req: AuthRequest, res: Response): Promise<void> => {
   const page = parseInt(req.query.page as string) || 1;
@@ -102,6 +103,7 @@ export const create = async (req: Request, res: Response, next: NextFunction): P
     },
   });
 
+  clearDashboardCache();
   successResponse(res, student, 'Student created', 201);
 };
 
@@ -168,6 +170,7 @@ export const deleteStudent = async (req: AuthRequest, res: Response, next: NextF
       prisma.student.deleteMany({ where: { id } }),
       prisma.user.deleteMany({ where: { id: student.userId } }),
     ]);
+    clearDashboardCache();
     successResponse(res, null, 'Student deleted');
   } catch (err) {
     next(err);
@@ -196,8 +199,8 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
       return normalizedRow;
     }).filter(r => r.name || r.studentname || r.firstname);
 
-    if (results.length > 500) {
-      return next(createError('Please upload maximum 500 students at a time', 400));
+    if (results.length > 5000) {
+      return next(createError('Please upload maximum 5000 students at a time', 400));
     }
 
     let success = 0;
@@ -350,6 +353,7 @@ export const bulkImport = async (req: AuthRequest, res: Response, next: NextFunc
       console.error('File cleanup failed:', e);
     }
 
+    clearDashboardCache();
     successResponse(res, { success, failed, total: results.length }, 'Bulk import complete');
   } catch (error) {
     next(error);
