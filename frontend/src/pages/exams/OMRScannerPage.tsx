@@ -121,38 +121,148 @@ export const OMRScannerPage: React.FC = () => {
     }
   };
 
+  // ── EXACT AUTO-CALIBRATED COORDINATES ──────────────────────
+  const TARGET_W = 1200;
+  const TARGET_H = 1600;
+  const GRID_Y_START = 752;
+  const GRID_ROW_SPACING = 41;
+
+  const GROUPS_X = [
+    [132, 169, 208, 248],    // Group 1  (Q01–Q15)
+    [350, 389, 426, 464],    // Group 2  (Q16–Q30)
+    [567, 603, 641, 679],    // Group 3  (Q31–Q45)
+    [780, 816, 855, 889],    // Group 4  (Q46–Q60)
+    [993, 1031, 1069, 1107], // Group 5  (Q61–Q75)
+  ];
+  const OPTIONS = ['A', 'B', 'C', 'D'];
+
+  const ID_GRID_Y_START = 205;
+  const ID_GRID_ROW_SPACING = 31;
+  const ID_COLS_X = [121, 153, 185, 217, 248, 280, 312];
+
+  const processOmrImageBrowser = (file: File): Promise<OMRResult> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = TARGET_W;
+        canvas.height = TARGET_H;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject('Canvas context error');
+
+        // Draw & Resize to target 1200x1600
+        ctx.drawImage(img, 0, 0, TARGET_W, TARGET_H);
+        const imgData = ctx.getImageData(0, 0, TARGET_W, TARGET_H);
+        const data = imgData.data;
+
+        // Grayscale mean pixel function
+        const getMeanIntensity = (cx: number, cy: number, r: number = 13): number => {
+          let total = 0;
+          let count = 0;
+          const startX = Math.max(0, cx - r);
+          const endX = Math.min(TARGET_W, cx + r);
+          const startY = Math.max(0, cy - r);
+          const endY = Math.min(TARGET_H, cy + r);
+
+          for (let y = startY; y < endY; y++) {
+            for (let x = startX; x < endX; x++) {
+              const idx = (y * TARGET_W + x) * 4;
+              // Grayscale: 0.299R + 0.587G + 0.114B
+              const gray = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
+              total += gray;
+              count++;
+            }
+          }
+          return count > 0 ? total / count : 255;
+        };
+
+        // 1. Detect Student ID
+        const sidDigits: string[] = [];
+        ID_COLS_X.forEach((colX) => {
+          const vals: number[] = [];
+          for (let digit = 0; digit < 10; digit++) {
+            const y = ID_GRID_Y_START + digit * ID_GRID_ROW_SPACING;
+            vals.push(getMeanIntensity(colX, y, 10));
+          }
+          const minVal = Math.min(...vals);
+          if (minVal < 140) {
+            sidDigits.push(vals.indexOf(minVal).toString());
+          } else {
+            sidDigits.push('?');
+          }
+        });
+        const studentId = sidDigits.join('');
+
+        // 2. Detect Question Answers (1 to 75)
+        const answers: Record<string, string | null> = {};
+        let filledCount = 0;
+
+        GROUPS_X.forEach((gxs, gIdx) => {
+          for (let row = 0; row < 15; row++) {
+            const q = gIdx * 15 + row + 1;
+            const y = GRID_Y_START + row * GRID_ROW_SPACING;
+
+            const vals = gxs.map((x) => getMeanIntensity(x, y, 13));
+            const minVal = Math.min(...vals);
+
+            if (minVal < 140) {
+              const optIdx = vals.indexOf(minVal);
+              answers[q.toString()] = OPTIONS[optIdx];
+              filledCount++;
+            } else {
+              answers[q.toString()] = null;
+            }
+          }
+        });
+
+        // 3. Calculate Scores if Answer Key present
+        let score: number | null = null;
+        let correctCount: number | null = null;
+        let wrongCount: number | null = null;
+
+        if (parsedAnswerKey) {
+          correctCount = 0;
+          wrongCount = 0;
+          Object.entries(parsedAnswerKey).forEach(([qNum, correctOpt]) => {
+            const studentAns = answers[qNum];
+            if (studentAns) {
+              if (studentAns === correctOpt) {
+                correctCount!++;
+              } else {
+                wrongCount!++;
+              }
+            }
+          });
+          score = correctCount * 4; // 0 negative marking
+        }
+
+        resolve({
+          student_id: studentId,
+          answers,
+          total_questions: 75,
+          filled_count: filledCount,
+          blank_count: 75 - filledCount,
+          score,
+          correct_count: correctCount,
+          wrong_count: wrongCount,
+          max_score: parsedAnswerKey ? Object.keys(parsedAnswerKey).length * 4 : 300
+        });
+      };
+      img.onerror = () => reject('Failed to load image');
+    });
+  };
+
   const handleUpload = async () => {
     if (files.length === 0) return;
     setIsUploading(true);
     setError(null);
 
     try {
-      const file = files[0];
-      const base64Image = await fileToBase64(file);
-
-      const response = await fetch('/api/omr', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          image: base64Image,
-          answer_key: parsedAnswerKey 
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server returned error status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setResults(data);
-      } else {
-        throw new Error(data.error || 'Failed to scan OMR sheet');
-      }
+      const res = await processOmrImageBrowser(files[0]);
+      setResults(res);
     } catch (err: any) {
-      setError(err.message || 'An error occurred during OMR scan');
+      setError(err?.toString() || 'An error occurred during OMR processing');
     } finally {
       setIsUploading(false);
     }
