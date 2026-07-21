@@ -220,7 +220,7 @@ export const router = createBrowserRouter([
       {
         path: 'exams/omr-scanner',
         element: withSuspense(
-          <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TEACHER']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <OMRScannerPage />
           </ProtectedRoute>
         ),
