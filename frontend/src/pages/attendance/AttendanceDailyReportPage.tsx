@@ -125,7 +125,7 @@ export default function AttendanceDailyReportPage() {
               <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500 rounded-full blur-[100px] opacity-30"></div>
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500 rounded-full blur-[100px] opacity-30"></div>
               
-              <h1 className="text-6xl font-black uppercase text-white tracking-widest drop-shadow-2xl relative z-10 mb-4">SRI VENKATESWARA JY SCHOOL</h1>
+              <h1 className="text-5xl whitespace-nowrap font-black uppercase text-white tracking-widest drop-shadow-2xl relative z-10 mb-4">SRI VENKATESWARA JY SCHOOL</h1>
               <p className="text-2xl font-bold text-indigo-200 uppercase tracking-[0.3em] relative z-10 mb-8">Daily Attendance Report</p>
               
               <div className="inline-flex items-center justify-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 px-10 py-4 rounded-full font-black text-2xl text-white relative z-10 shadow-2xl">
@@ -155,28 +155,28 @@ export default function AttendanceDailyReportPage() {
                 ))}
               </div>
 
-              {/* Class-wise Grid to fit on one page */}
-              <div className="flex-1 min-h-0">
-                <div className="grid grid-cols-3 gap-6 auto-rows-max">
-                  {data.map((row) => (
-                    <div key={row.classId} className="bg-white border-2 border-slate-100 rounded-2xl overflow-hidden shadow-sm flex flex-col">
-                      <div className="bg-slate-800 text-white px-4 py-3 flex justify-between items-center">
-                        <span className="text-xl font-black tracking-wider truncate">{row.className}</span>
-                        <span className="text-sm font-bold bg-white/20 px-3 py-1 rounded-full">{row.total} Total</span>
-                      </div>
-                      <div className="grid grid-cols-2 divide-x divide-slate-100">
-                        <div className="p-4 flex flex-col items-center justify-center bg-emerald-50/30">
-                          <span className="text-sm font-bold text-emerald-600 uppercase tracking-widest mb-1">Present</span>
-                          <span className="text-3xl font-black text-emerald-600">{row.present}</span>
-                        </div>
-                        <div className="p-4 flex flex-col items-center justify-center bg-rose-50/30">
-                          <span className="text-sm font-bold text-rose-600 uppercase tracking-widest mb-1">Absent</span>
-                          <span className="text-3xl font-black text-rose-600">{row.absent}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              {/* Class-wise Table */}
+              <div className="flex-1 min-h-0 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-800 text-white">
+                      <th className="py-4 px-6 font-black uppercase tracking-widest text-lg">Class</th>
+                      <th className="py-4 px-6 font-black uppercase tracking-widest text-lg text-center">Total Students</th>
+                      <th className="py-4 px-6 font-black uppercase tracking-widest text-lg text-center text-emerald-400">Present</th>
+                      <th className="py-4 px-6 font-black uppercase tracking-widest text-lg text-center text-rose-400">Absent</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {data.map((row, index) => (
+                      <tr key={row.classId} className={index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                        <td className="py-3 px-6 font-bold text-xl text-slate-800 border-r border-slate-100">{row.className}</td>
+                        <td className="py-3 px-6 font-bold text-xl text-center text-slate-600 border-r border-slate-100">{row.total}</td>
+                        <td className="py-3 px-6 font-black text-2xl text-center text-emerald-600 bg-emerald-50/30 border-r border-slate-100">{row.present}</td>
+                        <td className="py-3 px-6 font-black text-2xl text-center text-rose-600 bg-rose-50/30">{row.absent}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
 
               {/* Footer Signature Area */}
