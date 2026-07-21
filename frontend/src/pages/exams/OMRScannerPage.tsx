@@ -231,7 +231,7 @@ export const OMRScannerPage: React.FC = () => {
           }
         }
 
-        const studentId = "JY26" + last4Digits.join('');
+        const studentId = "JY26-" + last4Digits.join('');
 
         // 2. Answers with Local Centroid Snap Lock
         const answers: Record<string, string | null> = {};
