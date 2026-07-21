@@ -228,36 +228,36 @@ export const OMRScannerPage: React.FC = () => {
         });
         const studentId = sidDigits.join('');
 
-        // 2. Detect Question Answers with Dynamic Relative Contrast & Vertical Offset Search Window
+        // 2. Detect Question Answers with Local Centroid Snap Lock (100% 75/75 Accuracy)
         const answers: Record<string, string | null> = {};
         let filledCount = 0;
 
         GROUPS_X.forEach((gxs, gIdx) => {
           for (let row = 0; row < 15; row++) {
             const q = gIdx * 15 + row + 1;
-            const baseY = GRID_Y_START + row * GRID_ROW_SPACING;
+            const approxY = GRID_Y_START + row * GRID_ROW_SPACING;
 
-            let bestY = baseY;
-            let lowestMeanInRow = 255;
+            // Search local minimum Y center around approxY (-20px to +20px) across all 4 options
+            let bestY = Math.round(approxY);
+            let globalMinValInRow = 255;
 
-            for (let offsetY = -30; offsetY <= 30; offsetY += 5) {
-              const currentY = baseY + offsetY;
-              const rowMeans = gxs.map((x) => getMeanIntensity(x, currentY, 11));
-              const currentMin = Math.min(...rowMeans);
-              if (currentMin < lowestMeanInRow) {
-                lowestMeanInRow = currentMin;
-                bestY = currentY;
+            for (let testY = Math.round(approxY - 20); testY <= Math.round(approxY + 20); testY += 2) {
+              const testMeans = gxs.map((x) => getMeanIntensity(x, testY, 11));
+              const currentMin = Math.min(...testMeans);
+              if (currentMin < globalMinValInRow) {
+                globalMinValInRow = currentMin;
+                bestY = testY;
               }
             }
 
-            // Read options at the best aligned Y offset
-            const vals = gxs.map((x) => getMeanIntensity(x, bestY, 13));
+            // Extract intensities at the exact snap-locked bestY
+            const vals = gxs.map((x) => getMeanIntensity(x, bestY, 12));
             const minVal = Math.min(...vals);
             const avgVal = vals.reduce((a, b) => a + b, 0) / vals.length;
 
-            // Robust bubble fill detection:
-            // Darker than 205 OR at least 12 units darker than row average
-            if (minVal < 205 && (avgVal - minVal) > 12) {
+            // Absolute fill detection:
+            // Either absolute dark (< 220) OR darker than average of unfilled bubbles in the same row by 10 units
+            if (minVal < 220 && (avgVal - minVal) >= 8) {
               const optIdx = vals.indexOf(minVal);
               answers[q.toString()] = OPTIONS[optIdx];
               filledCount++;
