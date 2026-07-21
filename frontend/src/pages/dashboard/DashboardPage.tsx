@@ -92,16 +92,25 @@ const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }>
       
       {/* Glass Panel Content */}
       <div className="relative z-10 p-4 sm:p-5 md:p-6 flex items-center justify-between gap-3 md:gap-6 h-full">
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center min-w-0 flex-1">
           <p className="text-indigo-300/80 text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em] mb-1 md:mb-2 flex items-center gap-1.5 md:gap-2">
             <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-400 animate-ping absolute" />
             <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-400 relative" />
             {greeting}
           </p>
-          <h1 className="text-[26px] sm:text-4xl md:text-5xl font-black text-white mb-1.5 md:mb-2 tracking-tight whitespace-nowrap truncate max-w-full">
-            {name}
+          <h1 className="text-[20px] sm:text-3xl md:text-5xl font-black text-white mb-1.5 md:mb-2 tracking-tight whitespace-nowrap truncate max-w-full">
+            {(() => {
+              if (!name) return '';
+              if (name.length <= 15) return name;
+              const parts = name.split(' ').filter(Boolean);
+              if (parts.length >= 3) {
+                const initials = parts.slice(0, -1).map(p => p.replace(/[^A-Za-z]/g, '')[0] || '').join('').toUpperCase();
+                return `${initials} ${parts[parts.length - 1]}`;
+              }
+              return name;
+            })()}
           </h1>
-          <p className="text-indigo-100/90 text-[10px] sm:text-sm md:text-base font-semibold mb-3 md:mb-4">{roleLabel[role] || role} <span className="mx-1.5 md:mx-2 opacity-50">•</span> JY School</p>
+          <p className="text-indigo-100/90 text-[10px] sm:text-sm md:text-base font-semibold mb-3 md:mb-4 truncate">{roleLabel[role] || role} <span className="mx-1.5 md:mx-2 opacity-50">•</span> JY School</p>
           
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2.5 rounded-[0.8rem] md:rounded-[1rem] bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors shadow-inner">
