@@ -20,11 +20,30 @@ export const OMRScannerPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [keyTab, setKeyTab] = useState<'manual' | 'excel'>('manual');
-  
-  // Quick Answer Key configuration state
+
+  // Answer Key configuration state
   const [answerKeyInput, setAnswerKeyInput] = useState<string>('');
   const [manualGridKey, setManualGridKey] = useState<Record<string, string>>({});
   const [parsedAnswerKey, setParsedAnswerKey] = useState<Record<string, string> | null>(null);
+
+  // ── EXACT AUTO-CALIBRATED COORDINATES ──────────────────────
+  const TARGET_W = 1200;
+  const TARGET_H = 1600;
+  const GRID_Y_START = 752;
+  const GRID_ROW_SPACING = 41;
+
+  const GROUPS_X = [
+    [132, 169, 208, 248],    // Group 1  (Q01–Q15)
+    [350, 389, 426, 464],    // Group 2  (Q16–Q30)
+    [567, 603, 641, 679],    // Group 3  (Q31–Q45)
+    [780, 816, 855, 889],    // Group 4  (Q46–Q60)
+    [993, 1031, 1069, 1107], // Group 5  (Q61–Q75)
+  ];
+  const OPTIONS = ['A', 'B', 'C', 'D'];
+
+  const ID_GRID_Y_START = 205;
+  const ID_GRID_ROW_SPACING = 31;
+  const ID_COLS_X = [121, 153, 185, 217, 248, 280, 312];
 
   const handleGridSelect = (qNum: string, option: string) => {
     setManualGridKey((prev) => {
@@ -46,7 +65,6 @@ export const OMRScannerPage: React.FC = () => {
       if (i > 25 && i <= 50) subject = 'Physics';
       if (i > 50) subject = 'Chemistry';
       
-      // Default sample answers pattern
       const sampleOpts = ['A', 'B', 'C', 'D'];
       const sampleAns = sampleOpts[(i - 1) % 4];
       csvContent += `${i},${subject},${sampleAns}\n`;
@@ -61,6 +79,8 @@ export const OMRScannerPage: React.FC = () => {
     link.click();
     document.body.removeChild(link);
   };
+
+  const handleExcelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -70,7 +90,6 @@ export const OMRScannerPage: React.FC = () => {
         const text = evt.target?.result as string;
         const keyObj: Record<string, string> = {};
         
-        // Parse CSV or Text lines
         const lines = text.split(/\r?\n/);
         let qCount = 1;
         
@@ -92,6 +111,7 @@ export const OMRScannerPage: React.FC = () => {
 
         if (Object.keys(keyObj).length > 0) {
           setParsedAnswerKey(keyObj);
+          setManualGridKey(keyObj);
           alert(`Successfully loaded Answer Key with ${Object.keys(keyObj).length} questions from file!`);
           setShowKeyModal(false);
         } else {
@@ -113,54 +133,6 @@ export const OMRScannerPage: React.FC = () => {
     }
   };
 
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (err) => reject(err);
-    });
-  };
-
-  const handleSaveAnswerKey = () => {
-    // Parse comma-separated or space-separated answers like "A,B,C,D..." or "1:A 2:B"
-    try {
-      const keyObj: Record<string, string> = {};
-      const tokens = answerKeyInput.toUpperCase().trim().split(/[\s,]+/);
-      tokens.forEach((token, idx) => {
-        if (token.includes(':')) {
-          const [q, a] = token.split(':');
-          if (q && ['A','B','C','D'].includes(a)) keyObj[q] = a;
-        } else if (['A','B','C','D'].includes(token)) {
-          keyObj[(idx + 1).toString()] = token;
-        }
-      });
-      setParsedAnswerKey(Object.keys(keyObj).length > 0 ? keyObj : null);
-      setShowKeyModal(false);
-    } catch {
-      alert('Invalid Answer Key format. Enter options like: A, B, C, D...');
-    }
-  };
-
-  // ── EXACT AUTO-CALIBRATED COORDINATES ──────────────────────
-  const TARGET_W = 1200;
-  const TARGET_H = 1600;
-  const GRID_Y_START = 752;
-  const GRID_ROW_SPACING = 41;
-
-  const GROUPS_X = [
-    [132, 169, 208, 248],    // Group 1  (Q01–Q15)
-    [350, 389, 426, 464],    // Group 2  (Q16–Q30)
-    [567, 603, 641, 679],    // Group 3  (Q31–Q45)
-    [780, 816, 855, 889],    // Group 4  (Q46–Q60)
-    [993, 1031, 1069, 1107], // Group 5  (Q61–Q75)
-  ];
-  const OPTIONS = ['A', 'B', 'C', 'D'];
-
-  const ID_GRID_Y_START = 205;
-  const ID_GRID_ROW_SPACING = 31;
-  const ID_COLS_X = [121, 153, 185, 217, 248, 280, 312];
-
   const processOmrImageBrowser = (file: File): Promise<OMRResult> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -172,12 +144,10 @@ export const OMRScannerPage: React.FC = () => {
         const ctx = canvas.getContext('2d');
         if (!ctx) return reject('Canvas context error');
 
-        // Draw & Resize to target 1200x1600
         ctx.drawImage(img, 0, 0, TARGET_W, TARGET_H);
         const imgData = ctx.getImageData(0, 0, TARGET_W, TARGET_H);
         const data = imgData.data;
 
-        // Grayscale mean pixel function
         const getMeanIntensity = (cx: number, cy: number, r: number = 13): number => {
           let total = 0;
           let count = 0;
@@ -189,7 +159,6 @@ export const OMRScannerPage: React.FC = () => {
           for (let y = startY; y < endY; y++) {
             for (let x = startX; x < endX; x++) {
               const idx = (y * TARGET_W + x) * 4;
-              // Grayscale: 0.299R + 0.587G + 0.114B
               const gray = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
               total += gray;
               count++;
@@ -215,7 +184,7 @@ export const OMRScannerPage: React.FC = () => {
         });
         const studentId = sidDigits.join('');
 
-        // 2. Detect Question Answers (1 to 75)
+        // 2. Detect Question Answers
         const answers: Record<string, string | null> = {};
         let filledCount = 0;
 
@@ -237,7 +206,7 @@ export const OMRScannerPage: React.FC = () => {
           }
         });
 
-        // 3. Calculate Scores if Answer Key present
+        // 3. Score
         let score: number | null = null;
         let correctCount: number | null = null;
         let wrongCount: number | null = null;
@@ -255,7 +224,7 @@ export const OMRScannerPage: React.FC = () => {
               }
             }
           });
-          score = correctCount * 4; // 0 negative marking
+          score = correctCount * 4;
         }
 
         resolve({
@@ -444,7 +413,6 @@ export const OMRScannerPage: React.FC = () => {
                 {Object.entries(results.answers).map(([qNum, ans]) => {
                   const keyAns = parsedAnswerKey?.[qNum];
                   const isCorrect = keyAns && ans === keyAns;
-                  const isWrong = keyAns && ans && ans !== keyAns;
 
                   let cardStyle = 'bg-gray-100 border-gray-200 text-gray-400';
                   if (ans) {
@@ -468,6 +436,23 @@ export const OMRScannerPage: React.FC = () => {
               </div>
             </div>
           )}
+        </div>
+
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm p-6 bg-amber-50 border border-amber-100">
+            <h3 className="text-sm font-bold text-amber-800 flex items-center gap-2 mb-3">
+              <AlertCircle className="w-4 h-4" />
+              Instructions for Best Accuracy
+            </h3>
+            <ul className="text-xs text-amber-700 space-y-2 list-disc pl-4">
+              <li>Use high-resolution flat-bed scanner images for 100% accuracy.</li>
+              <li>Ensure the sheet image includes full boundaries.</li>
+              <li>Bubble markings must be clear with dark blue/black ink.</li>
+              <li>Results display recognized responses for Q01 to Q75.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
       {/* ANSWER KEY MODAL */}
       {showKeyModal && (
@@ -481,12 +466,14 @@ export const OMRScannerPage: React.FC = () => {
             {/* TAB SELECTOR */}
             <div className="flex bg-slate-100 p-1 rounded-xl">
               <button
+                type="button"
                 onClick={() => setKeyTab('manual')}
                 className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${keyTab === 'manual' ? 'bg-white shadow text-indigo-600' : 'text-slate-500'}`}
               >
-                📝 Manual Text / Key Entry
+                📝 Manual Grid Entry
               </button>
               <button
+                type="button"
                 onClick={() => setKeyTab('excel')}
                 className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${keyTab === 'excel' ? 'bg-white shadow text-indigo-600' : 'text-slate-500'}`}
               >
@@ -500,17 +487,16 @@ export const OMRScannerPage: React.FC = () => {
                   <span className="text-xs font-bold text-indigo-900">
                     Quick Key Selection (75 Questions)
                   </span>
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => setAnswerKeyInput('')} 
-                      className="text-[11px] text-red-500 font-semibold hover:underline"
-                    >
-                      Clear All
-                    </button>
-                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => { setManualGridKey({}); setParsedAnswerKey(null); }} 
+                    className="text-[11px] text-red-500 font-semibold hover:underline"
+                  >
+                    Clear All
+                  </button>
                 </div>
 
-                {/* TABULAR GRID FOR 75 QUESTIONS (3 SUBJECTS x 25 Qs) */}
+                {/* TABULAR GRID FOR 75 QUESTIONS */}
                 <div className="max-h-[380px] overflow-y-auto pr-1 space-y-4">
                   {[
                     { title: '📘 Maths (Q01 - Q25)', start: 1, count: 25, color: 'border-blue-200 bg-blue-50/30' },
@@ -585,41 +571,16 @@ export const OMRScannerPage: React.FC = () => {
 
             <div className="flex justify-end gap-3 pt-3 border-t">
               <button 
+                type="button"
                 onClick={() => setShowKeyModal(false)}
                 className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl"
               >
-                Cancel
+                Close
               </button>
-              {keyTab === 'manual' && (
-                <button 
-                  onClick={handleSaveAnswerKey}
-                  className="px-4 py-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm"
-                >
-                  Save Answer Key
-                </button>
-              )}
             </div>
           </div>
         </div>
       )}
-        </div>
-
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-sm p-6 bg-amber-50 border border-amber-100">
-            <h3 className="text-sm font-bold text-amber-800 flex items-center gap-2 mb-3">
-              <AlertCircle className="w-4 h-4" />
-              Instructions for Best Accuracy
-            </h3>
-            <ul className="text-xs text-amber-700 space-y-2 list-disc pl-4">
-              <li>Use high-resolution flat-bed scanner images for 100% accuracy.</li>
-              <li>Ensure the sheet image includes full boundaries.</li>
-              <li>Bubble markings must be clear with dark blue/black ink.</li>
-              <li>Results display recognized responses for Q01 to Q75.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
-
