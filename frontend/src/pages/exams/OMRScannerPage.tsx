@@ -11,6 +11,7 @@ interface OMRResult {
   correct_count?: number | null;
   wrong_count?: number | null;
   max_score?: number;
+  vision_preview?: string;
 }
 
 export const OMRScannerPage: React.FC = () => {
@@ -288,6 +289,53 @@ export const OMRScannerPage: React.FC = () => {
           score = correctCount * 4;
         }
 
+        // Render High-Contrast Black Negative Computer Vision Preview Image
+        const visionCanvas = document.createElement('canvas');
+        visionCanvas.width = TARGET_W;
+        visionCanvas.height = TARGET_H;
+        const vCtx = visionCanvas.getContext('2d');
+        if (vCtx) {
+          vCtx.fillStyle = 'black';
+          vCtx.fillRect(0, 0, TARGET_W, TARGET_H);
+          vCtx.drawImage(canvas, 0, 0);
+
+          // Invert contrast & enhance bubble borders (Negative Vision Mode)
+          const vData = vCtx.getImageData(0, 0, TARGET_W, TARGET_H);
+          const d = vData.data;
+          for (let i = 0; i < d.length; i += 4) {
+            const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+            const inv = 255 - gray;
+            d[i] = inv > 120 ? 255 : inv;
+            d[i + 1] = inv > 120 ? 255 : inv;
+            d[i + 2] = inv > 120 ? 255 : inv;
+          }
+          vCtx.putImageData(vData, 0, 0);
+
+          // Draw green/red highlighted circles on detected bubbles
+          GROUPS_X.forEach((gxs, gIdx) => {
+            for (let row = 0; row < 15; row++) {
+              const q = (gIdx * 15 + row + 1).toString();
+              const y = GRID_Y_START + row * GRID_ROW_SPACING;
+              const detAns = answers[q];
+
+              gxs.forEach((x, optIdx) => {
+                const opt = OPTIONS[optIdx];
+                vCtx.beginPath();
+                vCtx.arc(x, y, 12, 0, 2 * Math.PI);
+                if (detAns === opt) {
+                  vCtx.fillStyle = '#ef4444'; // Red solid for filled answer
+                  vCtx.fill();
+                }
+                vCtx.strokeStyle = '#22c55e'; // Green ring for bubble position
+                vCtx.lineWidth = 2;
+                vCtx.stroke();
+              });
+            }
+          });
+
+          var processedVisionImg = visionCanvas.toDataURL('image/jpeg');
+        }
+
         resolve({
           student_id: studentId,
           answers,
@@ -297,7 +345,8 @@ export const OMRScannerPage: React.FC = () => {
           score,
           correct_count: correctCount,
           wrong_count: wrongCount,
-          max_score: parsedAnswerKey ? Object.keys(parsedAnswerKey).length * 4 : 300
+          max_score: parsedAnswerKey ? Object.keys(parsedAnswerKey).length * 4 : 300,
+          vision_preview: processedVisionImg
         });
       };
       img.onerror = () => reject('Failed to load image');
@@ -443,30 +492,22 @@ export const OMRScannerPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* SUBJECT BREAKDOWN CARDS */}
-                  {parsedAnswerKey && (
-                    <div className="grid grid-cols-3 gap-3 text-center">
-                      {[
-                        { title: '📘 Maths', start: 1, end: 25, color: 'bg-blue-50 border-blue-200 text-blue-900' },
-                        { title: '🟣 Physics', start: 26, end: 50, color: 'bg-purple-50 border-purple-200 text-purple-900' },
-                        { title: '🟡 Chemistry', start: 51, end: 75, color: 'bg-amber-50 border-amber-200 text-amber-900' },
-                      ].map((sub, idx) => {
-                        let subCorrect = 0;
-                        for (let q = sub.start; q <= sub.end; q++) {
-                          const qKey = q.toString();
-                          if (parsedAnswerKey[qKey] && results.answers[qKey] === parsedAnswerKey[qKey]) {
-                            subCorrect++;
-                          }
-                        }
-                        return (
-                          <div key={idx} className={`p-3 rounded-xl border ${sub.color}`}>
-                            <p className="text-xs font-bold">{sub.title}</p>
-                            <p className="text-lg font-extrabold mt-1">{subCorrect * 4} <span className="text-xs font-normal opacity-70">/ 100</span></p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                  {/* COMPUTER VISION HIGH CONTRAST PREVIEW IMAGE */}
+              {results.vision_preview && (
+                <div className="p-4 bg-slate-900 rounded-xl space-y-2 text-white">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
+                      👁️ Computer Vision Inspection View (Negative Contrast Mode)
+                    </span>
+                    <span className="text-[10px] text-slate-400">Green Rings = Bubbles | Red Dots = Filled Responses</span>
+                  </div>
+                  <div className="overflow-x-auto max-h-[350px] border border-slate-800 rounded-lg bg-black flex justify-center p-2">
+                    <img 
+                      src={results.vision_preview} 
+                      alt="Computer Vision OMR Inspection" 
+                      className="max-h-[330px] object-contain rounded"
+                    />
+                  </div>
                 </div>
               )}
 
