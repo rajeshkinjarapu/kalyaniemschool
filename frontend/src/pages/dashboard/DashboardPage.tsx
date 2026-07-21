@@ -97,7 +97,7 @@ const WelcomeBanner: React.FC<{ name: string; role: string; photoUrl?: string }>
             {greeting}
           </p>
           <h1 className="text-[26px] sm:text-4xl md:text-5xl font-black text-white mb-1.5 md:mb-2 tracking-tight break-words max-w-[85%]">
-            <span className="hidden sm:inline">Welcome back, </span>{name.split(' ')[0]} 👋
+            {name.split(' ')[0]} 👋
           </h1>
           <p className="text-indigo-100/90 text-[10px] sm:text-sm md:text-base font-semibold mb-3 md:mb-4">{roleLabel[role] || role} <span className="mx-1.5 md:mx-2 opacity-50">•</span> JY School</p>
           

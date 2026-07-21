@@ -1191,7 +1191,12 @@ export const ExamListPage: React.FC = () => {
       )}
 
       {/* ══ TAB 5: PROGRESS CARD ══ */}
-      {activeTab === 'progress-card' && user?.role !== 'TEACHER' && (
+      {activeTab === 'progress-card' && (
+        <ProgressCardTab exams={exams} />
+      )}
+
+      {/* ══ TAB 5B: JEE PROGRESS CARD ══ */}
+      {activeTab === 'jee-progress-card' && (
         <JEEProgressCardTab exams={exams} />
       )}
 
