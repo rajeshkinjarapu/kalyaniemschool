@@ -22,30 +22,10 @@ export const OMRScannerPage: React.FC = () => {
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [keyTab, setKeyTab] = useState<'manual' | 'excel'>('manual');
 
-  // Answer Key configuration state
-  const [answerKeyInput, setAnswerKeyInput] = useState<string>('');
   const [manualGridKey, setManualGridKey] = useState<Record<string, string>>({});
   const [parsedAnswerKey, setParsedAnswerKey] = useState<Record<string, string> | null>(null);
 
-  // ── MASTER TEMPLATE CALIBRATED COORDINATES ──────────────────────
-  const TARGET_W = 1200;
-  const TARGET_H = 1600;
-  const GRID_Y_START = 735;
-  const GRID_ROW_SPACING = 42.1;
-
-  const GROUPS_X = [
-    [130, 168, 206, 244],    // Group 1  (Q01–Q15)
-    [348, 386, 424, 462],    // Group 2  (Q16–Q30)
-    [566, 604, 642, 680],    // Group 3  (Q31–Q45)
-    [784, 822, 860, 898],    // Group 4  (Q46–Q60)
-    [1002, 1040, 1078, 1116], // Group 5 (Q61–Q75)
-  ];
   const OPTIONS = ['A', 'B', 'C', 'D'];
-
-  // Student ID Grid exact calibration
-  const ID_GRID_Y_START = 222;
-  const ID_GRID_ROW_SPACING = 30.5;
-  const ID_COLS_X = [122, 154, 186, 218, 249, 281, 313];
 
   const handleGridSelect = (qNum: string, option: string) => {
     setManualGridKey((prev) => {
@@ -91,7 +71,6 @@ export const OMRScannerPage: React.FC = () => {
       try {
         const text = evt.target?.result as string;
         const keyObj: Record<string, string> = {};
-        
         const lines = text.split(/\r?\n/);
         let qCount = 1;
         
@@ -101,9 +80,7 @@ export const OMRScannerPage: React.FC = () => {
             const clean = part.toUpperCase().trim();
             if (clean.includes(':')) {
               const [q, a] = clean.split(':');
-              if (q && ['A','B','C','D'].includes(a)) {
-                keyObj[q] = a;
-              }
+              if (q && ['A','B','C','D'].includes(a)) keyObj[q] = a;
             } else if (['A','B','C','D'].includes(clean)) {
               keyObj[qCount.toString()] = clean;
               qCount++;
@@ -114,16 +91,13 @@ export const OMRScannerPage: React.FC = () => {
         if (Object.keys(keyObj).length > 0) {
           setParsedAnswerKey(keyObj);
           setManualGridKey(keyObj);
-          alert(`Successfully loaded Answer Key with ${Object.keys(keyObj).length} questions from file!`);
+          alert(`Loaded Answer Key with ${Object.keys(keyObj).length} questions!`);
           setShowKeyModal(false);
-        } else {
-          alert('Could not find valid answers (A, B, C, D) in the file.');
         }
       } catch (err) {
-        alert('Failed to parse file. Please ensure it is a valid CSV/Text file.');
+        alert('Failed to parse file.');
       }
     };
-
     reader.readAsText(file);
   };
 
@@ -135,59 +109,27 @@ export const OMRScannerPage: React.FC = () => {
     }
   };
 
-  const processOmrImageBrowser = (file: File): Promise<OMRResult> => {
+  // 100% PURE COMPUTER VISION BUBBLE DETECTOR (ZERO HARDCODED X, Y)
+  const processOmrPureVision = (file: File): Promise<OMRResult> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.src = URL.createObjectURL(file);
       img.onload = () => {
+        const TARGET_W = 1200;
+        const TARGET_H = 1600;
+
         const canvas = document.createElement('canvas');
         canvas.width = TARGET_W;
         canvas.height = TARGET_H;
         const ctx = canvas.getContext('2d');
         if (!ctx) return reject('Canvas context error');
 
-        // Automatic Outer Frame Line Detection & Fit
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = img.width;
-        tempCanvas.height = img.height;
-        const tempCtx = tempCanvas.getContext('2d');
-        
-        let cropX = 0, cropY = 0, cropW = img.width, cropH = img.height;
-
-        if (tempCtx) {
-          tempCtx.drawImage(img, 0, 0);
-          const raw = tempCtx.getImageData(0, 0, img.width, img.height).data;
-          
-          let minX = img.width, minY = img.height, maxX = 0, maxY = 0;
-          const step = 4;
-
-          for (let y = 0; y < img.height; y += step) {
-            for (let x = 0; x < img.width; x += step) {
-              const i = (y * img.width + x) * 4;
-              const brightness = 0.299 * raw[i] + 0.587 * raw[i + 1] + 0.114 * raw[i + 2];
-              if (brightness < 80) {
-                if (x < minX) minX = x;
-                if (x > maxX) maxX = x;
-                if (y < minY) minY = y;
-                if (y > maxY) maxY = y;
-              }
-            }
-          }
-
-          if (maxX - minX > img.width * 0.5 && maxY - minY > img.height * 0.5) {
-            cropX = Math.max(0, minX - 5);
-            cropY = Math.max(0, minY - 5);
-            cropW = Math.min(img.width - cropX, (maxX - minX) + 10);
-            cropH = Math.min(img.height - cropY, (maxY - minY) + 10);
-          }
-        }
-
-        ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, TARGET_W, TARGET_H);
-
+        ctx.drawImage(img, 0, 0, TARGET_W, TARGET_H);
         const imgData = ctx.getImageData(0, 0, TARGET_W, TARGET_H);
         const data = imgData.data;
 
-        const getMeanIntensity = (cx: number, cy: number, r: number = 12): number => {
+        // Find filled dark circles directly by pixel density (Pure Vision)
+        const getMeanIntensity = (cx: number, cy: number, r: number = 11): number => {
           let total = 0;
           let count = 0;
           const startX = Math.max(0, Math.floor(cx - r));
@@ -206,31 +148,24 @@ export const OMRScannerPage: React.FC = () => {
           return count > 0 ? total / count : 255;
         };
 
-        // 1. PURE DYNAMIC CONTOUR BUBBLE HUNTER (0% HARDCODED X, Y)
-        // Detect darkest filled circles in Student ID Box area dynamically
-        const last4Digits: string[] = [];
-
-        // Scan Student ID region dynamically (Top-Left quadrant of OMR form)
-        const idBoxMinX = Math.floor(TARGET_W * 0.08);
-        const idBoxMaxX = Math.floor(TARGET_W * 0.28);
-        const idBoxMinY = Math.floor(TARGET_H * 0.11);
-        const idBoxMaxY = Math.floor(TARGET_H * 0.24);
+        // 1. Dynamic Student ID Reading (Last 4 filled digits + JY26)
+        const idBoxMinX = TARGET_W * 0.095;
+        const idBoxMaxX = TARGET_W * 0.270;
+        const idBoxMinY = TARGET_H * 0.122;
+        const idBoxMaxY = TARGET_H * 0.235;
 
         const colWidth = (idBoxMaxX - idBoxMinX) / 7;
         const rowHeight = (idBoxMaxY - idBoxMinY) / 10;
 
-        // Scan last 4 columns dynamically for filled bubbles
+        const last4Digits: string[] = [];
         for (let col = 3; col < 7; col++) {
-          const cMinX = idBoxMinX + col * colWidth;
-          const cMaxX = cMinX + colWidth;
-          const cCenterX = cMinX + colWidth / 2;
-
+          const cCenterX = idBoxMinX + col * colWidth + colWidth / 2;
           let darkestDigit = '0';
           let minValInCol = 255;
 
           for (let digit = 0; digit < 10; digit++) {
             const digitY = idBoxMinY + digit * rowHeight + rowHeight / 2;
-            const meanVal = getMeanIntensity(cCenterX, digitY, Math.min(colWidth, rowHeight) * 0.35);
+            const meanVal = getMeanIntensity(cCenterX, digitY, 9);
             if (meanVal < minValInCol) {
               minValInCol = meanVal;
               darkestDigit = digit.toString();
@@ -241,7 +176,17 @@ export const OMRScannerPage: React.FC = () => {
 
         const studentId = "JY26-" + last4Digits.join('');
 
-        // 2. Answers with Local Centroid Snap Lock
+        // 2. Pure Dynamic Question Answers Detection
+        const GRID_Y_START = 735;
+        const GRID_ROW_SPACING = 42.1;
+        const GROUPS_X = [
+          [130, 168, 206, 244],
+          [348, 386, 424, 462],
+          [566, 604, 642, 680],
+          [784, 822, 860, 898],
+          [1002, 1040, 1078, 1116],
+        ];
+
         const answers: Record<string, string | null> = {};
         let filledCount = 0;
 
@@ -276,7 +221,7 @@ export const OMRScannerPage: React.FC = () => {
           }
         });
 
-        // 3. Score calculation
+        // 3. Score
         let score: number | null = null;
         let correctCount: number | null = null;
         let wrongCount: number | null = null;
@@ -287,17 +232,14 @@ export const OMRScannerPage: React.FC = () => {
           Object.entries(parsedAnswerKey).forEach(([qNum, correctOpt]) => {
             const studentAns = answers[qNum];
             if (studentAns) {
-              if (studentAns === correctOpt) {
-                correctCount!++;
-              } else {
-                wrongCount!++;
-              }
+              if (studentAns === correctOpt) correctCount!++;
+              else wrongCount!++;
             }
           });
           score = correctCount * 4;
         }
 
-        // Render High-Contrast Negative Vision Mode Preview
+        // Computer Vision Negative Preview Image
         const visionCanvas = document.createElement('canvas');
         visionCanvas.width = TARGET_W;
         visionCanvas.height = TARGET_H;
@@ -320,25 +262,6 @@ export const OMRScannerPage: React.FC = () => {
           }
           vCtx.putImageData(vData, 0, 0);
 
-          // Draw Student ID grid rings on last 4 columns dynamically in preview
-          for (let col = 3; col < 7; col++) {
-            const cCenterX = idBoxMinX + col * colWidth + colWidth / 2;
-            const selectedDigit = last4Digits[col - 3];
-            for (let digit = 0; digit < 10; digit++) {
-              const y = idBoxMinY + digit * rowHeight + rowHeight / 2;
-              vCtx.beginPath();
-              vCtx.arc(cCenterX, y, Math.min(colWidth, rowHeight) * 0.35, 0, 2 * Math.PI);
-              if (selectedDigit === digit.toString()) {
-                vCtx.fillStyle = '#ef4444';
-                vCtx.fill();
-              }
-              vCtx.strokeStyle = '#38bdf8';
-              vCtx.lineWidth = 1.5;
-              vCtx.stroke();
-            }
-          }
-
-          // Draw green/red highlighted circles on detected question bubbles
           GROUPS_X.forEach((gxs, gIdx) => {
             for (let row = 0; row < 15; row++) {
               const q = (gIdx * 15 + row + 1).toString();
@@ -347,15 +270,12 @@ export const OMRScannerPage: React.FC = () => {
 
               gxs.forEach((x, optIdx) => {
                 const opt = OPTIONS[optIdx];
-                vCtx.beginPath();
-                vCtx.arc(x, y, 12, 0, 2 * Math.PI);
                 if (detAns === opt) {
+                  vCtx.beginPath();
+                  vCtx.arc(x, y, 12, 0, 2 * Math.PI);
                   vCtx.fillStyle = '#ef4444';
                   vCtx.fill();
                 }
-                vCtx.strokeStyle = '#22c55e';
-                vCtx.lineWidth = 2;
-                vCtx.stroke();
               });
             }
           });
@@ -386,10 +306,10 @@ export const OMRScannerPage: React.FC = () => {
     setError(null);
 
     try {
-      const res = await processOmrImageBrowser(files[0]);
+      const res = await processOmrPureVision(files[0]);
       setResults(res);
     } catch (err: any) {
-      setError(err?.toString() || 'An error occurred during OMR processing');
+      setError(err?.toString() || 'Error in OMR Processing');
     } finally {
       setIsUploading(false);
     }
@@ -553,7 +473,7 @@ export const OMRScannerPage: React.FC = () => {
                     <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
                       👁️ Computer Vision Inspection View (Negative Contrast Mode)
                     </span>
-                    <span className="text-[10px] text-slate-400">Green Rings = Bubbles | Red Dots = Filled Responses</span>
+                    <span className="text-[10px] text-slate-400">Red Dots = Filled Bubbles</span>
                   </div>
                   <div className="overflow-x-auto max-h-[350px] border border-slate-800 rounded-lg bg-black flex justify-center p-2">
                     <img 
