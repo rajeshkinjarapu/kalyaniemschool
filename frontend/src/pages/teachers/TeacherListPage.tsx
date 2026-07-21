@@ -283,7 +283,9 @@ export const TeacherListPage: React.FC = () => {
                      {idx + 1}
                    </div>
                    <div className="shrink-0 pl-2">
-                           <img src={getPhotoUrl(teacher.user.photoUrl)} alt={name} className="w-14 h-14 rounded-2xl object-cover shadow-md border-2 border-white dark:border-white/10" />
+                        {getPhotoUrl(teacher.user?.photoUrl) ? (
+                           <img src={getPhotoUrl(teacher.user?.photoUrl)} alt={name} className="w-14 h-14 rounded-2xl object-cover shadow-md border-2 border-white dark:border-white/10" />
+                        ) : (
                           <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-black text-xl shadow-md border-2 border-white dark:border-white/10`}>
                             {getInitials(name)}
                           </div>
