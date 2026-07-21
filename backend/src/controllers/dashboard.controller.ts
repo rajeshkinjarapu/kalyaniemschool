@@ -344,7 +344,7 @@ export const getStudentDashboard = async (req: AuthRequest, res: Response, next:
     // Upcoming Exams
     const upcomingExams = await prisma.exam.findMany({
       where: {
-        classId: student.classId || '',
+        classes: { some: { id: student.classId || '' } },
         examDate: { gte: new Date() }
       },
       take: 5,

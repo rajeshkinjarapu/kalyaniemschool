@@ -112,7 +112,7 @@ export const deleteClass = async (req: AuthRequest, res: Response, next: NextFun
 
       // 5. Delete all Exam marks, ExamPlans and Exams for this class
       const exams = await tx.exam.findMany({
-        where: { classId: id },
+        where: { classes: { some: { id: id } } },
         select: { id: true },
       });
       const examIds = exams.map(e => e.id);
@@ -125,7 +125,7 @@ export const deleteClass = async (req: AuthRequest, res: Response, next: NextFun
         });
       }
       await tx.exam.deleteMany({
-        where: { classId: id },
+        where: { id: { in: examIds } },
       });
 
       // 6. Delete all FeePayments and FeeStructures for this class

@@ -67,7 +67,7 @@ export const getMarksReport = async (req: Request, res: Response, next: NextFunc
 
     const exam = await prisma.exam.findUnique({
       where: { id: examId as string },
-      include: { class: true }
+      include: { classes: true }
     });
 
     if (!exam) {
@@ -344,7 +344,7 @@ export const getMarksReportPdf = async (req: Request, res: Response, next: NextF
 
     const exam = await prisma.exam.findUnique({
       where: { id: examId as string },
-      include: { class: true }
+      include: { classes: true }
     });
     if (!exam) {
       res.status(404).json({ success: false, message: 'Exam not found' });
@@ -413,7 +413,7 @@ export const getMarksReportPdf = async (req: Request, res: Response, next: NextF
     doc.fontSize(12).font('Helvetica-Bold').fillColor('#ffffff').text('GRADES REGISTRY', 320, 48, { align: 'right', width: 220 });
 
     // Sub-info
-    doc.fillColor('#334155').fontSize(9).font('Helvetica-Bold').text(`Exam: ${exam.name}  |  Class: ${exam.class ? `${exam.class.name}-${exam.class.section}` : 'N/A'}`, 40, 110);
+    doc.fillColor('#334155').fontSize(9).font('Helvetica-Bold').text(`Exam: ${exam.name}  |  Class: ${exam.classes && exam.classes.length > 0 ? `${exam.classes[0].name}-${exam.classes[0].section}` : 'N/A'}`, 40, 110);
     doc.font('Helvetica').text(`Print Date: ${new Date().toLocaleDateString()}`, 40, 125);
 
     // Table Headers
