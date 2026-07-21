@@ -91,12 +91,24 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
 
     const originalDisplay = el.style.display;
     el.style.display = 'flex';
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const imgData = await toJpeg(el, { cacheBust: true, pixelRatio: 2, quality: 0.95, backgroundColor: '#ffffff' });
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (el.offsetHeight * pdfWidth) / el.offsetWidth;
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+    await new Promise(resolve => setTimeout(resolve, 500));
+    let pdf: any;
+    try {
+      const imgData = await toJpeg(el, { cacheBust: true, pixelRatio: 2, quality: 0.95, backgroundColor: '#ffffff', allowTaint: true });
+      pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (el.offsetHeight * pdfWidth) / el.offsetWidth;
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+    } catch (err) {
+      el.style.display = originalDisplay;
+      if (parentContainer) {
+        parentContainer.classList.add('hidden');
+        parentContainer.style.display = originalParentDisplay || '';
+        parentContainer.style.position = originalParentPosition || '';
+        parentContainer.style.left = '';
+      }
+      throw new Error(`Failed to generate image: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    }
     
     el.style.display = originalDisplay;
     if (parentContainer) {
@@ -117,8 +129,9 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
       pdf.save(`${studentName}_AdmitCard.pdf`);
       toast.success('Downloaded successfully!', { id: toastId });
     } catch (e: any) {
-      console.error(e);
-      toast.error('Failed to generate PDF', { id: toastId });
+      console.error('PDF Generation Error:', e);
+      const errorMsg = e.message || 'Failed to generate PDF. Please try again.';
+      toast.error(errorMsg, { id: toastId });
     }
   };
 
@@ -136,14 +149,15 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         printArea.classList.remove('hidden');
         printArea.classList.add('flex');
         printArea.style.position = 'absolute';
-        printArea.style.left = '0';
+        printArea.style.left = '-9999px';
         printArea.style.top = '0';
         printArea.style.width = '210mm';
         printArea.style.zIndex = '-9999';
+        printArea.style.visibility = 'visible';
       }
 
-      // Allow DOM to update and images to load
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Allow DOM to update and images to load (increased timeout)
+      await new Promise(resolve => setTimeout(resolve, 2500));
 
       const templates = document.querySelectorAll('.admit-card-wrapper');
       
@@ -151,15 +165,20 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         const el = templates[i] as HTMLElement;
         const student = students[i];
         
-        const imgData = await toJpeg(el, { cacheBust: true, pixelRatio: 1.5, quality: 0.75 });
-        
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (el.offsetHeight * pdfWidth) / el.offsetWidth;
-        
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-        const fileName = `${student.user?.name || student.name || `Student_${i+1}`}.pdf`;
-        zip.file(fileName, pdf.output('blob'));
+        try {
+          const imgData = await toJpeg(el, { cacheBust: true, pixelRatio: 1.5, quality: 0.75, allowTaint: true });
+          
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (el.offsetHeight * pdfWidth) / el.offsetWidth;
+          
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+          const fileName = `${student.user?.name || student.name || `Student_${i+1}`}.pdf`;
+          zip.file(fileName, pdf.output('blob'));
+        } catch (err) {
+          console.error(`Failed to generate PDF for student ${i}:`, err);
+          throw new Error(`Failed to generate PDF for ${student.user?.name || student.name}: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        }
       }
 
       if (printArea) {
@@ -170,14 +189,16 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         printArea.style.top = '';
         printArea.style.width = '';
         printArea.style.zIndex = '';
+        printArea.style.visibility = '';
       }
 
       const content = await zip.generateAsync({ type: 'blob' });
       saveAs(content, `AdmitCards_${selectedClassId}.zip`);
       toast.success('Downloaded successfully!', { id: loadingToastId });
     } catch (e: any) {
-      console.error('Zip generation error:', e);
-      toast.error(`Failed to generate zip file: ${e.message || 'Unknown error'}`, { id: loadingToastId });
+      console.error('Zip/PDF generation error:', e);
+      const errorMsg = e.message || 'Failed to generate PDFs. Please ensure all images are properly loaded.';
+      toast.error(errorMsg, { id: loadingToastId });
     } finally {
       setIsDownloading(false);
     }
