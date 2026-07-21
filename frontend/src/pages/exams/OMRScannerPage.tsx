@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, FileType, CheckCircle, AlertCircle, RefreshCw, FileText } from 'lucide-react';
+import { Upload, FileType, CheckCircle, AlertCircle, RefreshCw, FileText, Download } from 'lucide-react';
 
 interface OMRResult {
   student_id?: string;
@@ -39,7 +39,28 @@ export const OMRScannerPage: React.FC = () => {
     });
   };
 
-  const handleExcelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const downloadSampleCsv = () => {
+    let csvContent = 'QNo,Subject,Answer\n';
+    for (let i = 1; i <= 75; i++) {
+      let subject = 'Maths';
+      if (i > 25 && i <= 50) subject = 'Physics';
+      if (i > 50) subject = 'Chemistry';
+      
+      // Default sample answers pattern
+      const sampleOpts = ['A', 'B', 'C', 'D'];
+      const sampleAns = sampleOpts[(i - 1) % 4];
+      csvContent += `${i},${subject},${sampleAns}\n`;
+    }
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'JY_School_OMR_Answer_Key_Template.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -538,15 +559,27 @@ export const OMRScannerPage: React.FC = () => {
                 <div>
                   <p className="text-sm font-bold text-slate-800">Upload Answer Key Excel / CSV File</p>
                   <p className="text-xs text-slate-500 mt-1">
-                    Columns should contain: <span className="font-semibold text-slate-700">QNo</span> and <span className="font-semibold text-slate-700">Answer</span> (A, B, C, or D)
+                    Columns: <span className="font-semibold text-slate-700">QNo</span>, <span className="font-semibold text-slate-700">Subject</span>, <span className="font-semibold text-slate-700">Answer</span> (A, B, C, or D)
                   </p>
                 </div>
-                <input
-                  type="file"
-                  accept=".csv,.txt"
-                  onChange={handleExcelUpload}
-                  className="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
-                />
+                
+                <div className="flex flex-col items-center gap-3">
+                  <input
+                    type="file"
+                    accept=".csv,.txt"
+                    onChange={handleExcelUpload}
+                    className="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
+                  />
+                  
+                  <button
+                    type="button"
+                    onClick={downloadSampleCsv}
+                    className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-200 transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Download Sample Answer Key CSV Template
+                  </button>
+                </div>
               </div>
             )}
 
