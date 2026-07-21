@@ -148,35 +148,53 @@ export const OMRScannerPage: React.FC = () => {
           return count > 0 ? total / count : 255;
         };
 
-        // 1. Dynamic Student ID Reading (Last 4 filled digits + JY26)
-        const idBoxMinX = TARGET_W * 0.095;
-        const idBoxMaxX = TARGET_W * 0.270;
-        const idBoxMinY = TARGET_H * 0.122;
-        const idBoxMaxY = TARGET_H * 0.235;
+        // 1. PURE WHITE CONNECTED COMPONENT BLOB DETECTOR (NO GRID/X,Y ASSUMPTIONS)
+        // Detect solid white circles in inverted image dynamically
+        const whiteBlobs: { x: number; y: number; size: number }[] = [];
+        const step = 4;
+        const visited = new Uint8Array(TARGET_W * TARGET_H);
 
-        const colWidth = (idBoxMaxX - idBoxMinX) / 7;
-        const rowHeight = (idBoxMaxY - idBoxMinY) / 10;
+        for (let y = 50; y < TARGET_H - 50; y += step) {
+          for (let x = 50; x < TARGET_W - 50; x += step) {
+            const idx = y * TARGET_W + x;
+            if (visited[idx]) continue;
 
-        const last4Digits: string[] = [];
-        for (let col = 3; col < 7; col++) {
-          const cCenterX = idBoxMinX + col * colWidth + colWidth / 2;
-          let darkestDigit = '0';
-          let minValInCol = 255;
+            const pIdx = idx * 4;
+            const gray = 0.299 * data[pIdx] + 0.587 * data[pIdx + 1] + 0.114 * data[pIdx + 2];
+            
+            // Inverted white bubble check
+            if (gray < 70) {
+              // Found a solid white filled bubble blob in inverted space
+              let sumX = 0, sumY = 0, count = 0;
+              for (let dy = -10; dy <= 10; dy += 2) {
+                for (let dx = -10; dx <= 10; dx += 2) {
+                  const ny = y + dy;
+                  const nx = x + dx;
+                  if (nx >= 0 && nx < TARGET_W && ny >= 0 && ny < TARGET_H) {
+                    const nIdx = (ny * TARGET_W + nx) * 4;
+                    const g = 0.299 * data[nIdx] + 0.587 * data[nIdx + 1] + 0.114 * data[nIdx + 2];
+                    if (g < 90) {
+                      sumX += nx;
+                      sumY += ny;
+                      count++;
+                      visited[ny * TARGET_W + nx] = 1;
+                    }
+                  }
+                }
+              }
 
-          for (let digit = 0; digit < 10; digit++) {
-            const digitY = idBoxMinY + digit * rowHeight + rowHeight / 2;
-            const meanVal = getMeanIntensity(cCenterX, digitY, 9);
-            if (meanVal < minValInCol) {
-              minValInCol = meanVal;
-              darkestDigit = digit.toString();
+              if (count >= 15) {
+                whiteBlobs.push({
+                  x: Math.round(sumX / count),
+                  y: Math.round(sumY / count),
+                  size: count
+                });
+              }
             }
           }
-          last4Digits.push(darkestDigit);
         }
 
-        const studentId = "JY26-" + last4Digits.join('');
-
-        // 2. Pure Dynamic Question Answers Detection
+        // Map whiteBlobs to questions and Student ID dynamically
         const GRID_Y_START = 735;
         const GRID_ROW_SPACING = 42.1;
         const GROUPS_X = [
@@ -187,41 +205,69 @@ export const OMRScannerPage: React.FC = () => {
           [1002, 1040, 1078, 1116],
         ];
 
+        const idBoxMinX = TARGET_W * 0.095;
+        const idBoxMaxX = TARGET_W * 0.270;
+        const idBoxMinY = TARGET_H * 0.122;
+        const idBoxMaxY = TARGET_H * 0.235;
+        const colWidth = (idBoxMaxX - idBoxMinX) / 7;
+        const rowHeight = (idBoxMaxY - idBoxMinY) / 10;
+
+        const last4Digits: string[] = ['0', '0', '0', '0'];
         const answers: Record<string, string | null> = {};
         let filledCount = 0;
 
+        // Process Question Rows based on closest white blobs
         GROUPS_X.forEach((gxs, gIdx) => {
           for (let row = 0; row < 15; row++) {
-            const q = gIdx * 15 + row + 1;
+            const q = (gIdx * 15 + row + 1).toString();
             const approxY = GRID_Y_START + row * GRID_ROW_SPACING;
 
-            // Find exact Center of Mass (Centroid) of the White Blob in local 30x30 window
-            let bestY = Math.round(approxY);
-            let lowestMeanInRow = 255;
+            // Find closest white blob within row Y window
+            let bestOpt: string | null = null;
+            let minDistance = Infinity;
 
-            // Search best Y center where white pixels are concentrated in this row
-            for (let testY = Math.round(approxY - 18); testY <= Math.round(approxY + 18); testY += 2) {
-              const testMeans = gxs.map((gx) => getMeanIntensity(gx, testY, 11));
-              const currentMin = Math.min(...testMeans);
-              if (currentMin < lowestMeanInRow) {
-                lowestMeanInRow = currentMin;
-                bestY = testY;
+            gxs.forEach((gx, optIdx) => {
+              const matchingBlob = whiteBlobs.find(
+                (b) => Math.abs(b.x - gx) < 18 && Math.abs(b.y - approxY) < 22
+              );
+              if (matchingBlob) {
+                const dist = Math.abs(matchingBlob.y - approxY);
+                if (dist < minDistance) {
+                  minDistance = dist;
+                  bestOpt = OPTIONS[optIdx];
+                }
               }
-            }
+            });
 
-            const vals = gxs.map((gx) => getMeanIntensity(gx, bestY, 11));
-            const minVal = Math.min(...vals);
-            const avgVal = vals.reduce((a, b) => a + b, 0) / vals.length;
-
-            if (minVal < 220 && (avgVal - minVal) >= 8) {
-              const optIdx = vals.indexOf(minVal);
-              answers[q.toString()] = OPTIONS[optIdx];
+            if (bestOpt) {
+              answers[q] = bestOpt;
               filledCount++;
             } else {
-              answers[q.toString()] = null;
+              answers[q] = null;
             }
           }
         });
+
+        // Student ID Reading from White Blobs in ID Area
+        for (let col = 3; col < 7; col++) {
+          const cCenterX = idBoxMinX + col * colWidth + colWidth / 2;
+          let minDistance = Infinity;
+          let detectedDigit = '0';
+
+          for (let digit = 0; digit < 10; digit++) {
+            const digitY = idBoxMinY + digit * rowHeight + rowHeight / 2;
+            const matchingBlob = whiteBlobs.find(
+              (b) => Math.abs(b.x - cCenterX) < 14 && Math.abs(b.y - digitY) < 15
+            );
+            if (matchingBlob) {
+              detectedDigit = digit.toString();
+              break;
+            }
+          }
+          last4Digits[col - 3] = detectedDigit;
+        }
+
+        const studentId = "JY26-" + last4Digits.join('');
 
         // 3. Score
         let score: number | null = null;
