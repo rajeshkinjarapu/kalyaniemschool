@@ -1,5 +1,5 @@
 export const getPhotoUrl = (photoUrl?: string | null): string | undefined => {
-  if (!photoUrl) return undefined;
+  if (!photoUrl || photoUrl === 'null' || photoUrl === 'undefined') return undefined;
   
   // If it's a base64 data URI or an external HTTP link, return it as is
   if (photoUrl.startsWith('data:') || photoUrl.startsWith('http')) {
