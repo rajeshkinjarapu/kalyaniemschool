@@ -148,17 +148,19 @@ export const OMRScannerPage: React.FC = () => {
         const imgData = ctx.getImageData(0, 0, TARGET_W, TARGET_H);
         const data = imgData.data;
 
-        const getMeanIntensity = (cx: number, cy: number, r: number = 13): number => {
+        // Grayscale mean pixel function
+        const getMeanIntensity = (cx: number, cy: number, r: number = 12): number => {
           let total = 0;
           let count = 0;
-          const startX = Math.max(0, cx - r);
-          const endX = Math.min(TARGET_W, cx + r);
-          const startY = Math.max(0, cy - r);
-          const endY = Math.min(TARGET_H, cy + r);
+          const startX = Math.max(0, Math.floor(cx - r));
+          const endX = Math.min(TARGET_W, Math.ceil(cx + r));
+          const startY = Math.max(0, Math.floor(cy - r));
+          const endY = Math.min(TARGET_H, Math.ceil(cy + r));
 
           for (let y = startY; y < endY; y++) {
             for (let x = startX; x < endX; x++) {
               const idx = (y * TARGET_W + x) * 4;
+              // Grayscale: 0.299R + 0.587G + 0.114B
               const gray = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
               total += gray;
               count++;
@@ -173,10 +175,12 @@ export const OMRScannerPage: React.FC = () => {
           const vals: number[] = [];
           for (let digit = 0; digit < 10; digit++) {
             const y = ID_GRID_Y_START + digit * ID_GRID_ROW_SPACING;
-            vals.push(getMeanIntensity(colX, y, 10));
+            vals.push(getMeanIntensity(colX, y, 9));
           }
           const minVal = Math.min(...vals);
-          if (minVal < 140) {
+          const maxVal = Math.max(...vals);
+          // Dynamic contrast check (darkest bubble must be significantly darker than un-bubbled average)
+          if (minVal < 185 && (maxVal - minVal) > 25) {
             sidDigits.push(vals.indexOf(minVal).toString());
           } else {
             sidDigits.push('?');
@@ -184,7 +188,7 @@ export const OMRScannerPage: React.FC = () => {
         });
         const studentId = sidDigits.join('');
 
-        // 2. Detect Question Answers
+        // 2. Detect Question Answers with Dynamic Relative Contrast
         const answers: Record<string, string | null> = {};
         let filledCount = 0;
 
@@ -193,10 +197,15 @@ export const OMRScannerPage: React.FC = () => {
             const q = gIdx * 15 + row + 1;
             const y = GRID_Y_START + row * GRID_ROW_SPACING;
 
-            const vals = gxs.map((x) => getMeanIntensity(x, y, 13));
+            const vals = gxs.map((x) => getMeanIntensity(x, y, 12));
             const minVal = Math.min(...vals);
+            const maxVal = Math.max(...vals);
+            const avgVal = vals.reduce((a, b) => a + b, 0) / vals.length;
 
-            if (minVal < 140) {
+            // A bubble is filled if:
+            // a) It is darker than absolute threshold (185)
+            // b) It is significantly darker than the average of other 3 options in the row (diff >= 20)
+            if (minVal < 185 && (avgVal - minVal) > 20) {
               const optIdx = vals.indexOf(minVal);
               answers[q.toString()] = OPTIONS[optIdx];
               filledCount++;
