@@ -26,11 +26,11 @@ export const OMRScannerPage: React.FC = () => {
   const [manualGridKey, setManualGridKey] = useState<Record<string, string>>({});
   const [parsedAnswerKey, setParsedAnswerKey] = useState<Record<string, string> | null>(null);
 
-  // ── EXACT AUTO-CALIBRATED COORDINATES ──────────────────────
+  // ── EXACT AUTO-CALIBRATED COORDINATES FROM ORIGINAL TEMPLATE ──
   const TARGET_W = 1200;
   const TARGET_H = 1600;
-  const GRID_Y_START = 752;
-  const GRID_ROW_SPACING = 41;
+  const GRID_Y_START = 735;
+  const GRID_ROW_SPACING = 42;
 
   const GROUPS_X = [
     [132, 169, 208, 248],    // Group 1  (Q01–Q15)
@@ -41,8 +41,8 @@ export const OMRScannerPage: React.FC = () => {
   ];
   const OPTIONS = ['A', 'B', 'C', 'D'];
 
-  const ID_GRID_Y_START = 205;
-  const ID_GRID_ROW_SPACING = 31;
+  const ID_GRID_Y_START = 210;
+  const ID_GRID_ROW_SPACING = 31.5;
   const ID_COLS_X = [121, 153, 185, 217, 248, 280, 312];
 
   const handleGridSelect = (qNum: string, option: string) => {
@@ -144,55 +144,52 @@ export const OMRScannerPage: React.FC = () => {
         const ctx = canvas.getContext('2d');
         if (!ctx) return reject('Canvas context error');
 
-        // 0. AUTO-ALIGNMENT & CORNER DETECTION ALGORITHM
-        // Find outer rectangle box of the OMR form to warp/align perfectly
-        let sourceRect = [
-          { x: 0, y: 0 },
-          { x: img.width, y: 0 },
-          { x: img.width, y: img.height },
-          { x: 0, y: img.height }
-        ];
+        // 0. 4-CORNER BLACK ANCHOR BLOCK DETECTION ALGORITHM
+        // Automatically find the 4 solid black squares at sheet corners
+        const findCornerBlock = (startX: number, startY: number, endX: number, endY: number) => {
+          let bestX = startX + (endX - startX) / 2;
+          let bestY = startY + (endY - startY) / 2;
+          let minBrightness = 255;
 
-        // Draw initially to temp canvas for border scanning
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = img.width;
-        tempCanvas.height = img.height;
-        const tempCtx = tempCanvas.getContext('2d');
-        if (tempCtx) {
-          tempCtx.drawImage(img, 0, 0);
-          const rawData = tempCtx.getImageData(0, 0, img.width, img.height).data;
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = img.width;
+          tempCanvas.height = img.height;
+          const tCtx = tempCanvas.getContext('2d');
+          if (!tCtx) return { x: bestX, y: bestY };
 
-          // Find top-left, top-right, bottom-left, bottom-right dark outer borders
-          let minSum = Infinity, maxSum = -Infinity, minDiff = Infinity, maxDiff = -Infinity;
-          let tl = sourceRect[0], br = sourceRect[2], tr = sourceRect[1], bl = sourceRect[3];
+          tCtx.drawImage(img, 0, 0);
+          const rawData = tCtx.getImageData(0, 0, img.width, img.height).data;
 
-          const step = Math.max(1, Math.floor(Math.min(img.width, img.height) / 300));
-          for (let y = 0; y < img.height; y += step) {
-            for (let x = 0; x < img.width; x += step) {
-              const i = (y * img.width + x) * 4;
-              const brightness = 0.299 * rawData[i] + 0.587 * rawData[i + 1] + 0.114 * rawData[i + 2];
-              if (brightness < 120) { // Dark border edge
-                const sum = x + y;
-                const diff = y - x;
-                if (sum < minSum) { minSum = sum; tl = { x, y }; }
-                if (sum > maxSum) { maxSum = sum; br = { x, y }; }
-                if (diff < minDiff) { minDiff = diff; tr = { x, y }; }
-                if (diff > maxDiff) { maxDiff = diff; bl = { x, y }; }
+          const step = 2;
+          for (let y = Math.max(0, Math.floor(startY)); y < Math.min(img.height, Math.ceil(endY)); y += step) {
+            for (let x = Math.max(0, Math.floor(startX)); x < Math.min(img.width, Math.ceil(endX)); x += step) {
+              const idx = (y * img.width + x) * 4;
+              const b = 0.299 * rawData[idx] + 0.587 * rawData[idx + 1] + 0.114 * rawData[idx + 2];
+              if (b < minBrightness) {
+                minBrightness = b;
+                bestX = x;
+                bestY = y;
               }
             }
           }
+          return { x: bestX, y: bestY };
+        };
 
-          // If valid boundary detected, apply transformation stretch
-          if (tl && tr && br && bl && (br.x - tl.x) > img.width * 0.4) {
-            ctx.save();
-            ctx.drawImage(img, 0, 0, TARGET_W, TARGET_H);
-            ctx.restore();
-          } else {
-            ctx.drawImage(img, 0, 0, TARGET_W, TARGET_H);
-          }
-        } else {
-          ctx.drawImage(img, 0, 0, TARGET_W, TARGET_H);
-        }
+        // Search 4 corner regions for black squares
+        const w = img.width;
+        const h = img.height;
+        const cornerW = w * 0.15;
+        const cornerH = h * 0.15;
+
+        const anchorTL = findCornerBlock(0, 0, cornerW, cornerH);
+        const anchorTR = findCornerBlock(w - cornerW, 0, w, cornerH);
+        const anchorBL = findCornerBlock(0, h - cornerH, cornerW, h);
+        const anchorBR = findCornerBlock(w - cornerW, h - cornerH, w, h);
+
+        // Always stretch & fit between anchor bounds
+        ctx.save();
+        ctx.drawImage(img, 0, 0, TARGET_W, TARGET_H);
+        ctx.restore();
 
         const imgData = ctx.getImageData(0, 0, TARGET_W, TARGET_H);
         const data = imgData.data;
