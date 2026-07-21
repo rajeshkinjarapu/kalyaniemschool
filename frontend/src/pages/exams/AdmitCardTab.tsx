@@ -229,30 +229,32 @@ export const AdmitCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-150 dark:border-gray-800 print:hidden gap-4">
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <span className="text-xs font-extrabold uppercase text-gray-400 shrink-0">Select Exam:</span>
-          <select 
-            value={selectedExamId} 
-            onChange={e => setSelectedExamId(e.target.value)} 
-            className="input !py-1.5 min-w-[200px]"
-          >
-            <option value="">-- Choose Exam --</option>
-            {exams.map(e => <option key={e.id} value={e.id}>{e.name} ({e.term})</option>)}
-          </select>
-
-          {selectedExam && (
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-gradient-to-r from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 sm:p-5 rounded-2xl border border-indigo-100 dark:border-gray-800 shadow-sm print:hidden gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+          <span className="text-xs font-black uppercase text-indigo-500 tracking-wider shrink-0 ml-1 sm:ml-0">Select Details:</span>
+          <div className="flex flex-col sm:flex-row w-full gap-3">
             <select 
-              value={selectedClassId} 
-              onChange={e => setSelectedClassId(e.target.value)} 
-              className="input !py-1.5 min-w-[150px]"
+              value={selectedExamId} 
+              onChange={e => setSelectedExamId(e.target.value)} 
+              className="input !py-2.5 sm:!py-2 w-full sm:min-w-[200px] border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500/20 bg-white shadow-sm font-semibold text-gray-700"
             >
-              <option value="">-- Choose Class --</option>
-              {(selectedExam.classes || []).map((c: any) => (
-                <option key={c.id} value={c.id}>{c.name}-{c.section}</option>
-              ))}
+              <option value="">-- Choose Exam --</option>
+              {exams.map(e => <option key={e.id} value={e.id}>{e.name} ({e.term})</option>)}
             </select>
-          )}
+
+            {selectedExam && (
+              <select 
+                value={selectedClassId} 
+                onChange={e => setSelectedClassId(e.target.value)} 
+                className="input !py-2.5 sm:!py-2 w-full sm:min-w-[150px] border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500/20 bg-white shadow-sm font-semibold text-gray-700"
+              >
+                <option value="">-- Choose Class --</option>
+                {(selectedExam.classes || []).map((c: any) => (
+                  <option key={c.id} value={c.id}>{c.name}-{c.section}</option>
+                ))}
+              </select>
+            )}
+          </div>
         </div>
         <div className="flex gap-2">
           {isSuperAdmin && selectedExam && (

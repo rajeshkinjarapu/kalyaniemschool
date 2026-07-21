@@ -58,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, title }) => {
           </button>
         )}
         <div className="flex items-center gap-2.5 min-w-0">
-          {user?.role === 'TEACHER' && (
+          {user?.role === 'TEACHER' && title !== 'Dashboard' && (
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-sm shadow-sm sm:hidden overflow-hidden shrink-0 border-2 border-indigo-100">
               {user.photoUrl ? (
                 <img src={getPhotoUrl(user.photoUrl)} alt={user.name} className="w-full h-full object-cover" />
