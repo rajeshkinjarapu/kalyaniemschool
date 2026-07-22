@@ -304,73 +304,67 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
           </div>
         </div>
         
-        <div className="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto mt-2 sm:mt-0 justify-end">
+        <div className="flex flex-wrap gap-2 w-full md:w-auto justify-start md:justify-end mt-2 md:mt-0">
           {isSuperAdmin && selectedExam && (
             <>
               {!published ? (
                 <button 
                   onClick={async () => {
-                    setPublished(true);
-                    try {
-                      await api.post(`/api/exams/${selectedExamId}/admit-card-settings`, {
-                        admitCardPublished: selectedExam.admitCardPublished || false,
-                        admitCardSettings: { ...(selectedExam.admitCardSettings || {}), progressCardPublished: true },
-                      });
-                      toast.success('Progress Cards published to Teachers & Students!');
-                      if (selectedExam) {
-                        if (!selectedExam.admitCardSettings) selectedExam.admitCardSettings = {};
-                        selectedExam.admitCardSettings.progressCardPublished = true;
+                    const confirmPublish = window.confirm('Are you sure you want to publish these results? This will make them visible to students and parents.');
+                    if (confirmPublish) {
+                      setPublished(true);
+                      try {
+                        const res: any = await api.put(`/api/exams/${selectedExamId}/publish-results`, { published: true });
+                        if (res.data?.success) {
+                          toast.success('Results published successfully!');
+                        }
+                      } catch (e: any) {
+                        toast.error('Failed to publish');
+                        setPublished(false);
                       }
-                    } catch (e: any) {
-                      toast.error('Failed to publish');
-                      setPublished(false);
                     }
                   }} 
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 flex-1 md:flex-none justify-center shadow-md shadow-emerald-500/20"
                 >
                   <CheckCircle className="w-4 h-4" /> Publish Cards
                 </button>
               ) : (
-                <div className="flex items-center gap-2">
-                  <span className="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-1 md:flex-none">
+                  <span className="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 border border-emerald-200 justify-center w-full md:w-auto">
                     <CheckCircle className="w-4 h-4" /> Published
                   </span>
                   <button 
                     onClick={async () => {
+                      if (!window.confirm('Are you sure you want to unpublish these results?')) return;
                       setPublished(false);
                       try {
-                        await api.post(`/api/exams/${selectedExamId}/admit-card-settings`, {
-                          admitCardPublished: selectedExam.admitCardPublished || false,
-                          admitCardSettings: { ...(selectedExam.admitCardSettings || {}), progressCardPublished: false },
-                        });
-                        toast.success('Progress Cards unpublished!');
-                        if (selectedExam) {
-                          if (!selectedExam.admitCardSettings) selectedExam.admitCardSettings = {};
-                          selectedExam.admitCardSettings.progressCardPublished = false;
+                        const res: any = await api.put(`/api/exams/${selectedExamId}/publish-results`, { published: false });
+                        if (res.data?.success) {
+                          toast.success('Results unpublished successfully!');
                         }
                       } catch (e: any) {
                         toast.error('Failed to unpublish');
                         setPublished(true);
                       }
                     }}
-                    className="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2"
+                    className="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 justify-center"
                   >
                     Unpublish
                   </button>
                 </div>
               )}
-              <button onClick={() => setShowSettings(!showSettings)} className="btn-secondary flex items-center gap-2">
+              <button onClick={() => setShowSettings(!showSettings)} className="btn-secondary flex items-center gap-2 flex-1 md:flex-none justify-center">
                 <Settings className="w-4 h-4" /> Settings
               </button>
             </>
           )}
           {studentsData.length > 0 && (
             <>
-              <button onClick={handleDownloadAll} disabled={isDownloading} className="btn-secondary flex items-center gap-2">
+              <button onClick={handleDownloadAll} disabled={isDownloading} className="btn-secondary flex items-center gap-2 flex-1 md:flex-none justify-center">
                 {isDownloading ? <LoadingSpinner size="sm" /> : <Download className="w-4 h-4" />} 
                 {isDownloading ? 'Generating...' : 'Download ZIP'}
               </button>
-              <button onClick={handlePrint} className="btn-primary flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 border-none shadow-lg shadow-blue-500/30">
+              <button onClick={handlePrint} className="btn-primary flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 border-none shadow-lg shadow-blue-500/30 flex-1 md:flex-none justify-center">
                 <Printer className="w-4 h-4" /> Print All Cards
               </button>
             </>
@@ -463,7 +457,7 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                   <tr>
                     <th className="py-3 px-4 w-16">Rank</th>
                     <th className="py-3 px-4">Student Name</th>
-                    {!isTeacher && <th className="py-3 px-4">Roll Number</th>}
+                    {!isTeacher && <th className="py-3 px-4 hidden md:table-cell">Roll Number</th>}
                     <th className="py-3 px-4 text-center">Score</th>
                     <th className="py-3 px-4 text-right">Action</th>
                   </tr>
@@ -480,14 +474,14 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                         </div>
                         <span className="truncate">{data.studentName}</span>
                       </td>
-                      {!isTeacher && <td className="py-3 px-4 text-gray-600 font-medium">{data.rollNo || '-'}</td>}
+                      {!isTeacher && <td className="py-3 px-4 text-gray-600 font-medium hidden md:table-cell">{data.rollNo || '-'}</td>}
                       <td className="py-3 px-4 text-center font-bold text-emerald-600">{data.total}</td>
-                      <td className="py-3 px-4 flex justify-end gap-2">
-                        <button onClick={() => handleDownloadSingle(data.studentId, data.studentName, idx)} className="btn-secondary text-xs flex items-center gap-1 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-                          <Download className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Download</span>
+                      <td className="py-3 px-4 flex justify-end gap-1.5">
+                        <button onClick={() => handleDownloadSingle(data.studentId, data.studentName, idx)} className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 p-2 md:px-3 md:py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                          <Download className="w-4 h-4" /> <span className="hidden md:inline">Download</span>
                         </button>
-                        <button onClick={() => handlePrintSingle(idx)} className="btn-secondary text-xs flex items-center gap-1 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-                          <Printer className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Print</span>
+                        <button onClick={() => handlePrintSingle(idx)} className="hidden md:flex bg-gray-50 hover:bg-gray-100 text-gray-600 p-2 md:px-3 md:py-1.5 rounded-lg text-xs font-semibold items-center gap-1.5 transition-colors">
+                          <Printer className="w-4 h-4" /> <span className="hidden md:inline">Print</span>
                         </button>
                       </td>
                     </tr>

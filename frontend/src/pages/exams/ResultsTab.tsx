@@ -224,13 +224,13 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
             
             <div className="relative z-10 flex items-center justify-between">
               <div>
-                <h2 className="text-3xl font-black tracking-tight mb-2 flex items-center gap-3 print-title">
-                  <Award className="w-8 h-8 text-yellow-300 no-print" />
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-2 flex items-center gap-2 sm:gap-3 print-title whitespace-nowrap">
+                  <Award className="w-7 h-7 sm:w-8 sm:h-8 text-yellow-300 no-print shrink-0" />
                   Examination Results
                 </h2>
-                <div className="flex gap-4 text-white/90 font-medium print-subtitle">
-                  <span className="bg-white/20 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10">{selectedExam?.name}</span>
-                  <span className="bg-white/20 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10">{results[0]?.className}</span>
+                <div className="flex gap-2 sm:gap-4 text-white/90 font-medium print-subtitle text-xs sm:text-base">
+                  <span className="bg-white/20 px-2 sm:px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10 whitespace-nowrap">{selectedExam?.name}</span>
+                  <span className="bg-white/20 px-2 sm:px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10 whitespace-nowrap">{results[0]?.className}</span>
                 </div>
               </div>
             </div>
