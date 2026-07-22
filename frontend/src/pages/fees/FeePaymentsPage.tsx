@@ -210,9 +210,23 @@ export const FeePaymentsPage: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6 md:space-y-8 p-0 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-24 overflow-x-hidden">
+      
+      {/* Mobile Header Title */}
+      <div className="md:hidden bg-white px-4 py-3 border-b border-gray-100 shadow-sm sticky top-0 z-20 flex items-center justify-between">
+        <h1 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">Transaction History</h1>
+        {(user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'ACCOUNTANT') && (
+          <button
+            onClick={exportPaymentsPdf}
+            className="text-indigo-600 font-bold text-xs bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100"
+          >
+            Export PDF
+          </button>
+        )}
+      </div>
+
       <div className="print:hidden space-y-4 sm:space-y-6 md:space-y-8">
       {user?.role !== 'TEACHER' && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 rounded-none sm:rounded-3xl shadow-xl text-white transform transition-all sm:hover:scale-[1.01]">
+        <div className="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-5 sm:p-6 md:p-8 rounded-none sm:rounded-3xl shadow-xl text-white transform transition-all sm:hover:scale-[1.01]">
           <div>
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">Fee Transaction Ledger</h3>
             <p className="text-indigo-100 mt-1 sm:mt-2 font-medium text-sm sm:text-lg opacity-90 leading-snug">Track paid, pending and overdue tuition invoices.</p>
@@ -250,17 +264,17 @@ export const FeePaymentsPage: React.FC = () => {
       )}
 
       {user?.role !== 'TEACHER' && (
-        <div className="px-3 sm:px-0">
+        <div className="px-0 sm:px-0">
         {loading ? (
           <LoadingSpinner size="lg" className="py-12" />
         ) : (
-          <div className="rounded-3xl border border-white/50 bg-white/80 backdrop-blur-lg overflow-hidden shadow-2xl">
+          <div className="rounded-none sm:rounded-3xl border-y sm:border border-white/50 bg-white/80 backdrop-blur-lg overflow-hidden shadow-2xl">
             <div className="overflow-x-auto w-full max-w-full block"><table className="w-full text-sm text-left">
               <thead className="bg-indigo-50/50 text-indigo-900 font-bold border-b border-indigo-100">
                 <tr>
-                  <th className="px-3 sm:px-6 py-4">Student</th>
-                  <th className="px-3 sm:px-6 py-4">Fee Structure</th>
-                  <th className="px-3 sm:px-6 py-4">Amount Paid</th>
+                  <th className="px-2 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm uppercase sm:normal-case">Student</th>
+                  <th className="px-2 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm uppercase sm:normal-case">Fee Structure</th>
+                  <th className="px-2 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm uppercase sm:normal-case">Amount Paid</th>
                   <th className="px-6 py-4 hidden md:table-cell">Date</th>
                   <th className="px-6 py-4 hidden md:table-cell">Method</th>
                   <th className="px-6 py-4 hidden md:table-cell">Receipt No</th>
@@ -271,9 +285,9 @@ export const FeePaymentsPage: React.FC = () => {
                 {payments.map((p) => (
                   <React.Fragment key={p.id}>
                   <tr onClick={() => toggleRow(p.id)} className="hover:bg-indigo-50/30 transition-colors cursor-pointer md:cursor-default">
-                    <td className="px-3 sm:px-6 py-4 font-bold text-slate-800 break-words whitespace-normal break-all sm:break-normal max-w-[100px] sm:max-w-none leading-tight sm:leading-normal text-xs sm:text-sm">{p.student?.user?.name || 'Unknown student'}</td>
-                    <td className="px-3 sm:px-6 py-4 text-slate-500 whitespace-normal break-words text-xs sm:text-sm">{p.feeStructure?.name || 'Deleted structure'}</td>
-                    <td className="px-3 sm:px-6 py-4 font-bold text-xs sm:text-sm whitespace-nowrap">₹{p.amountPaid.toLocaleString()}</td>
+                    <td className="px-2 sm:px-6 py-3 sm:py-4 font-bold text-slate-800 leading-tight text-xs sm:text-sm">{p.student?.user?.name || 'Unknown student'}</td>
+                    <td className="px-2 sm:px-6 py-3 sm:py-4 text-slate-500 whitespace-normal break-words text-xs sm:text-sm">{p.feeStructure?.name || 'Deleted structure'}</td>
+                    <td className="px-2 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-sm whitespace-nowrap">₹{p.amountPaid.toLocaleString()}</td>
                     <td className="px-6 py-4 text-gray-500 hidden md:table-cell">
                       {new Date(p.paymentDate).toLocaleDateString()}
                     </td>
