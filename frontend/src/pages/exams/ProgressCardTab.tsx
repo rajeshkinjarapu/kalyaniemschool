@@ -459,7 +459,7 @@ export const ProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                   <tr>
                     <th className="py-3 px-4 w-16">Rank</th>
                     <th className="py-3 px-4">Student Name</th>
-                    {!isTeacher && <th className="py-3 px-4 hidden md:table-cell">Roll Number</th>}
+                    {!isTeacher && <th className="py-3 px-4 hidden md:table-cell">Student ID</th>}
                     <th className="py-3 px-4 text-center">Score</th>
                     <th className="py-3 px-4 text-right">Action</th>
                   </tr>
@@ -470,11 +470,11 @@ export const ProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                       <td className="py-3 px-4">
                         <span className="font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">#{data.rank}</span>
                       </td>
-                      <td className="py-3 px-4 font-bold text-gray-900 flex items-center gap-2 max-w-[150px] sm:max-w-[200px] overflow-hidden text-ellipsis">
+                      <td className="py-3 px-4 font-bold text-gray-900 flex items-center gap-2 max-w-[150px] md:max-w-none overflow-hidden text-ellipsis md:overflow-visible md:whitespace-normal">
                         <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold shrink-0">
                           {data.studentName?.[0] || 'S'}
                         </div>
-                        <span className="truncate hidden md:inline">{data.studentName}</span>
+                        <span className="hidden md:inline whitespace-normal break-words">{data.studentName}</span>
                         <span className="truncate md:hidden">
                           {(() => {
                             if (!data.studentName) return '';
