@@ -112,31 +112,7 @@ export const SubjectPage: React.FC = () => {
     }
   };
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const importToast = toast.loading('Uploading and importing subjects...');
-    try {
-      const res: any = await api.post('/api/subjects/bulk-import', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      const data = res.data;
-      toast.success(`Import complete! Successfully added ${data.success} subjects.`, {
-        id: importToast,
-      });
-      fetchData();
-    } catch (err: any) {
-      toast.error(err.message || 'Bulk import failed. Please verify format rules.', {
-        id: importToast,
-      });
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -146,36 +122,7 @@ export const SubjectPage: React.FC = () => {
           <p className="text-xs text-gray-400">Map course subjects, codes, classes, and teachers.</p>
         </div>
         <div className="flex gap-3">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleImport}
-            className="hidden"
-            accept=".xlsx,.csv"
-          />
-          <button
-            onClick={() => {
-              const csvContent = "data:text/csv;charset=utf-8,Name,Code,Class,Section\nMathematics,MATH101,Class 1,A";
-              const encodedUri = encodeURI(csvContent);
-              const tempLink = document.createElement("a");
-              tempLink.setAttribute("href", encodedUri);
-              tempLink.setAttribute("download", "subjects_import_template.csv");
-              document.body.appendChild(tempLink);
-              tempLink.click();
-              document.body.removeChild(tempLink);
-            }}
-            className="btn-secondary flex items-center gap-2"
-          >
-            <FileDown className="w-4.5 h-4.5" />
-            <span className="hidden sm:inline">Get Template</span>
-          </button>
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="btn-secondary flex items-center gap-2"
-          >
-            <Upload className="w-4.5 h-4.5" />
-            <span className="hidden sm:inline">Import Subjects</span>
-          </button>
+
           <button
             onClick={() => {
               setEditingSubject(null);

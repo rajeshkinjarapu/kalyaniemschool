@@ -3,8 +3,9 @@ export const generateRollNo = (count: number): string => {
   return `JY${year}-${String(count).padStart(4, '0')}`;
 };
 
-export const generateEmployeeId = (count: number): string => {
-  return `JY${String(count).padStart(6, '0')}`;
+export const generateEmployeeId = (count?: number): string => {
+  const random = Math.floor(1000 + Math.random() * 9000);
+  return `SVJY-${random}`;
 };
 
 export const generateOtp = (): string => {

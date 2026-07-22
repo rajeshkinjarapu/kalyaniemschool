@@ -4,6 +4,8 @@ import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { Search, UserPlus, FileDown, Trash2, Eye, Upload, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../hooks/useAuth';
 import { getPhotoUrl } from '../../utils/photo';
@@ -38,90 +40,36 @@ export const StudentListPage: React.FC = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
-    const importToast = toast.loading('Uploading and importing spreadsheet...');
-    try {
-      const res: any = await api.post('/api/students/bulk-import', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      const data = res.data;
-      toast.success(`Import complete! Successfully added ${data.success} students.`, { id: importToast, duration: 4000 });
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-      queryClient.invalidateQueries({ queryKey: ['classes'] });
-    } catch (err: any) {
-      toast.error(err.message || 'Bulk import failed. Please verify format rules.', { id: importToast });
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
+  const exportStudents = () => {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(18);
+    doc.text('Student List', 14, 22);
+    
+    const tableColumn = ["S.No", "Student ID", "Student Name", "Mobile No"];
+    const tableRows: any[] = [];
 
-  const handlePhotoImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
-    const importToast = toast.loading('Uploading and extracting ZIP photos...');
-    try {
-      const res: any = await api.post('/api/students/bulk-photos', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      const data = res.data.data || res.data;
-      toast.success(`Photos imported! Successfully updated ${data.success} students.`, { id: importToast, duration: 5000 });
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-    } catch (err: any) {
-      toast.error(err.message || 'Bulk photo upload failed. Ensure files are named as StudentID.jpg', { id: importToast });
-    } finally {
-      if (photoInputRef.current) photoInputRef.current.value = '';
-    }
-  };
+    students.forEach((student: any, index: number) => {
+      const studentData = [
+        index + 1,
+        student.rollNo || '-',
+        student.user?.name || '-',
+        student.user?.phone || '-'
+      ];
+      tableRows.push(studentData);
+    });
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this student profile?')) return;
-    try {
-      await api.delete(`/api/students/${id}`);
-      toast.success('Student deleted successfully');
-      fetchStudents();
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to delete student');
-    }
-  };
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      theme: 'grid',
+      styles: { fontSize: 10, cellPadding: 3 },
+      headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold' }
+    });
 
-  const exportStudents = async () => {
-    const t = toast.loading('Generating Excel sheet...');
-    try {
-      const response: any = await api.get(`/api/reports/students?classId=${classId}`, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data || response]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'Student_Report.xlsx');
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode?.removeChild(link);
-      toast.success('Report downloaded!', { id: t });
-    } catch {
-      toast.error('Failed to export data.', { id: t });
-    }
-  };
-
-  const downloadTemplate = async () => {
-    const t = toast.loading('Downloading template...');
-    try {
-      const response: any = await api.get('/api/students/template', { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data || response]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'Student_Import_Template.xlsx');
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode?.removeChild(link);
-      toast.success('Template downloaded!', { id: t });
-    } catch {
-      toast.error('Failed to download template.', { id: t });
-    }
+    doc.save('Student_List.pdf');
+    toast.success('PDF generated successfully!');
   };
 
   // Initials avatar fallback
@@ -182,19 +130,6 @@ export const StudentListPage: React.FC = () => {
             <>
               <button onClick={exportStudents} className="flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-bold text-gray-600 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all cursor-pointer">
                 <FileDown className="w-4 h-4" /> Export
-              </button>
-              
-              <input type="file" ref={photoInputRef} onChange={handlePhotoImport} className="hidden" accept=".zip" />
-              <button onClick={() => photoInputRef.current?.click()} className="flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-bold text-gray-600 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all cursor-pointer">
-                <Upload className="w-4 h-4" /> Bulk Photos (ZIP)
-              </button>
-
-              <input type="file" ref={fileInputRef} onChange={handleImport} className="hidden" accept=".xlsx,.csv" />
-              <button onClick={downloadTemplate} className="flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-bold text-gray-600 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all cursor-pointer">
-                <FileDown className="w-4 h-4" /> Get Template
-              </button>
-              <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-bold text-gray-600 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all cursor-pointer">
-                <Upload className="w-4 h-4" /> Import Sheet
               </button>
             </>
           )}

@@ -6,6 +6,8 @@ import { Avatar } from '../../components/UI/Avatar';
 import { Search, UserPlus, Trash2, Edit, Upload, FileDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { useAuth } from '../../hooks/useAuth';
 import { getPhotoUrl } from '../../utils/photo';
 
@@ -19,32 +21,7 @@ export const TeacherListPage: React.FC = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const importToast = toast.loading('Uploading and importing teachers registry...');
-    try {
-      const res: any = await api.post('/api/teachers/bulk-import', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      const data = res.data;
-      toast.success(`Import complete! Successfully added ${data.success} teachers.`, {
-        id: importToast,
-        duration: 4000,
-      });
-      fetchTeachers();
-    } catch (err: any) {
-      toast.error(err.message || 'Bulk import failed. Please verify format rules.', {
-        id: importToast,
-      });
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
 
   const fetchTeachers = async () => {
     setLoading(true);
@@ -79,23 +56,37 @@ export const TeacherListPage: React.FC = () => {
     }
   };
 
-  const exportTeachers = async () => {
-    const importToast = toast.loading('Generating Excel sheet...');
-    try {
-      const response: any = await api.get('/api/teachers/export', {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data || response]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'Teacher_Report.xlsx');
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode?.removeChild(link);
-      toast.success('Report downloaded successfully!', { id: importToast });
-    } catch (e: any) {
-      toast.error('Failed to export teachers registry data.', { id: importToast });
-    }
+  const exportTeachers = () => {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(18);
+    doc.text('Teacher List', 14, 22);
+    
+    const tableColumn = ["S.No", "Teacher ID", "Name", "Mobile No", "Subject(s)"];
+    const tableRows: any[] = [];
+
+    teachers.forEach((teacher: any, index: number) => {
+      const teacherData = [
+        index + 1,
+        teacher.employeeId || '-',
+        teacher.user?.name || '-',
+        teacher.user?.phone || '-',
+        teacher.specialization || '-'
+      ];
+      tableRows.push(teacherData);
+    });
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      theme: 'grid',
+      styles: { fontSize: 10, cellPadding: 3 },
+      headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold' }
+    });
+
+    doc.save('Teacher_List.pdf');
+    toast.success('PDF generated successfully!');
   };
 
   return (
@@ -122,25 +113,6 @@ export const TeacherListPage: React.FC = () => {
             <>
               <button onClick={exportTeachers} className="flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-bold text-gray-600 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all cursor-pointer">
                 <FileDown className="w-4 h-4" /> Export
-              </button>
-              <button
-                onClick={() => {
-                  const csvContent = "data:text/csv;charset=utf-8,Name,Phone,Subject\nTeacher 1,9876543210,Physics";
-                  const encodedUri = encodeURI(csvContent);
-                  const tempLink = document.createElement("a");
-                  tempLink.setAttribute("href", encodedUri);
-                  tempLink.setAttribute("download", "teachers_import_template.csv");
-                  document.body.appendChild(tempLink);
-                  tempLink.click();
-                  document.body.removeChild(tempLink);
-                }}
-                className="flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-bold text-gray-600 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all cursor-pointer"
-              >
-                <FileDown className="w-4 h-4" /> Get Template
-              </button>
-              <input type="file" ref={fileInputRef} onChange={handleImport} className="hidden" accept=".xlsx,.csv" />
-              <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-bold text-gray-600 dark:text-white bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all cursor-pointer">
-                <Upload className="w-4 h-4" /> Import Sheet
               </button>
             </>
           )}
