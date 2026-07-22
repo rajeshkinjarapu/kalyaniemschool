@@ -274,6 +274,8 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     }
   };
 
+  const getWaUrl = (mobile: string) => `https://wa.me/${(mobile || '').replace(/\D/g, '')}?text=Please%20check%20your%20progress%20card`;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-center bg-gradient-to-r from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 sm:p-5 rounded-2xl border border-indigo-100 dark:border-gray-800 shadow-sm print:hidden gap-4">
@@ -492,7 +494,7 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                             <Download className="w-4 h-4" /> <span className="hidden md:inline">Download</span>
                           </button>
                         ) : (
-                          <a href={`https://wa.me/${data.mobile.replace(/\D/g, '')}?text=Please%20check%20your%20progress%20card`} target="_blank" rel="noopener noreferrer" className="bg-green-50 hover:bg-green-100 text-green-600 p-2 md:px-3 md:py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                          <a href={getWaUrl(data.mobile)} target="_blank" rel="noopener noreferrer" className="bg-green-50 hover:bg-green-100 text-green-600 p-2 md:px-3 md:py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors">
                             <MessageCircle className="w-4 h-4" /> <span className="hidden md:inline">WhatsApp</span>
                           </a>
                         )}
