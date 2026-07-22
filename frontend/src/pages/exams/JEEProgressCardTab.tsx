@@ -316,10 +316,12 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                     if (confirmPublish) {
                       setPublished(true);
                       try {
-                        const res: any = await api.put(`/api/exams/${selectedExamId}/publish-results`, { published: true });
-                        if (res.data?.success) {
-                          toast.success('Results published successfully!');
-                        }
+                        const newSettings = { ...(selectedExam.admitCardSettings || {}), progressCardPublished: true };
+                        await api.post(`/api/exams/${selectedExamId}/admit-card-settings`, {
+                          admitCardPublished: selectedExam?.admitCardPublished || false,
+                          admitCardSettings: newSettings
+                        });
+                        toast.success('Results published successfully!');
                       } catch (e: any) {
                         toast.error('Failed to publish');
                         setPublished(false);
@@ -340,10 +342,12 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                       if (!window.confirm('Are you sure you want to unpublish these results?')) return;
                       setPublished(false);
                       try {
-                        const res: any = await api.put(`/api/exams/${selectedExamId}/publish-results`, { published: false });
-                        if (res.data?.success) {
-                          toast.success('Results unpublished successfully!');
-                        }
+                        const newSettings = { ...(selectedExam.admitCardSettings || {}), progressCardPublished: false };
+                        await api.post(`/api/exams/${selectedExamId}/admit-card-settings`, {
+                          admitCardPublished: selectedExam?.admitCardPublished || false,
+                          admitCardSettings: newSettings
+                        });
+                        toast.success('Results unpublished successfully!');
                       } catch (e: any) {
                         toast.error('Failed to unpublish');
                         setPublished(true);
