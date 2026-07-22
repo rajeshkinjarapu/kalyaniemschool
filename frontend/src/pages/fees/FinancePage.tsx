@@ -244,6 +244,23 @@ export const FinancePage: React.FC = () => {
     }
   };
 
+  const handlePrintReceipt = async (paymentId: string) => {
+    try {
+      const response: any = await api.get(`/api/reports/receipt/${paymentId}`, {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data || response], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Receipt_${paymentId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (e) {
+      toast.error('Failed to generate receipt');
+    }
+  };
+
   // Helper selectors
   const getClassName = (classId: string) => {
     const cls = classes.find(c => c.id === classId);
@@ -262,7 +279,7 @@ export const FinancePage: React.FC = () => {
   return (
     <div className="flex flex-col lg:flex-row gap-6">
       {/* ══ LEFT SIDEBAR TABS (Matching sidebar design) ══ */}
-      <div className="print:hidden w-full lg:w-64 shrink-0 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-4 flex flex-col gap-1.5 shadow-sm">
+      <div className={`print:hidden w-full lg:w-64 shrink-0 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-4 flex flex-col gap-1.5 shadow-sm ${activeTab === 'transaction' ? 'hidden' : ''}`}>
         <div className="px-3 py-2 text-xs font-black uppercase text-gray-400 tracking-wider flex items-center gap-1.5 border-b border-gray-100 dark:border-gray-800 mb-2">
           <Wallet className="w-4 h-4 text-indigo-500" />
           Finance Submenu
@@ -785,6 +802,7 @@ export const FinancePage: React.FC = () => {
                         <th className="pb-3 text-[10px] uppercase tracking-wider">Payment Method</th>
                         <th className="pb-3 text-[10px] uppercase tracking-wider">Status</th>
                         <th className="pb-3 text-[10px] uppercase tracking-wider text-right">Date</th>
+                        <th className="pb-3 text-[10px] uppercase tracking-wider text-right hidden md:table-cell">Receipt</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -804,6 +822,15 @@ export const FinancePage: React.FC = () => {
                           </td>
                           <td className="py-4 text-right text-xs text-gray-400 font-semibold">
                             {new Date(p.paymentDate).toLocaleDateString()}
+                          </td>
+                          <td className="py-4 text-right hidden md:table-cell">
+                            <button
+                              onClick={() => handlePrintReceipt(p.id)}
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 cursor-pointer"
+                              title="Download Receipt"
+                            >
+                              <FileDown className="w-4 h-4" />
+                            </button>
                           </td>
                         </tr>
                       ))}
