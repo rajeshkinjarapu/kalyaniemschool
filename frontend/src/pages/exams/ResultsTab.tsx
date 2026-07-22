@@ -12,6 +12,9 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
+
+  const toggleRow = (id: string) => setExpandedRow(prev => prev === id ? null : id);
 
   const selectedExam = exams.find(e => e.id === selectedExamId);
 
@@ -240,48 +243,87 @@ export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                   <tr className="bg-indigo-50/50">
                     <th className="p-4 font-black text-indigo-900 text-xs uppercase tracking-wider rounded-tl-xl w-16 text-center">Rank</th>
                     <th className="p-4 font-black text-indigo-900 text-xs uppercase tracking-wider whitespace-nowrap">Student Name</th>
-                    <th className="p-4 font-black text-indigo-900 text-xs uppercase tracking-wider w-28">Roll No</th>
+                    <th className="hidden md:table-cell p-4 font-black text-indigo-900 text-xs uppercase tracking-wider w-28">Roll No</th>
                     {results[0]?.marks.map((m: any, i: number) => (
-                      <th key={i} className="p-4 font-black text-indigo-900 text-xs uppercase tracking-wider text-center">{m.subject}</th>
+                      <th key={i} className="hidden md:table-cell p-4 font-black text-indigo-900 text-xs uppercase tracking-wider text-center">{m.subject}</th>
                     ))}
                     <th className="p-4 font-black text-indigo-900 text-xs uppercase tracking-wider text-center w-20">Total</th>
-                    <th className="p-4 font-black text-indigo-900 text-xs uppercase tracking-wider text-center w-24">Percentage</th>
-                    <th className="p-4 font-black text-indigo-900 text-xs uppercase tracking-wider text-center rounded-tr-xl w-20 hide-in-print">Grade</th>
+                    <th className="hidden md:table-cell p-4 font-black text-indigo-900 text-xs uppercase tracking-wider text-center w-24">Percentage</th>
+                    <th className="hidden md:table-cell p-4 font-black text-indigo-900 text-xs uppercase tracking-wider text-center rounded-tr-xl w-20 hide-in-print">Grade</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {results.map((student, idx) => (
-                    <tr key={student.studentId} className="hover:bg-indigo-50/30 transition-colors group">
-                      <td className="p-4">
-                        <div className="flex justify-center">
-                          {getRankBadge(student.rank)}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <p className="font-bold text-gray-900 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">{student.name}</p>
-                      </td>
-                      <td className="p-4">
-                        <p className="text-xs text-gray-500 font-semibold print-roll-no">{student.rollNo || '-'}</p>
-                      </td>
-                      {student.marks.map((m: any, i: number) => (
-                        <td key={i} className="p-4 text-center">
-                          <span className="font-bold text-gray-700">{m.obtained}</span>
+                    <React.Fragment key={student.studentId || idx}>
+                      <tr 
+                        onClick={() => toggleRow(student.studentId || String(idx))}
+                        className="hover:bg-indigo-50/50 transition-colors group cursor-pointer bg-white"
+                      >
+                        <td className="p-4">
+                          <div className="flex justify-center">
+                            {getRankBadge(student.rank)}
+                          </div>
                         </td>
-                      ))}
-                      <td className="p-4 text-center font-black text-indigo-600">
-                        {student.total}
-                      </td>
-                      <td className="p-4 text-center">
-                        <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-green-50 text-green-700 font-bold border border-green-100">
-                          {student.percentage}%
-                        </div>
-                      </td>
-                      <td className="p-4 text-center hide-in-print">
-                        <span className="inline-block px-3 py-1 rounded-full font-black text-sm text-fuchsia-700 bg-fuchsia-50 border border-fuchsia-200">
-                          {student.grade || '-'}
-                        </span>
-                      </td>
-                    </tr>
+                        <td className="p-4">
+                          <p className="font-bold text-indigo-900 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] md:max-w-[200px]">{student.name}</p>
+                        </td>
+                        <td className="hidden md:table-cell p-4">
+                          <p className="text-xs text-gray-500 font-semibold print-roll-no">{student.rollNo || '-'}</p>
+                        </td>
+                        {student.marks.map((m: any, i: number) => (
+                          <td key={i} className="hidden md:table-cell p-4 text-center">
+                            <span className="font-bold text-gray-700">{m.obtained}</span>
+                          </td>
+                        ))}
+                        <td className="p-4 text-center font-black text-indigo-600">
+                          {student.total}
+                        </td>
+                        <td className="hidden md:table-cell p-4 text-center">
+                          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-green-50 text-green-700 font-bold border border-green-100">
+                            {student.percentage}%
+                          </div>
+                        </td>
+                        <td className="hidden md:table-cell p-4 text-center hide-in-print">
+                          <span className="inline-block px-3 py-1 rounded-full font-black text-sm text-fuchsia-700 bg-fuchsia-50 border border-fuchsia-200">
+                            {student.grade || '-'}
+                          </span>
+                        </td>
+                      </tr>
+
+                      {/* Expanded Mobile Details */}
+                      {expandedRow === (student.studentId || String(idx)) && (
+                        <tr className="md:hidden bg-gradient-to-r from-indigo-50/50 to-fuchsia-50/50 border-b border-gray-100">
+                          <td colSpan={3} className="p-4">
+                            <div className="space-y-4">
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="font-semibold text-gray-500">Roll No:</span>
+                                <span className="font-bold text-gray-900">{student.rollNo || '-'}</span>
+                              </div>
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="font-semibold text-gray-500">Percentage:</span>
+                                <span className="font-bold text-green-600">{student.percentage}%</span>
+                              </div>
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="font-semibold text-gray-500">Grade:</span>
+                                <span className="font-bold text-fuchsia-600">{student.grade || '-'}</span>
+                              </div>
+                              
+                              <div className="pt-2 border-t border-gray-200/60">
+                                <p className="text-xs font-bold text-indigo-500 uppercase mb-2">Subject Marks</p>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {student.marks.map((m: any, i: number) => (
+                                    <div key={i} className="flex justify-between items-center bg-white/80 backdrop-blur-sm p-2 rounded-lg border border-white shadow-sm">
+                                      <span className="text-xs font-semibold text-gray-500 truncate mr-2">{m.subject}</span>
+                                      <span className="text-sm font-bold text-indigo-700">{m.obtained}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>
