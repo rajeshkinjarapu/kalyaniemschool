@@ -146,7 +146,7 @@ const HomeworkPage: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in-up pb-10">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-[2rem]" style={{
+      <div className="relative overflow-hidden rounded-none sm:rounded-[2rem] hidden md:block" style={{
         background: 'linear-gradient(120deg, #0f172a 0%, #1e1b4b 50%, #15803d 100%)',
         boxShadow: '0 25px 50px -12px rgba(21, 128, 61, 0.3)',
       }}>
@@ -195,8 +195,8 @@ const HomeworkPage: React.FC = () => {
 
       {/* Homework Grid */}
       {homeworks.length === 0 ? (
-        <div className="text-center py-20 rounded-[2rem] bg-white border border-slate-100"
-          style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.04)' }}>
+        <div className="text-center py-10 md:py-20 md:rounded-[2rem] md:bg-white md:border md:border-slate-100"
+          style={{ boxShadow: window.innerWidth < 768 ? 'none' : '0 4px 24px rgba(0,0,0,0.04)' }}>
           <BookMarked className="w-16 h-16 text-slate-300 mx-auto mb-4" />
           <h3 className="text-lg font-bold text-slate-500">No homework found</h3>
           <p className="text-sm text-slate-400 mt-1">
@@ -209,8 +209,8 @@ const HomeworkPage: React.FC = () => {
             const statusInfo = getStatusColor(hw.dueDate, hw.status);
             const dueDate = new Date(hw.dueDate);
             return (
-              <div key={hw.id} className="group relative bg-white rounded-[1.5rem] border border-slate-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl overflow-hidden"
-                style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
+              <div key={hw.id} className="group relative md:bg-white md:rounded-[1.5rem] md:border md:border-slate-100 transition-all duration-300 md:hover:-translate-y-1 md:hover:shadow-xl overflow-hidden border-b border-gray-150 py-2 md:py-0"
+                style={{ boxShadow: window.innerWidth < 768 ? 'none' : '0 4px 24px rgba(0,0,0,0.06)' }}>
                 {/* Top accent */}
                 <div className="h-1.5 w-full" style={{ background: 'linear-gradient(90deg, #22c55e, #10b981)' }} />
                 <div className="p-5">

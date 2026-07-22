@@ -140,7 +140,7 @@ const TeacherAttendancePage: React.FC = () => {
   return (
     <div className="space-y-4 sm:space-y-6 md:space-y-8 p-0 sm:p-4 md:p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen animate-fade-in-up pb-10 overflow-x-hidden">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-none sm:rounded-[2rem]" style={{
+      <div className="relative overflow-hidden rounded-none sm:rounded-[2rem] hidden md:block" style={{
         background: 'linear-gradient(120deg, #0f172a 0%, #1e1b4b 50%, #7c3aed 100%)',
         boxShadow: '0 25px 50px -12px rgba(124,58,237,0.3)',
       }}>
@@ -184,15 +184,17 @@ const TeacherAttendancePage: React.FC = () => {
       {isAdmin && (
         <div className="space-y-5 px-3 sm:px-0">
           {/* Date Selector */}
-          <div className="flex items-center gap-4 bg-white rounded-[1.5rem] p-4 border border-slate-100"
-            style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.04)' }}>
-            <CalendarCheck className="w-5 h-5 text-violet-500" />
-            <label className="text-sm font-bold text-slate-600">Mark attendance for date:</label>
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 md:bg-white md:rounded-[1.5rem] py-2 md:p-4 md:border md:border-slate-100"
+            style={{ boxShadow: window.innerWidth < 768 ? 'none' : '0 4px 24px rgba(0,0,0,0.04)' }}>
+            <div className="flex items-center gap-2">
+              <CalendarCheck className="w-5 h-5 text-violet-500 hidden md:block" />
+              <label className="text-sm font-bold text-slate-600 hidden md:block">Mark attendance for date:</label>
+            </div>
             <input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)}
               max={today.toISOString().split('T')[0]}
-              className="px-3 py-2 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500 cursor-pointer" />
+              className="px-3 py-2 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500 cursor-pointer bg-white" />
             <button onClick={handleBulkSave} disabled={saving}
-              className="ml-auto flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90 cursor-pointer disabled:opacity-50"
+              className="md:ml-auto w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90 cursor-pointer disabled:opacity-50"
               style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
               <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save All'}
             </button>
@@ -210,9 +212,9 @@ const TeacherAttendancePage: React.FC = () => {
           )}
 
           {/* Teacher List */}
-          <div className="bg-white rounded-[1.5rem] border border-slate-100 overflow-hidden"
-            style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.04)' }}>
-            <div className="p-5 border-b border-slate-50">
+          <div className="md:bg-white md:rounded-[1.5rem] md:border md:border-slate-100 overflow-hidden"
+            style={{ boxShadow: window.innerWidth < 768 ? 'none' : '0 4px 24px rgba(0,0,0,0.04)' }}>
+            <div className="md:p-5 pb-2 md:pb-5 md:border-b border-slate-50">
               <h3 className="font-black text-slate-800">Teachers — {teachers.length} staff members</h3>
             </div>
             <div className="divide-y divide-slate-50">
