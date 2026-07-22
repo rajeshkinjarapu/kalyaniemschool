@@ -26,6 +26,11 @@ const queryClient = new QueryClient({
   },
 });
 
+// Handle Vite dynamic import errors (e.g. after a new deployment)
+window.addEventListener('vite:preloadError', () => {
+  window.location.reload();
+});
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
