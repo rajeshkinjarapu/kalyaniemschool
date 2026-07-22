@@ -191,7 +191,7 @@ export const ClassManagementPage: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {classes.map((cls) => (
-            <div key={cls.id} className="card p-6 space-y-4 hover:shadow-md transition-shadow relative group">
+            <div key={cls.id} className="bg-gradient-to-br from-white to-indigo-50/30 p-6 space-y-4 hover:shadow-glow-primary transition-all duration-300 relative group rounded-3xl border border-indigo-50 backdrop-blur-md animate-fade-in-up hover:-translate-y-1">
               <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
                   onClick={() => openEditModal(cls)}
@@ -216,7 +216,7 @@ export const ClassManagementPage: React.FC = () => {
                   <School className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-base text-gray-900 dark:text-white">
+                  <h4 className="font-extrabold text-lg text-indigo-950 group-hover:text-indigo-600 transition-colors">
                     {cls.name}-{cls.section}
                   </h4>
                   <span className="text-xs text-gray-400">Academic Year: {cls.academicYear}</span>

@@ -154,11 +154,11 @@ export const TeacherListPage: React.FC = () => {
       {loading ? (
         <LoadingSpinner size="lg" className="py-12" />
       ) : (
-        <div className="bg-white/80 dark:bg-white/5 border border-gray-150 dark:border-white/10 rounded-3xl shadow-sm overflow-hidden backdrop-blur-xl">
+        <div className="bg-white/40 dark:bg-white/5 border border-white/60 dark:border-white/10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden backdrop-blur-2xl">
           <div className="overflow-x-auto hidden md:block">
             <table className="w-full text-sm text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50/50 dark:bg-white/5 text-gray-500 font-semibold border-b border-gray-150 dark:border-white/10">
+                <tr className="bg-indigo-50/50 text-indigo-900 font-semibold border-b border-indigo-100">
                   <th className="px-6 py-4 font-extrabold text-xs uppercase tracking-wider text-gray-400">Teacher</th>
                   <th className="px-6 py-4 font-extrabold text-xs uppercase tracking-wider text-gray-400">Employee ID</th>
                   <th className="px-6 py-4 font-extrabold text-xs uppercase tracking-wider text-gray-400">Subject</th>
@@ -184,7 +184,7 @@ export const TeacherListPage: React.FC = () => {
                     return parts.length >= 2 ? `${parts[0][0]}${parts[1][0]}`.toUpperCase() : n[0].toUpperCase();
                   };
                   return (
-                  <tr key={teacher.id} className="hover:bg-indigo-50/30 dark:hover:bg-white/5 transition-colors group">
+                  <tr key={teacher.id} className="hover:bg-white bg-transparent transition-all duration-300 group border-b border-indigo-50/50 hover:shadow-glow-primary animate-fade-in-up" style={{ animationDelay: `${idx * 30}ms` }}>
                     <td className="px-6 py-4 flex items-center gap-3">
                       <div className="relative">
                         {getPhotoUrl(teacher.user?.photoUrl) ? (
@@ -260,7 +260,7 @@ export const TeacherListPage: React.FC = () => {
           </div>
           
           {/* Mobile View */}
-          <div className="md:hidden flex flex-col gap-3 p-3 bg-gray-50/50 dark:bg-transparent">
+          <div className="md:hidden flex flex-col gap-4 p-4 bg-transparent">
              {teachers.map((teacher, idx) => {
                 const name = teacher.user?.name || 'Teacher';
                 const avatarColors = [
@@ -278,7 +278,7 @@ export const TeacherListPage: React.FC = () => {
                     return parts.length >= 2 ? `${parts[0][0]}${parts[1][0]}`.toUpperCase() : n[0].toUpperCase();
                 };
                 return (
-                <div key={teacher.id} className="bg-white dark:bg-white/5 p-4 rounded-2xl shadow-sm border border-gray-150 dark:border-white/10 flex items-center gap-3 relative overflow-visible mt-2 backdrop-blur-md">
+                <div key={teacher.id} className="bg-gradient-to-br from-white to-indigo-50/30 p-4 rounded-3xl shadow-sm hover:shadow-glow-primary hover:-translate-y-1 transition-all duration-300 border border-indigo-50 flex items-center gap-4 relative overflow-visible mt-2 backdrop-blur-md animate-fade-in-up" style={{ animationDelay: `${idx * 40}ms` }}>
                    <div className="absolute -top-2.5 -left-2.5 w-7 h-7 bg-indigo-500 rounded-full flex items-center justify-center text-white font-black text-[10px] shadow-lg border-2 border-white dark:border-indigo-500 z-10">
                      {idx + 1}
                    </div>
@@ -292,7 +292,7 @@ export const TeacherListPage: React.FC = () => {
                         )}
                    </div>
                    <div className="flex-1 min-w-0">
-                     <Link to={`/teachers/${teacher.id}`} className="font-extrabold text-[15px] text-gray-900 dark:text-white truncate block hover:text-indigo-600 transition-colors mb-1.5">
+                     <Link to={`/teachers/${teacher.id}`} className="font-extrabold text-[15px] text-indigo-950 truncate block hover:text-indigo-600 transition-colors mb-2">
                        {name}
                      </Link>
                      <div className="flex flex-wrap gap-1.5">
@@ -310,8 +310,14 @@ export const TeacherListPage: React.FC = () => {
                         </button>
                      )}
                    </div>
+                   
+                   <div className="shrink-0">
+                     <Link to={`/teachers/${teacher.id}`} className="flex items-center justify-center w-10 h-10 bg-indigo-50 text-indigo-500 hover:bg-indigo-600 hover:text-white hover:shadow-lg hover:shadow-indigo-500/30 rounded-xl transition-all border border-indigo-100 cursor-pointer">
+                       <Eye className="w-4 h-4" />
+                     </Link>
+                   </div>
                 </div>
-             )})}
+                )})}
           </div>
         </div>
       )}

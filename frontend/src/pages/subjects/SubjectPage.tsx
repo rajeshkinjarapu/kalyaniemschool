@@ -196,12 +196,12 @@ export const SubjectPage: React.FC = () => {
       {loading ? (
         <LoadingSpinner size="lg" className="py-12" />
       ) : (
-        <div className="card overflow-hidden bg-white/80 dark:bg-white/5 border border-gray-150 dark:border-white/10 rounded-3xl shadow-sm backdrop-blur-xl">
+        <div className="bg-white/40 dark:bg-white/5 border border-white/60 dark:border-white/10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden backdrop-blur-2xl">
           
           {/* Mobile View */}
-          <div className="md:hidden flex flex-col gap-3 p-3 bg-gray-50/50 dark:bg-transparent">
+          <div className="md:hidden flex flex-col gap-4 p-4 bg-transparent">
             {subjects.map((sub, idx) => (
-              <div key={sub.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-150 flex items-center gap-3 relative overflow-visible mt-2 backdrop-blur-md">
+              <div key={sub.id} className="bg-gradient-to-br from-white to-indigo-50/30 p-4 rounded-3xl shadow-sm hover:shadow-glow-primary hover:-translate-y-1 transition-all duration-300 border border-indigo-50 flex items-center gap-4 relative overflow-visible mt-2 backdrop-blur-md animate-fade-in-up" style={{ animationDelay: `${idx * 40}ms` }}>
                  <div className="absolute -top-2.5 -left-2.5 w-7 h-7 bg-indigo-500 rounded-full flex items-center justify-center text-white font-black text-[10px] shadow-lg border-2 border-white z-10">
                    {idx + 1}
                  </div>
@@ -211,7 +211,7 @@ export const SubjectPage: React.FC = () => {
                    </div>
                  </div>
                  <div className="flex-1 min-w-0">
-                   <h4 className="font-extrabold text-[15px] text-gray-900 truncate mb-1.5">{sub.name}</h4>
+                   <h4 className="font-extrabold text-[15px] text-indigo-950 truncate mb-1.5">{sub.name}</h4>
                    <div className="flex flex-wrap gap-1.5">
                      <span className="font-mono text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">{sub.code}</span>
                      <span className="text-[10px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100">{sub.class ? `${sub.class.name}-${sub.class.section}` : 'N/A'}</span>
@@ -241,7 +241,7 @@ export const SubjectPage: React.FC = () => {
 
           {/* Desktop Table View */}
           <div className="hidden md:block overflow-x-auto w-full max-w-full"><table className="w-full text-sm text-left border-collapse">
-            <thead className="bg-gray-50 dark:bg-gray-800/40 text-gray-500 font-semibold border-b border-gray-100 dark:border-gray-800">
+            <thead className="bg-indigo-50/50 text-indigo-900 font-semibold border-b border-indigo-100">
               <tr>
                 <th className="px-6 py-4">Subject Name</th>
                 <th className="px-6 py-4">Code</th>
@@ -251,8 +251,8 @@ export const SubjectPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800/50">
-              {subjects.map((sub) => (
-                <tr key={sub.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/10">
+              {subjects.map((sub, idx) => (
+                <tr key={sub.id} className="hover:bg-white bg-transparent transition-all duration-300 group border-b border-indigo-50/50 hover:shadow-glow-primary animate-fade-in-up" style={{ animationDelay: `${idx * 30}ms` }}>
                   <td className="px-6 py-4 font-semibold text-gray-950 dark:text-white">{sub.name}</td>
                   <td className="px-6 py-4 font-mono text-xs text-gray-500">{sub.code}</td>
                   <td className="px-6 py-4">

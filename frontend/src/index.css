@@ -23,6 +23,7 @@
   --animate-fade-in:    fadeIn 0.2s ease-out;
   --animate-float:      float 6s ease-in-out infinite;
   --animate-slide-in:   slideIn 0.25s cubic-bezier(.4,0,.2,1);
+  --animate-gradient-shift: gradientShift 15s ease infinite;
 }
 
 @keyframes fadeInUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
@@ -32,6 +33,7 @@
 @keyframes slideIn   { from{transform:translateX(-12px);opacity:0} to{transform:none;opacity:1} }
 @keyframes shimmer   { from{background-position:200% 0} to{background-position:-200% 0} }
 @keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,.4)} 50%{box-shadow:0 0 0 8px rgba(99,102,241,0)} }
+@keyframes gradientShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 
 @layer base {
   :root { --grid-color: rgba(0,0,0,.025); }
