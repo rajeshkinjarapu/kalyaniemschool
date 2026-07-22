@@ -368,6 +368,7 @@ export const TimetablePage: React.FC = () => {
               </button>
             ))}
           </div>
+        </div>
       </div>
 
       {/* ══ FILTER BAR ══ */}
