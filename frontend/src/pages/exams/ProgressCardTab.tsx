@@ -308,20 +308,20 @@ export const ProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
           {isSuperAdmin && selectedExam && (
             <>
               {!published ? (
-                <button 
-                  onClick={async () => {
-                    setPublished(true);
-                    try {
-                      await api.post(`/api/exams/${selectedExamId}/admit-card-settings`, {
-                        admitCardPublished: selectedExam.admitCardPublished || false,
-                        admitCardSettings: { ...(selectedExam.admitCardSettings || {}), progressCardPublished: true },
-                      });
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     const confirmPublish = window.confirm('Are you sure you want to publish these results? This will make them visible to students and parents.');
                     if (confirmPublish) {
                       setPublished(true);
-                      toast.success('Results published successfully!');
+                      try {
+                        const res: any = await api.put(`/api/exams/${selectedExamId}/publish-results`, { published: true });
+                        if (res.data?.success) {
+                          toast.success('Results published successfully!');
+                        }
+                      } catch (e: any) {
+                        toast.error('Failed to publish');
+                        setPublished(false);
+                      }
                     }
                   }}
                   className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 flex-1 md:flex-none justify-center shadow-md shadow-emerald-500/20"
