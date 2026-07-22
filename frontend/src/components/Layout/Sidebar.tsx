@@ -193,24 +193,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           </div>
         )}
 
-        <div className="flex items-center gap-3 px-3 py-3 rounded-2xl"
+        <div className="flex items-center gap-2 px-3 py-3 rounded-2xl relative"
           style={{ background: 'rgba(255,255,255,0.05)' }}>
-          {user.photoUrl ? (
-            <div className="w-9 h-9 rounded-xl shrink-0 overflow-hidden border border-white/20">
-              <img src={getPhotoUrl(user.photoUrl)} alt={user.name} className="w-full h-full object-cover" />
+          <NavLink 
+            to="/profile" 
+            onClick={() => setIsOpen(false)}
+            className="flex flex-1 items-center gap-3 min-w-0 group cursor-pointer"
+            title="Update Profile"
+          >
+            {user.photoUrl ? (
+              <div className="w-9 h-9 rounded-xl shrink-0 overflow-hidden border border-white/20 group-hover:border-indigo-400 transition-colors">
+                <img src={getPhotoUrl(user.photoUrl)} alt={user.name} className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center text-white font-black text-sm group-hover:shadow-[0_0_12px_rgba(99,102,241,0.8)] transition-all"
+                style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 2px 8px rgba(99,102,241,.4)' }}>
+                {user.name?.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-white truncate leading-tight group-hover:text-indigo-200 transition-colors">{user.name}</p>
+              <p className="text-[10px] font-semibold" style={{ color: '#818cf8' }}>{roleLabels[user.role]}</p>
             </div>
-          ) : (
-            <div className="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center text-white font-black text-sm"
-              style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 2px 8px rgba(99,102,241,.4)' }}>
-              {user.name?.charAt(0).toUpperCase()}
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-white truncate leading-tight">{user.name}</p>
-            <p className="text-[10px] font-semibold" style={{ color: '#818cf8' }}>{roleLabels[user.role]}</p>
-          </div>
+          </NavLink>
           <button onClick={logout} title="Logout"
-            className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer">
+            className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer z-10 shrink-0">
             <LogOut className="w-4 h-4" />
           </button>
         </div>
