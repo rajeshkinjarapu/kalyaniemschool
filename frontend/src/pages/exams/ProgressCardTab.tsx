@@ -215,6 +215,34 @@ export const ProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     }
   };
 
+  const handleWhatsAppShare = async (studentId: string, studentName: string, index: number, mobile: string) => {
+    const el = document.getElementById(`progress-card-${index}`);
+    if (!el) return toast.error('Could not find card element');
+    
+    const toastId = toast.loading(`Preparing PDF for WhatsApp...`);
+    try {
+      const pdf = await generatePDFForElement(el, studentName);
+      const blob = pdf.output('blob');
+      const file = new File([blob], `${studentName}_ProgressCard.pdf`, { type: 'application/pdf' });
+      
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        toast.dismiss(toastId);
+        await navigator.share({
+          files: [file],
+          title: `${studentName} Progress Card`,
+          text: `Please find the progress card for ${studentName} attached.`
+        });
+      } else {
+        toast.success('Sharing file directly is not supported on this browser. Downloading instead...', { id: toastId });
+        pdf.save(`${studentName}_ProgressCard.pdf`);
+        window.open(getWaUrl(mobile), '_blank');
+      }
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Failed to prepare PDF for WhatsApp.', { id: toastId });
+    }
+  };
+
   const handleDownloadAll = async () => {
     if (studentsData.length === 0) return;
     setIsDownloading(true);
@@ -492,9 +520,9 @@ export const ProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                             <Download className="w-4 h-4" /> <span className="hidden md:inline">Download</span>
                           </button>
                         ) : (
-                          <a href={getWaUrl(data.mobile)} target="_blank" rel="noopener noreferrer" className="bg-green-50 hover:bg-green-100 text-green-600 p-2 md:px-3 md:py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                          <button onClick={() => handleWhatsAppShare(data.studentId, data.studentName, idx, data.mobile)} className="bg-green-50 hover:bg-green-100 text-green-600 p-2 md:px-3 md:py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors">
                             <MessageCircle className="w-4 h-4" /> <span className="hidden md:inline">WhatsApp</span>
-                          </a>
+                          </button>
                         )}
                         <button onClick={() => handlePrintSingle(idx)} className="hidden md:flex bg-gray-50 hover:bg-gray-100 text-gray-600 p-2 md:px-3 md:py-1.5 rounded-lg text-xs font-semibold items-center gap-1.5 transition-colors">
                           <Printer className="w-4 h-4" /> <span className="hidden md:inline">Print</span>
