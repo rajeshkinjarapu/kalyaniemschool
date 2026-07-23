@@ -157,6 +157,29 @@ export const update = async (req: Request, res: Response, next: NextFunction): P
   successResponse(res, updated, 'Student updated');
 };
 
+export const changeClass = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  const id = req.params.id as string;
+  const { classId } = req.body;
+
+  if (!classId) {
+    return next(createError('classId is required', 400));
+  }
+
+  const student = await prisma.student.findUnique({ where: { id } });
+  if (!student) return next(createError('Student not found', 404));
+
+  const updated = await prisma.student.update({
+    where: { id },
+    data: { classId },
+    include: {
+      user: { select: { id: true, name: true, email: true, phone: true, photoUrl: true } },
+      class: true,
+    },
+  });
+
+  successResponse(res, updated, 'Student section/class updated');
+};
+
 export const deleteStudent = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   const id = req.params.id as string;
   const student = await prisma.student.findUnique({ where: { id } });

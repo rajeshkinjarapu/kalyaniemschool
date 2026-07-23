@@ -22,6 +22,7 @@ export const StudentProfilePage: React.FC = () => {
   const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN';
   const [student, setStudent] = useState<any>(null);
   const [feeStructures, setFeeStructures] = useState<any[]>([]);
+  const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [printPayment, setPrintPayment] = useState<any>(null);
@@ -41,16 +42,23 @@ export const StudentProfilePage: React.FC = () => {
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Change Section Modal States
+  const [showSectionModal, setShowSectionModal] = useState(false);
+  const [newClassId, setNewClassId] = useState('');
+
   const fetchStudentProfile = async () => {
     try {
-      const [studentRes, structRes]: any = await Promise.all([
+      const [studentRes, structRes, classRes]: any = await Promise.all([
         api.get(`/api/students/${id}?_t=${Date.now()}`),
         api.get(`/api/fees/structures?_t=${Date.now()}`),
+        api.get(`/api/classes?_t=${Date.now()}`),
       ]);
       const studentData = studentRes?.data?.data || studentRes?.data || studentRes;
       const structData = structRes?.data?.data || structRes?.data || structRes || [];
+      const classData = classRes?.data?.data || classRes?.data || classRes || [];
       setStudent(studentData);
       setFeeStructures(structData);
+      setClasses(classData);
     } catch (e) {
       console.error(e);
     } finally {
@@ -213,6 +221,24 @@ export const StudentProfilePage: React.FC = () => {
     }, 500);
   };
 
+  const handleChangeSectionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newClassId) return toast.error('Please select a class/section.');
+    
+    setIsSubmitting(true);
+    const updateToast = toast.loading('Updating section...');
+    try {
+      await api.patch(`/api/students/${student.id}/class`, { classId: newClassId });
+      toast.success('Section updated successfully!', { id: updateToast });
+      setShowSectionModal(false);
+      fetchStudentProfile();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || err.message || 'Failed to update section', { id: updateToast });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     fetchStudentProfile();
   }, [id]);
@@ -302,6 +328,18 @@ export const StudentProfilePage: React.FC = () => {
                     <span className="text-sm font-bold text-gray-700 dark:text-gray-200">
                       Class: {student.class ? `${student.class.name}-${student.class.section}` : 'N/A'}
                     </span>
+                    {(isAdmin || user?.role === 'TEACHER') && (
+                      <button 
+                        onClick={() => {
+                          setNewClassId(student.classId || '');
+                          setShowSectionModal(true);
+                        }}
+                        className="ml-2 p-1 text-gray-400 hover:text-indigo-600 transition-colors"
+                        title="Change Section"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/60 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700 backdrop-blur-sm shadow-sm">
                     <Calendar className="w-4 h-4 text-emerald-500" />
@@ -686,6 +724,41 @@ export const StudentProfilePage: React.FC = () => {
       </div>
 
     </div>
+
+      {/* Change Section Modal */}
+      {showSectionModal && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-xs print:hidden">
+          <div className="fixed inset-0" onClick={() => setShowSectionModal(false)} />
+          <div className="relative card w-full max-w-md p-6 space-y-5 animate-scale-in z-10 bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Change Class / Section</h3>
+              <p className="text-xs text-gray-450 mt-1">For {student.user.name} ({student.rollNo})</p>
+            </div>
+            
+            <form onSubmit={handleChangeSectionSubmit} className="space-y-4">
+              <div>
+                <label className="label">Select New Class</label>
+                <select 
+                  value={newClassId} 
+                  onChange={(e) => setNewClassId(e.target.value)} 
+                  className="input mt-1 w-full"
+                  required
+                >
+                  <option value="">-- Select Class & Section --</option>
+                  {classes.map(c => (
+                    <option key={c.id} value={c.id}>{c.name} - {c.section} ({c.academicYear})</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+                <button type="button" onClick={() => setShowSectionModal(false)} className="flex-1 btn btn-secondary bg-gray-100 hover:bg-gray-200 text-gray-700">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="flex-1 btn btn-primary">{isSubmitting ? 'Updating...' : 'Update'}</button>
+              </div>
+            </form>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* Record Payment Modal */}
       {showModal && createPortal(
