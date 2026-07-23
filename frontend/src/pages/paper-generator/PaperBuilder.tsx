@@ -269,7 +269,7 @@ export const PaperBuilder: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-indigo-950 font-medium font-sans pb-16">
       {/* Top navbar */}
-      <nav className="border-b border-slate-200 bg-gradient-to-r from-indigo-100/90 via-purple-100/90 to-pink-100/90 backdrop-blur-md sticky top-0 z-30 text-slate-800">
+      <nav className="border-b border-slate-200 bg-gradient-to-r from-indigo-700 via-purple-700 to-indigo-800 text-white shadow-md text-white">
         <div className="w-full mx-auto px-2 lg:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/question-bank" className="p-2 hover:bg-slate-100 border border-slate-200 hover:border-slate-350 rounded-xl transition-colors text-indigo-800 font-medium">
@@ -301,7 +301,7 @@ export const PaperBuilder: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Metadata Settings Card (Left Column) */}
           <div className="bg-white/90 backdrop-blur-xl border-2 border-indigo-100 rounded-3xl p-6 shadow-xl shadow-indigo-200/50 h-fit space-y-4 shadow-sm">
-            <h3 className="font-bold text-sm flex items-center gap-1.5 border-b border-slate-100 pb-3 text-slate-700">
+            <h3 className="font-bold text-sm flex items-center gap-1.5 border-b border-slate-100 pb-3 text-slate-800">
               <Settings className="w-4 h-4 text-indigo-600" />
               Paper Information
             </h3>
@@ -447,7 +447,7 @@ export const PaperBuilder: React.FC = () => {
                   className={`py-2 rounded-lg text-xs font-bold transition-all ${
                     mode === 'MANUAL'
                       ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-indigo-700 font-medium hover:text-slate-700'
+                      : 'text-indigo-700 font-medium hover:text-slate-800'
                   }`}
                 >
                   Manual Selection
@@ -458,7 +458,7 @@ export const PaperBuilder: React.FC = () => {
                   className={`py-2 rounded-lg text-xs font-bold transition-all ${
                     mode === 'AUTO'
                       ? 'bg-teal-500 text-white shadow-sm'
-                      : 'text-indigo-700 font-medium hover:text-slate-700'
+                      : 'text-indigo-700 font-medium hover:text-slate-800'
                   }`}
                 >
                   Auto-Blueprint
@@ -677,7 +677,7 @@ export const PaperBuilder: React.FC = () => {
                                 key={q.id}
                                 className="bg-white border border-slate-200 p-2.5 rounded-xl flex items-center justify-between gap-3 text-xs"
                               >
-                                <div className="flex-1 font-serif text-[11px] truncate text-slate-700 pr-2">
+                                <div className="flex-1 font-serif text-[11px] truncate text-slate-800 pr-2">
                                   <span className="font-sans font-bold text-[10px] mr-1.5 text-indigo-700 font-medium">Q.{idx+1}</span>
                                   <LaTeXPreview text={q.questionText} className="inline" />
                                 </div>
@@ -724,6 +724,7 @@ export const PaperBuilder: React.FC = () => {
     </div>
   );
 };
+
 
 
 

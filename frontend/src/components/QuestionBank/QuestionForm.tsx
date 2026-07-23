@@ -176,8 +176,8 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
   return (
     <div className="w-full text-white grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Edit Form */}
-      <div className="bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 border border-slate-700/50 shadow-glass">
-        <h2 className="text-xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-accentPurple to-teal-500">
+      <div className="bg-gradient-to-br from-indigo-600/90 via-purple-600/90 to-pink-600/90 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-xl">
+        <h2 className="text-xl font-bold mb-6 text-white drop-shadow-md">
           {questionId ? 'Edit Question' : 'Create New Question'}
         </h2>
 
@@ -531,7 +531,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
       </div>
 
       {/* Live Preview Panel */}
-      <div className="bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 border border-slate-700/50 shadow-glass flex flex-col h-[fit-content] sticky top-6">
+      <div className="bg-gradient-to-br from-indigo-600/90 via-purple-600/90 to-pink-600/90 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-xl flex flex-col h-[fit-content] sticky top-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-bold flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse" />
@@ -609,6 +609,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
     </div>
   );
 };
+
 
 
 

@@ -109,12 +109,12 @@ export const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 bg-gradient-to-tr from-slate-100 via-indigo-50/20 to-purple-50/20 text-slate-800 font-sans pb-12 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 bg-gradient-to-tr from-slate-100 via-indigo-50/20 to-purple-50/20 text-white font-sans pb-12 relative overflow-hidden">
       {/* Decorative Blur Backgrounds */}
       <div className="absolute top-[-100px] right-[-100px] w-[500px] h-[500px] bg-accentPurple/5 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-[-150px] left-[-150px] w-[600px] h-[600px] bg-teal-500/4 rounded-full blur-[160px] pointer-events-none" />
       {/* Top Navigation */}
-      <nav className="border-b border-slate-200 bg-white/75 backdrop-blur-md sticky top-0 z-40 text-slate-800">
+      <nav className="border-b border-slate-200 bg-gradient-to-r from-indigo-700 via-purple-700 to-indigo-800 text-white text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-tr from-indigo-600 to-accentPurple rounded-xl flex items-center justify-center">
@@ -128,7 +128,7 @@ export const Dashboard: React.FC = () => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-xl border border-slate-200">
               <User className="w-4 h-4 text-indigo-600" />
-              <span className="text-sm font-semibold text-slate-700">
+              <span className="text-sm font-semibold text-slate-800">
                 {currentUser?.username} ({currentUser?.role})
               </span>
             </div>
@@ -148,7 +148,7 @@ export const Dashboard: React.FC = () => {
         {/* Welcome Banner */}
         <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-md mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">
+            <h1 className="text-2xl font-bold text-white">
               Welcome back, {currentUser?.username}!
             </h1>
             <p className="text-slate-500 text-sm mt-1">
@@ -158,7 +158,7 @@ export const Dashboard: React.FC = () => {
           <div className="flex gap-3">
             <Link
               to="/questions"
-              className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-xl text-sm font-medium transition-all flex items-center gap-2"
+              className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 rounded-xl text-sm font-medium transition-all flex items-center gap-2"
             >
               <Database className="w-4 h-4 text-teal-500" />
               <span>Question Bank</span>
@@ -215,7 +215,7 @@ export const Dashboard: React.FC = () => {
         {/* Papers Section */}
         <div className="bg-white border border-slate-250 rounded-3xl p-6 shadow-sm">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-indigo-600" />
               Generated Question Papers
             </h2>
@@ -227,7 +227,7 @@ export const Dashboard: React.FC = () => {
           {papers.length === 0 ? (
             <div className="text-center py-16 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
               <FileText className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-              <h3 className="text-slate-700 font-bold text-base">No question papers created yet</h3>
+              <h3 className="text-slate-800 font-bold text-base">No question papers created yet</h3>
               <p className="text-slate-500 text-xs mt-1 max-w-sm mx-auto">
                 You can assemble questions manually or auto-generate a JEE paper in seconds using custom blue-print structures.
               </p>
@@ -265,7 +265,7 @@ export const Dashboard: React.FC = () => {
                         </span>
                       </div>
 
-                      <h3 className="text-base font-bold text-slate-800 group-hover:text-indigo-600 line-clamp-1 pr-4 transition-colors">
+                      <h3 className="text-base font-bold text-white group-hover:text-indigo-600 line-clamp-1 pr-4 transition-colors">
                         {paper.title}
                       </h3>
 
@@ -309,6 +309,7 @@ export const Dashboard: React.FC = () => {
     </div>
   );
 };
+
 
 
 

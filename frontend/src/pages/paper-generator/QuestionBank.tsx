@@ -164,12 +164,12 @@ export const QuestionBank: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-slate-800 font-sans pb-12">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-white font-sans pb-12">
       {/* Header Banner */}
-      <nav className="border-b border-slate-200 bg-gradient-to-r from-indigo-100/90 via-purple-100/90 to-pink-100/90 backdrop-blur-md sticky top-0 z-30">
+      <nav className="border-b border-slate-200 bg-gradient-to-r from-indigo-700 via-purple-700 to-indigo-800 text-white shadow-md">
         <div className="w-full mx-auto px-2 lg:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/question-bank" className="p-2 hover:bg-slate-100 border border-slate-200 hover:border-slate-350 rounded-xl transition-colors text-slate-800">
+            <Link to="/question-bank" className="p-2 hover:bg-slate-100 border border-slate-200 hover:border-slate-350 rounded-xl transition-colors text-white">
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <span className="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-teal-500">
@@ -188,7 +188,7 @@ export const QuestionBank: React.FC = () => {
             />
             <label
               htmlFor="smart-import-input"
-              className={`px-4 py-2 border border-slate-200 bg-white hover:bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer select-none transition-all shadow-sm ${
+              className={`px-4 py-2 border border-slate-200 bg-white hover:bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-slate-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer select-none transition-all shadow-sm ${
                 importing ? 'opacity-50 pointer-events-none' : ''
               }`}
             >
@@ -221,15 +221,15 @@ export const QuestionBank: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Filter Panel (Left) */}
-            <div className="bg-white/90 backdrop-blur-xl border-2 border-indigo-100 rounded-3xl p-6 shadow-xl shadow-indigo-200/50 h-fit space-y-5 shadow-sm text-slate-800">
+            <div className="bg-white/90 backdrop-blur-xl border-2 border-indigo-100 rounded-3xl p-6 shadow-xl shadow-indigo-200/50 h-fit space-y-5 shadow-sm text-white">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 className="font-bold text-sm flex items-center gap-1.5 text-slate-800">
+                <h3 className="font-bold text-sm flex items-center gap-1.5 text-white">
                   <SlidersHorizontal className="w-4 h-4 text-teal-500" />
                   Filter Bank
                 </h3>
                 <button
                   onClick={handleClearFilters}
-                  className="text-[10px] font-semibold text-slate-400 hover:text-slate-800"
+                  className="text-[10px] font-semibold text-slate-400 hover:text-white"
                 >
                   Clear All
                 </button>
@@ -248,7 +248,7 @@ export const QuestionBank: React.FC = () => {
                       className={`text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                         subject === subj
                           ? 'bg-indigo-600 text-white shadow-md border-indigo-600'
-                          : 'bg-white hover:bg-indigo-50 text-slate-700 border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200'
+                          : 'bg-white hover:bg-indigo-50 text-slate-800 border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200'
                       }`}
                     >
                       {subj}
@@ -265,7 +265,7 @@ export const QuestionBank: React.FC = () => {
                 <select
                   value={chapter}
                   onChange={(e) => setChapter(e.target.value)}
-                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-indigo-600 text-slate-700 font-sans"
+                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-indigo-600 text-slate-800 font-sans"
                 >
                   <option value="">All Chapters</option>
                   {availableChapters.map((ch) => (
@@ -284,7 +284,7 @@ export const QuestionBank: React.FC = () => {
                 <select
                   value={difficulty}
                   onChange={(e) => setDifficulty(e.target.value)}
-                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-indigo-600 text-slate-700 font-sans"
+                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-indigo-600 text-slate-800 font-sans"
                 >
                   <option value="">All Levels</option>
                   <option value="Easy">Easy</option>
@@ -301,7 +301,7 @@ export const QuestionBank: React.FC = () => {
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value)}
-                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-indigo-600 text-slate-700 font-sans"
+                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-indigo-600 text-slate-800 font-sans"
                 >
                   <option value="">All Types</option>
                   <option value="MCQ_SINGLE">MCQ Single Correct</option>
@@ -320,7 +320,7 @@ export const QuestionBank: React.FC = () => {
                   placeholder="e.g. pyq-2025"
                   value={tag}
                   onChange={(e) => setTag(e.target.value)}
-                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 font-sans"
+                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-indigo-600 font-sans"
                 />
               </div>
             </div>
@@ -338,12 +338,12 @@ export const QuestionBank: React.FC = () => {
                     placeholder="Search question text, concepts, equations..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-2xl py-3 pl-10 pr-4 text-slate-800 focus:outline-none focus:border-indigo-600 transition-colors text-sm font-sans shadow-sm"
+                    className="w-full bg-white border border-slate-200 rounded-2xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-indigo-600 transition-colors text-sm font-sans shadow-sm"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="px-5 py-3 bg-slate-100 border border-slate-200 text-slate-700 rounded-2xl text-sm font-medium hover:bg-slate-200 transition-colors shadow-sm"
+                  className="px-5 py-3 bg-slate-100 border border-slate-200 text-slate-800 rounded-2xl text-sm font-medium hover:bg-slate-200 transition-colors shadow-sm"
                 >
                   Search
                 </button>
@@ -358,7 +358,7 @@ export const QuestionBank: React.FC = () => {
               ) : questions.length === 0 ? (
                 <div className="text-center py-20 bg-white border border-slate-200 rounded-2xl shadow-sm">
                   <Database className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-                  <h3 className="font-bold text-slate-700">No questions found matching criteria</h3>
+                  <h3 className="font-bold text-slate-800">No questions found matching criteria</h3>
                   <p className="text-slate-500 text-xs mt-1">
                     Try adjusting your filters, clearing your search query, or add a new question to seed this category.
                   </p>
@@ -381,10 +381,10 @@ export const QuestionBank: React.FC = () => {
                             }`}>
                               {q.subject}
                             </span>
-                            <span className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded uppercase">
+                            <span className="bg-slate-100 text-white px-2 py-0.5 rounded uppercase">
                               {q.difficulty}
                             </span>
-                            <span className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded uppercase">
+                            <span className="bg-slate-100 text-white px-2 py-0.5 rounded uppercase">
                               {q.type.replace('_', ' ')}
                             </span>
                             {q.tags && q.tags.split(',').map((t) => (
@@ -400,7 +400,7 @@ export const QuestionBank: React.FC = () => {
                         </div>
 
                         {/* Question Preview Box (White Sheet Mockup) */}
-                        <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50/50 border border-slate-150 rounded-xl p-4 font-serif text-[13px] text-slate-800">
+                        <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50/50 border border-slate-150 rounded-xl p-4 font-serif text-[13px] text-white">
                           <LaTeXPreview text={q.questionText} />
                         </div>
                       </div>
@@ -439,6 +439,7 @@ export const QuestionBank: React.FC = () => {
     </div>
   );
 };
+
 
 
 

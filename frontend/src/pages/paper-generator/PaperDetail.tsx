@@ -165,13 +165,13 @@ export const PaperDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 text-indigo-950 font-medium font-sans pb-16 print:bg-white print:pb-0">
       {/* Interactive Controls Nav (Hidden in print) */}
-      <header className="border-b border-slate-200 bg-gradient-to-r from-indigo-100/90 via-purple-100/90 to-pink-100/90 backdrop-blur-md sticky top-0 z-30 print:hidden">
+      <header className="border-b border-slate-200 bg-gradient-to-r from-indigo-700 via-purple-700 to-indigo-800 text-white shadow-md print:hidden">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/question-bank" className="p-2 hover:bg-slate-100 border border-slate-200 hover:border-slate-300 rounded-xl transition-colors text-slate-600">
+            <Link to="/question-bank" className="p-2 hover:bg-slate-100 border border-slate-200 hover:border-slate-300 rounded-xl transition-colors text-white/80 hover:text-white">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <span className="font-extrabold text-sm text-slate-700 line-clamp-1 max-w-xs md:max-w-md">
+            <span className="font-extrabold text-sm text-slate-800 line-clamp-1 max-w-xs md:max-w-md">
               Preview: {paper.title}
             </span>
           </div>
@@ -179,7 +179,7 @@ export const PaperDetail: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={handleLatexExport}
-              className="px-3.5 py-2 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 flex items-center gap-1.5 transition-all"
+              className="px-3.5 py-2 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 flex items-center gap-1.5 transition-all"
               title="Download LaTeX Source"
             >
               <FileCode className="w-4 h-4 text-orange-500" />
@@ -188,7 +188,7 @@ export const PaperDetail: React.FC = () => {
 
             <button
               onClick={handleClientPrint}
-              className="px-3.5 py-2 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 flex items-center gap-1.5 transition-all"
+              className="px-3.5 py-2 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 flex items-center gap-1.5 transition-all"
               title="Print Booklet"
             >
               <Printer className="w-4 h-4 text-teal-500" />
@@ -240,7 +240,7 @@ export const PaperDetail: React.FC = () => {
                   className={`py-1.5 rounded-lg text-xs font-bold transition-all ${
                     activeSet === setCode
                       ? 'bg-indigo-600 text-white'
-                      : 'text-indigo-700 font-medium hover:text-slate-700'
+                      : 'text-indigo-700 font-medium hover:text-slate-800'
                   }`}
                 >
                   Set {setCode}
@@ -310,7 +310,7 @@ export const PaperDetail: React.FC = () => {
               Exam Properties
             </label>
 
-            <label className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-slate-700">
+            <label className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-slate-800">
               <input
                 type="checkbox"
                 checked={showWatermark}
@@ -320,7 +320,7 @@ export const PaperDetail: React.FC = () => {
               <span>Render Watermarking</span>
             </label>
 
-            <label className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-slate-700">
+            <label className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-slate-800">
               <input
                 type="checkbox"
                 checked={showOmr}
@@ -330,7 +330,7 @@ export const PaperDetail: React.FC = () => {
               <span>Include OMR Response Sheet</span>
             </label>
 
-            <label className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-slate-700">
+            <label className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-slate-800">
               <input
                 type="checkbox"
                 checked={isDoubleColumn}
@@ -340,7 +340,7 @@ export const PaperDetail: React.FC = () => {
               <span>Double-Column booklet layout</span>
             </label>
 
-            <label className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-slate-700">
+            <label className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-slate-800">
               <input
                 type="checkbox"
                 checked={optionLabelType === 'NUMERIC'}
@@ -383,6 +383,7 @@ export const PaperDetail: React.FC = () => {
     </div>
   );
 };
+
 
 
 
