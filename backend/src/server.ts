@@ -42,6 +42,7 @@ import homeworkRoutes from './routes/homework';
 import teacherAttendanceRoutes from './routes/teacherAttendance';
 import salaryRoutes from './routes/salary';
 import leaveRoutes from './routes/leave';
+import questionBankRoutes from './routes/questionBank';
 
 const app = express();
 app.set('trust proxy', 1);
@@ -96,6 +97,7 @@ app.use('/api/homework', homeworkRoutes);
 app.use('/api/teacher-attendance', teacherAttendanceRoutes);
 app.use('/api/salary', salaryRoutes);
 app.use('/api/leave', leaveRoutes);
+app.use('/api', questionBankRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { api } from '../../api/latex-api';
-import { QuestionForm } from '../../components/QuestionForm';
-import { LaTeXPreview } from '../../components/LaTeXPreview';
+import api from '../../api/axios';
+import { QuestionForm } from '../../components/QuestionBank/QuestionForm';
+import { LaTeXPreview } from '../../components/QuestionBank/LaTeXPreview';
 import {
   Search,
   Filter,

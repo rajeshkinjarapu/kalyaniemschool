@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { api } from '../../api/latex-api';
-import { PrintablePaper } from '../../components/PrintablePaper';
-// import { downloadTexFile } from '../../utils/latexExporter';
+import api from '../../api/axios';
+import { PrintablePaper } from '../../components/QuestionBank/PrintablePaper';
+import { downloadTexFile } from '../utils/latexExporter';
 import {
   ArrowLeft,
   Download,
@@ -132,10 +132,10 @@ export const PaperDetail: React.FC = () => {
     }
   };
 
+  // LaTeX Source Code Download (.tex)
   const handleLatexExport = () => {
     if (!paper) return;
-    alert('LaTeX export is not implemented yet.');
-    // downloadTexFile(paper);
+    downloadTexFile(paper);
   };
 
   if (loading && !paper) {

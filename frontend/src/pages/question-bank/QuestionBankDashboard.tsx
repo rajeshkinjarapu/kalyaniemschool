@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   HelpCircle, 
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 
 export const QuestionBankDashboard = () => {
+  const navigate = useNavigate();
   const tools = [
     { title: 'Dashboard', description: 'Overview and analytics', icon: LayoutDashboard, gradient: 'from-blue-500 to-cyan-400', shadow: 'shadow-blue-500/30' },
     { title: 'Questions', description: 'Manage all questions', icon: HelpCircle, gradient: 'from-indigo-500 to-purple-500', shadow: 'shadow-indigo-500/30' },
