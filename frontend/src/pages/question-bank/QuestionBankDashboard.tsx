@@ -25,24 +25,7 @@ export const QuestionBankDashboard = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto p-4 md:p-8">
-      {/* Premium Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 p-8 md:p-12 shadow-2xl">
-        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-white opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-64 h-64 bg-pink-500 opacity-10 rounded-full blur-2xl"></div>
-        
-        <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-6">
-            <Sparkles className="w-5 h-5 text-amber-300" />
-            <span className="text-white text-sm font-semibold tracking-wide uppercase">Premium Tools</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-indigo-200 mb-4 drop-shadow-sm">
-            Question Bank System
-          </h1>
-          <p className="text-indigo-200 text-lg md:text-xl max-w-2xl font-medium leading-relaxed">
-            Manage your entire assessment workflow from a single, powerful dashboard. Create, organize, and generate high-quality question papers with ease.
-          </p>
-        </div>
-      </div>
+
 
       {/* Grid of Tools */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
