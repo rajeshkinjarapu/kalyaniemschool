@@ -164,7 +164,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     );
   };
 
-  const Content = () => (
+  const renderContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="px-5 pt-6 pb-5 border-b border-white/8">
@@ -243,14 +243,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
           <X className="w-4 h-4" />
         </button>
-        {Content()}
+        {renderContent()}
       </aside>
       {/* Desktop */}
       <aside className="hidden lg:flex flex-col w-[260px] shrink-0 h-screen sticky top-0" style={sidebarStyle}>
-        {Content()}
+        {renderContent()}
       </aside>
     </>
   );
 };
 export default Sidebar;
+
+
 
