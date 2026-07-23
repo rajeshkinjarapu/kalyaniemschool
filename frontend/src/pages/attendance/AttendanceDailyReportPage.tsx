@@ -41,12 +41,7 @@ export default function AttendanceDailyReportPage() {
     const toastId = toast.loading('Generating 9:16 Image...');
     try {
       // Temporarily remove transform to get full quality
-      const originalTransform = reportElement.style.transform;
-      reportElement.style.transform = 'none';
-      
-      const imgData = await toJpeg(reportElement, { cacheBust: true, pixelRatio: 1.5, quality: 0.9, backgroundColor: '#ffffff' });
-      
-      reportElement.style.transform = originalTransform;
+      const originalWidth = reportElement.style.width; const originalHeight = reportElement.style.height; const originalPosition = reportElement.style.position; reportElement.style.width = '1080px'; reportElement.style.height = '1920px'; reportElement.style.position = 'absolute'; const imgData = await toJpeg(reportElement, { cacheBust: true, pixelRatio: 1.5, quality: 0.9, backgroundColor: '#ffffff' }); reportElement.style.width = originalWidth; reportElement.style.height = originalHeight; reportElement.style.position = originalPosition;
       
       const link = document.createElement('a');
       link.download = `Attendance_Report_${date}.png`;
@@ -92,30 +87,7 @@ export default function AttendanceDailyReportPage() {
 
       {/* ── PRINTABLE AREA (Fixed 1080x1920 for 9:16) ── */}
       <div className="flex justify-center w-full overflow-hidden bg-slate-50 py-8 rounded-2xl print:bg-white print:py-0">
-        {/* Scaling Wrapper for Preview */}
-        <div className="origin-top flex justify-center" style={{ transform: 'scale(var(--scale, 1))' }} 
-             ref={(el) => {
-               if (el) {
-                 const updateScale = () => {
-                   const parent = el.parentElement;
-                    if (parent && !window.matchMedia('print').matches) {
-                      const padding = window.innerWidth < 768 ? 16 : 32;
-                      const scale = Math.min(1, (parent.clientWidth - padding) / 1080);
-                      el.style.setProperty('--scale', scale.toString());
-                      el.parentElement.style.height = `${1920 * scale + (padding ? 64 : 0)}px`;
-                   } else {
-                     el.style.setProperty('--scale', '1');
-                     if (parent) parent.style.height = 'auto';
-                   }
-                 };
-                 updateScale();
-                 window.addEventListener('resize', updateScale);
-                 return () => window.removeEventListener('resize', updateScale);
-               }
-             }}>
-          
-          <div id="reportArea" className="bg-white border border-gray-150 shadow-2xl print:shadow-none print:border-none print:m-0 overflow-hidden relative flex flex-col"
-            style={{ width: '1080px', height: '1920px' }}>
+<div id="reportArea" className="bg-white border border-gray-150 shadow-2xl print:shadow-none print:border-none print:m-0 overflow-hidden relative flex flex-col w-full rounded-2xl">
             
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#6366f1 2px, transparent 2px)', backgroundSize: '32px 32px' }} />
@@ -237,3 +209,4 @@ export default function AttendanceDailyReportPage() {
     </div>
   );
 }
+

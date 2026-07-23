@@ -80,11 +80,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       { to: '/subjects',      label: 'Subjects',      icon: BookOpen      },
       { to: '/attendance',    label: 'Attendance',    icon: CalendarCheck },
       { to: '/attendance/daily-report', label: 'Daily Report', icon: FileText },
-      { to: '/gate-pass',     label: 'Gate Pass',     icon: FileText },
+      
       { to: '/exams',         label: 'Examination',         icon: ClipboardList },
       ...(role === 'SUPER_ADMIN' ? [{ to: '/exams/omr-scanner', label: 'OMR Scanner', icon: Target }] : []),
       { to: '/timetable',     label: 'Timetable',     icon: Calendar      },
-      { to: '/leave/gate-pass', label: 'Staff Gate Pass',    icon: MapPin       },
+      { to: '/leave/gate-pass', label: 'Gate Pass',    icon: MapPin       },
       { to: '/leave/type',    label: 'Leave',         icon: UserCheck     },
       { to: '/finance',       label: 'Finance',       icon: CreditCard    },
       { to: '/fee-payment',   label: 'Fee Payment',   icon: CreditCard    },
@@ -108,7 +108,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       { to: '/homework',          label: 'Homework',       icon: BookOpen      },
       { to: '/exams',             label: 'Examination',    icon: PenTool       },
       { to: '/timetable',         label: 'Timetable',      icon: Calendar      },
-      { to: '/gate-pass',         label: 'Gate Pass',      icon: FileText      },
+      
       { to: '/leave/request-log', label: 'Leave',          icon: UserCheck     },
       { to: '/salary',            label: 'My Salary',      icon: CreditCard    },
       { to: '/announcements',     label: 'Announcements',  icon: Megaphone     },
@@ -120,14 +120,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       { to: '/timetable', label: 'Timetable',     icon: Calendar      },
       { to: '/homework',  label: 'Homework',      icon: BookOpen      },
       { to: '/finance',   label: 'My Fees',       icon: CreditCard    },
-      { to: '/gate-pass', label: 'Gate Pass', icon: FileText },
+      
       { to: '/announcements', label: 'Announcements', icon: Megaphone },
       { to: '/messages',  label: 'Messages',      icon: MessageSquare },
     ];
     if (role === 'ACCOUNTANT') return [...base,
       { to: '/finance',   label: 'Finance',       icon: CreditCard    },
       { to: '/fee-payment',   label: 'Fee Payment',   icon: CreditCard    },
-      { to: '/gate-pass', label: 'Gate Pass', icon: FileText },
+      
       { to: '/announcements', label: 'Announcements', icon: Megaphone },
       { to: '/messages',  label: 'Messages',      icon: MessageSquare },
     ];
