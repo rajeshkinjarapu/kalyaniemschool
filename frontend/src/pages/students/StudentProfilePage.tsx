@@ -944,3 +944,4 @@ export const StudentProfilePage: React.FC = () => {
 };
 
 export default StudentProfilePage;
+// FIX: Removed duplicate import of getPhotoUrl
