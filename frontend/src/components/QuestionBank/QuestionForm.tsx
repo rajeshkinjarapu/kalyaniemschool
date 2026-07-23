@@ -69,9 +69,7 @@ const ManualQuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialDa
       let finalImageUrl = formData.imageUrl;
       if (imageFile) {
         setUploadingImage(true);
-        const imgData = new FormData();
-        imgData.append('image', imageFile);
-        const uploadRes = await api.uploadImage(imgData);
+        const uploadRes = await api.uploadImage(imageFile);
         finalImageUrl = uploadRes.imageUrl;
         setUploadingImage(false);
       }
@@ -479,4 +477,5 @@ export const QuestionForm: React.FC<QuestionFormProps> = (props) => {
   }
   return <AIQuestionForm onSuccess={props.onSuccess} onCancel={props.onCancel} />;
 };
+
 
