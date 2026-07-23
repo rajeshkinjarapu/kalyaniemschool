@@ -3,6 +3,7 @@ import { AuthRequest } from '../middlewares/auth';
 import { createError } from '../middlewares/errorHandler';
 import { prisma } from '../utils/prisma';
 import { successResponse, paginatedResponse } from '../utils/response';
+import { generateEmployeeId } from '../utils/helpers';
 import bcrypt from 'bcryptjs';
 
 export const getAll = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -74,8 +75,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
   if (role === 'TEACHER') {
     const count = await prisma.teacher.count();
-    const year = new Date().getFullYear().toString().slice(-2);
-    const employeeId = `EMP${year}${String(count + 1).padStart(4, '0')}`;
+    const employeeId = generateEmployeeId();
     await prisma.teacher.create({
       data: {
         userId: user.id,
@@ -127,8 +127,7 @@ export const update = async (req: Request, res: Response, next: NextFunction): P
       const hasTeacher = await prisma.teacher.findUnique({ where: { userId: id } });
       if (!hasTeacher) {
         const count = await prisma.teacher.count();
-        const year = new Date().getFullYear().toString().slice(-2);
-        await prisma.teacher.create({ data: { userId: id, employeeId: `EMP${year}${String(count + 1).padStart(4, '0')}` } });
+        await prisma.teacher.create({ data: { userId: id, employeeId: generateEmployeeId() } });
       }
     } else if (role === 'STUDENT') {
       const hasStudent = await prisma.student.findUnique({ where: { userId: id } });
