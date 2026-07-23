@@ -42,7 +42,12 @@ export const QuestionBankDashboard = () => {
           const Icon = tool.icon;
           return (
             <div 
-              key={index} 
+              key={index}
+              onClick={() => {
+                if (tool.title === 'Questions') navigate('/exams/paper-generator/questions');
+                else if (tool.title === 'Question Paper Generator') navigate('/exams/paper-generator/papers/new');
+                else if (tool.title === 'Dashboard') navigate('/exams/paper-generator');
+              }}
               className="group relative bg-white border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden flex flex-col items-start gap-4"
             >
               <div className={`absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300 bg-gradient-to-br ${tool.gradient}`}></div>
