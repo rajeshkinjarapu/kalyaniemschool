@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import { Printer, Download, FileText, CheckCircle, Settings, Upload, Save, MessageCircle } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import toast from 'react-hot-toast';
@@ -157,86 +156,151 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     }
   };
 
-  const generatePDFForElement = async (el: HTMLElement, fileName: string) => {
-    const parentContainer = document.getElementById('progress-cards-print-container');
-    const originalParentDisplay = parentContainer?.style.display;
-    const originalParentPosition = parentContainer?.style.position;
-    
-    if (parentContainer) {
-      parentContainer.classList.remove('hidden');
-      parentContainer.style.display = 'flex';
-      parentContainer.style.position = 'absolute';
-      parentContainer.style.left = '-9999px';
-    }
-
-    // Force element to be visible for capture if it's hidden
-    const originalDisplay = el.style.display;
-    const originalPosition = el.style.position;
-    
-    // We assume the parent container makes it visible, but just in case:
-    el.style.display = 'flex';
-    
-    // Use html2canvas instead of html-to-image for better mobile/Safari compatibility
-    const canvas = await html2canvas(el, { 
-      scale: 1, // equivalent to pixelRatio: 1
-      useCORS: true, 
-      allowTaint: true,
-      backgroundColor: '#ffffff'
-    });
-    const imgData = canvas.toDataURL('image/jpeg', 0.9);
-    
+  const generateStudentPDF = (data: any, examName: string): jsPDF => {
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (el.offsetHeight * pdfWidth) / el.offsetWidth;
-    
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-    
-    // Restore
-    el.style.display = originalDisplay;
-    
-    if (parentContainer) {
-      parentContainer.classList.add('hidden');
-      parentContainer.style.display = originalParentDisplay || '';
-      parentContainer.style.position = originalParentPosition || '';
-      parentContainer.style.left = '';
-    }
-    
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = pdf.internal.pageSize.getHeight();
+    const margin = 15;
+    const contentWidth = pw - margin * 2;
+    let y = margin;
+
+    // Header background
+    pdf.setFillColor(63, 81, 181);
+    pdf.rect(0, 0, pw, 40, 'F');
+
+    // School name
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(16);
+    pdf.setTextColor(255, 255, 255);
+    pdf.text('SRI VENKATESWARA JY SCHOOL', pw / 2, 15, { align: 'center' });
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('IIT-JEE / NEET Foundation • Olympiads', pw / 2, 22, { align: 'center' });
+    pdf.text('PROGRESS REPORT CARD', pw / 2, 30, { align: 'center' });
+
+    y = 50;
+
+    // Exam name box
+    pdf.setFillColor(232, 234, 246);
+    pdf.roundedRect(margin, y, contentWidth, 10, 2, 2, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(11);
+    pdf.setTextColor(30, 30, 100);
+    pdf.text(examName || 'Exam', pw / 2, y + 7, { align: 'center' });
+    y += 16;
+
+    // Student info
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(10);
+    pdf.setTextColor(40, 40, 40);
+    pdf.text('Student Name:', margin, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(data.studentName || '-', margin + 40, y);
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Roll No:', pw / 2, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(data.rollNo || '-', pw / 2 + 20, y);
+    y += 8;
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Class:', margin, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`${data.className || ''} ${data.section || ''}`.trim(), margin + 40, y);
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Rank:', pw / 2, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(String(data.rank || '-'), pw / 2 + 20, y);
+    y += 14;
+
+    // Marks table header
+    pdf.setFillColor(63, 81, 181);
+    pdf.rect(margin, y, contentWidth, 9, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(9);
+    pdf.setTextColor(255, 255, 255);
+    const col1 = margin + 2;
+    const col2 = margin + contentWidth * 0.45;
+    const col3 = margin + contentWidth * 0.65;
+    const col4 = margin + contentWidth * 0.82;
+    pdf.text('Subject', col1, y + 6);
+    pdf.text('Max', col2, y + 6);
+    pdf.text('Obtained', col3, y + 6);
+    pdf.text('%', col4, y + 6);
+    y += 9;
+
+    // Marks rows
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(9);
+    let totalMax = 0;
+    let totalObtained = 0;
+    (data.marks || []).forEach((mark: any, i: number) => {
+      const rowColor = i % 2 === 0 ? [245, 245, 252] : [255, 255, 255];
+      pdf.setFillColor(rowColor[0], rowColor[1], rowColor[2]);
+      pdf.rect(margin, y, contentWidth, 8, 'F');
+      pdf.setTextColor(40, 40, 40);
+      const maxM = mark.maxMarks || 100;
+      const obtM = mark.obtained ?? 0;
+      const pct = maxM > 0 ? ((obtM / maxM) * 100).toFixed(1) : '-';
+      totalMax += maxM;
+      totalObtained += obtM;
+      pdf.text(mark.subject || '-', col1, y + 5.5);
+      pdf.text(String(maxM), col2, y + 5.5);
+      pdf.text(String(obtM), col3, y + 5.5);
+      pdf.text(String(pct), col4, y + 5.5);
+      y += 8;
+    });
+
+    // Total row
+    pdf.setFillColor(63, 81, 181);
+    pdf.rect(margin, y, contentWidth, 9, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(255, 255, 255);
+    pdf.text('TOTAL', col1, y + 6);
+    pdf.text(String(totalMax), col2, y + 6);
+    pdf.text(String(totalObtained), col3, y + 6);
+    const totalPct = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(1) : '-';
+    pdf.text(`${totalPct}%`, col4, y + 6);
+    y += 15;
+
+    // Footer
+    pdf.setFont('helvetica', 'italic');
+    pdf.setFontSize(8);
+    pdf.setTextColor(120, 120, 120);
+    pdf.text('Generated by JY School Management System', pw / 2, ph - 10, { align: 'center' });
+
     return pdf;
   };
 
   const handleDownloadSingle = async (studentId: string, studentName: string, index: number) => {
-    const el = document.getElementById(`progress-card-${index}`);
-    if (!el) return toast.error('Could not find card element');
-    
+    const data = studentsData[index];
+    if (!data) return toast.error('Student data not found');
     const toastId = toast.loading(`Generating PDF for ${studentName}...`);
     try {
-      const pdf = await generatePDFForElement(el, studentName);
+      const pdf = generateStudentPDF(data, selectedExam?.name || '');
       pdf.save(`${studentName}_ProgressCard.pdf`);
       toast.success('Downloaded successfully!', { id: toastId });
     } catch (e: any) {
       console.error(e);
-      toast.error('Failed to generate PDF. Opening print dialog instead...', { id: toastId });
-      handlePrintSingle(index);
+      toast.error('Failed to generate PDF.', { id: toastId });
     }
   };
 
   const handleWhatsAppShare = async (studentId: string, studentName: string, index: number, mobile: string) => {
-    const el = document.getElementById(`progress-card-${index}`);
-    if (!el) return toast.error('Could not find card element');
-    
+    const data = studentsData[index];
+    if (!data) return toast.error('Student data not found');
     const toastId = toast.loading(`Preparing PDF for WhatsApp...`);
-    let pdf;
+    let pdf: jsPDF;
     try {
-      pdf = await generatePDFForElement(el, studentName);
+      pdf = generateStudentPDF(data, selectedExam?.name || '');
     } catch (e) {
-      console.error("PDF generation failed:", e);
+      console.error('PDF generation failed:', e);
       return toast.error('Failed to generate PDF.', { id: toastId });
     }
-
     try {
       const blob = pdf.output('blob');
       const file = new File([blob], `${studentName}_ProgressCard.pdf`, { type: 'application/pdf' });
-      
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         toast.dismiss(toastId);
         await navigator.share({
@@ -245,17 +309,13 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
           text: `Please find the progress card for ${studentName} attached.`
         });
       } else {
-        toast.success('Sharing file directly is not supported on this browser. Downloading instead...', { id: toastId });
+        toast.success('Downloading PDF...', { id: toastId });
         pdf.save(`${studentName}_ProgressCard.pdf`);
         window.open(getWaUrl(mobile), '_blank');
       }
     } catch (e: any) {
-      console.error("WhatsApp share error:", e);
-      if (e.name === 'AbortError') {
-        toast.dismiss(toastId);
-        return;
-      }
-      toast.success('Sharing failed. Downloading instead...', { id: toastId });
+      console.error('WhatsApp share error:', e);
+      if (e.name === 'AbortError') { toast.dismiss(toastId); return; }
       pdf.save(`${studentName}_ProgressCard.pdf`);
       window.open(getWaUrl(mobile), '_blank');
     }
@@ -264,67 +324,23 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   const handleDownloadAll = async () => {
     if (studentsData.length === 0) return;
     setIsDownloading(true);
-    
-    const loadingToastId = toast.loading(`Generating ${studentsData.length} progress cards. Please do not close this window...`);
-    
+    const loadingToastId = toast.loading(`Generating ${studentsData.length} progress cards...`);
     try {
       const zip = new JSZip();
-      const printArea = document.getElementById('progress-cards-print-container');
-      
-      if (printArea) {
-        printArea.classList.remove('hidden');
-        printArea.classList.add('flex');
-        printArea.style.position = 'absolute';
-        printArea.style.left = '-9999px'; // Move off screen but keep rendered
-        printArea.style.top = '0';
-        printArea.style.width = '210mm';
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const templates = document.querySelectorAll('.progress-card-wrapper');
-      
-      for (let i = 0; i < templates.length; i++) {
-        const el = templates[i] as HTMLElement;
+      for (let i = 0; i < studentsData.length; i++) {
         const data = studentsData[i];
-        
-        // Update toast progress every 5 cards
-        if (i % 5 === 0) toast.loading(`Generated ${i} of ${templates.length}...`, { id: loadingToastId });
-        
-        // Use html2canvas for batch generation as well
-        const canvas = await html2canvas(el, { 
-          scale: 1, 
-          useCORS: true, 
-          allowTaint: true,
-          backgroundColor: '#ffffff'
-        });
-        const imgData = canvas.toDataURL('image/jpeg', 0.8);
-        
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (el.offsetHeight * pdfWidth) / el.offsetWidth;
-        
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+        if (i % 5 === 0) toast.loading(`Generated ${i} of ${studentsData.length}...`, { id: loadingToastId });
+        const pdf = generateStudentPDF(data, selectedExam?.name || '');
         const fileName = `${data.studentName || `Student_${i+1}`}_ProgressCard.pdf`;
         zip.file(fileName, pdf.output('blob'));
       }
-
-      if (printArea) {
-        printArea.classList.add('hidden');
-        printArea.classList.remove('flex');
-        printArea.style.position = '';
-        printArea.style.left = '';
-        printArea.style.top = '';
-        printArea.style.width = '';
-      }
-
-      toast.loading(`Zipping files...`, { id: loadingToastId });
+      toast.loading('Zipping files...', { id: loadingToastId });
       const content = await zip.generateAsync({ type: 'blob' });
       saveAs(content, `ProgressCards_${selectedExam?.name}_${selectedClassId}.zip`);
       toast.success('ZIP Downloaded successfully!', { id: loadingToastId });
     } catch (e: any) {
       console.error('Zip generation error:', e);
-      toast.error(`Failed to generate zip file: ${e.message}`, { id: loadingToastId });
+      toast.error(`Failed to generate zip: ${e.message}`, { id: loadingToastId });
     } finally {
       setIsDownloading(false);
     }
