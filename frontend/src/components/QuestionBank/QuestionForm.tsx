@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+ï»¿import React, { useState, useEffect } from 'react';
 import { qbApi as api } from '../../utils/questionBankApi';
 import { LaTeXPreview } from './LaTeXPreview';
 import { Upload, X, Check, AlertCircle, Sparkles, PenTool } from 'lucide-react';
@@ -408,8 +408,8 @@ const ManualQuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialDa
         <div className="bg-white text-black p-6 rounded-xl border border-slate-300 min-h-[300px] flex flex-col justify-between font-serif text-[15px] shadow-lg">
           <div>
             <div className="flex justify-between items-start text-xs border-b border-slate-200 pb-2 mb-4 font-sans text-slate-500">
-              <div>CHAPTER: <span className="font-semibold text-slate-800 uppercase">{formData.chapter || '—'}</span></div>
-              <div>TOPIC: <span className="font-semibold text-slate-800 uppercase">{formData.topic || '—'}</span></div>
+              <div>CHAPTER: <span className="font-semibold text-slate-800 uppercase">{formData.chapter || 'â€”'}</span></div>
+              <div>TOPIC: <span className="font-semibold text-slate-800 uppercase">{formData.topic || 'â€”'}</span></div>
             </div>
 
             <div className="mb-4 leading-relaxed">
