@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+﻿import { Request, Response } from 'express';
 import fs from 'fs';
 import { GoogleGenAI } from '@google/genai';
 import axios from 'axios';
@@ -72,16 +72,16 @@ export const parseWithGemini = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Text input is required.' });
     }
 
-    const prompt = You are an AI assistant for an exam portal. Extract multiple exam questions from the following text and return a JSON array of objects.
-Do not wrap the output in markdown code blocks like \\\json. Just return the raw JSON array.
+    const prompt = `You are an AI assistant for an exam portal. Extract multiple exam questions from the following text and return a JSON array of objects.
+Do not wrap the output in markdown code blocks like \`\`\`json. Just return the raw JSON array.
 Each object must strictly match this structure:
 {
-  "subject": "",
+  "subject": "${subject || 'Physics'}",
   "chapter": "Extracted chapter or empty string",
   "topic": "Extracted topic or empty string",
   "type": "MCQ_SINGLE" | "MCQ_MULTI" | "NUMERICAL",
   "difficulty": "Easy" | "Medium" | "Hard",
-  "questionText": "Question text in LaTeX format if math/science. Enclose math in \\( \\) or \\[ \\]",
+  "questionText": "Question text in LaTeX format if math/science. Enclose math in \\\\( \\\\) or \\\\[ \\\\]",
   "optionA": "Option A text",
   "optionB": "Option B text",
   "optionC": "Option C text",
@@ -92,7 +92,7 @@ Each object must strictly match this structure:
   "negativeMarks": -1
 }
 Raw Text:
-;
+${text}`;
 
     let parsed = null;
 
@@ -108,7 +108,7 @@ Raw Text:
         }
       });
       if (response.text) {
-        parsed = JSON.parse(response.text.replace(/`json\n?|`/g, ''));
+        parsed = JSON.parse(response.text.replace(/```json\n?|```/g, ''));
       }
     } else if (provider === 'chatgpt') {
       if (!apiKey) throw new Error("ChatGPT API key is required");
@@ -116,10 +116,10 @@ Raw Text:
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }]
       }, {
-        headers: { 'Authorization': Bearer , 'Content-Type': 'application/json' }
+        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' }
       });
       const content = response.data.choices[0].message.content;
-      parsed = JSON.parse(content.replace(/`json\n?|`/g, ''));
+      parsed = JSON.parse(content.replace(/```json\n?|```/g, ''));
     } else if (provider === 'claude') {
       if (!apiKey) throw new Error("Claude API key is required");
       const response = await axios.post('https://api.anthropic.com/v1/messages', {
@@ -130,17 +130,17 @@ Raw Text:
         headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' }
       });
       const content = response.data.content[0].text;
-      parsed = JSON.parse(content.replace(/`json\n?|`/g, ''));
+      parsed = JSON.parse(content.replace(/```json\n?|```/g, ''));
     } else if (provider === 'deepseek') {
       if (!apiKey) throw new Error("DeepSeek API key is required");
       const response = await axios.post('https://api.deepseek.com/chat/completions', {
         model: 'deepseek-chat',
         messages: [{ role: 'user', content: prompt }]
       }, {
-        headers: { 'Authorization': Bearer , 'Content-Type': 'application/json' }
+        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' }
       });
       const content = response.data.choices[0].message.content;
-      parsed = JSON.parse(content.replace(/`json\n?|`/g, ''));
+      parsed = JSON.parse(content.replace(/```json\n?|```/g, ''));
     } else {
       throw new Error("Invalid provider");
     }
@@ -157,4 +157,7 @@ Raw Text:
     console.error('AI parsing error:', error);
     return res.status(500).json({ message: error.response?.data?.error?.message || error.message || 'Server error' });
   }
+};
+export const importQuestionFile = async (req: Request, res: Response) => {
+  return res.status(501).json({ message: 'Not implemented' });
 };

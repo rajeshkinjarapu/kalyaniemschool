@@ -256,7 +256,7 @@ export const bulkCreateQuestions = async (req: Request, res: Response) => {
       data: questionsToInsert,
     });
 
-    return res.status(201).json({ message: \Successfully created \ questions.\ });
+    return res.status(201).json({ message: `Successfully created ${result.count} questions.` });
   } catch (error: any) {
     console.error('Bulk create error:', error);
     return res.status(500).json({ message: error.message || 'Server error' });
