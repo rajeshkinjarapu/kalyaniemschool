@@ -138,6 +138,7 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     if (parentContainer) {
       parentContainer.classList.remove('hidden');
       parentContainer.style.display = 'flex';
+      // Keep in viewport but hide behind other content to fix mobile rendering issues
       parentContainer.style.position = 'fixed';
       parentContainer.style.top = '0';
       parentContainer.style.left = '0';
@@ -147,24 +148,23 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     const originalDisplay = el.style.display;
     el.style.display = 'flex';
     
+    // Wait a bit for images and layout to render
     await new Promise(resolve => setTimeout(resolve, 300));
     
     try {
       const canvas = await html2canvas(el, { 
-        scale: window.innerWidth < 768 ? 1.5 : 2,
+        scale: window.innerWidth < 768 ? 1.5 : 2, // Better quality, fallback to 1.5 on mobile for memory
         useCORS: true, 
-        allowTaint: false,
+        allowTaint: true,
         backgroundColor: '#ffffff',
-        logging: false,
-        width: 794,
-        height: 1123,
+        logging: false
       });
       
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
       
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = 210;
-      const pdfHeight = (1123 / 794) * pdfWidth;
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
       
@@ -294,19 +294,17 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         await new Promise(resolve => setTimeout(resolve, 100));
         
         const canvas = await html2canvas(el, { 
-          scale: 1.5, 
+          scale: 2, // Keep scale 2 for ZIP export for consistent quality
           useCORS: true, 
-          allowTaint: false,
+          allowTaint: true,
           backgroundColor: '#ffffff',
-          logging: false,
-          width: 794,
-          height: 1123,
+          logging: false
         });
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
         
         const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = 210;
-        const pdfHeight = (1123 / 794) * pdfWidth;
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
         
         pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
         const fileName = `${data.studentName || `Student_${i+1}`}_ProgressCard.pdf`;
