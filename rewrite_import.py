@@ -1,11 +1,16 @@
-import { Request, Response } from 'express';
+import re
+
+with open('backend/src/controllers/question-bank/import.controller.ts', 'r', encoding='utf-8') as f:
+    content = f.read()
+
+new_content = '''import { Request, Response } from 'express';
 import fs from 'fs';
 import { GoogleGenAI } from '@google/genai';
 import axios from 'axios';
 
 // Helper to parse standard question structures from raw text
 const parseQuestionFromText = (text: string) => {
-  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const lines = text.split('\\n').map((l) => l.trim()).filter(Boolean);
   
   let questionText = '';
   let optionA = '';
@@ -27,14 +32,14 @@ const parseQuestionFromText = (text: string) => {
       continue;
     }
 
-    const qMatch = line.match(/^(?:Q\d+|\d+)\.\s+(.+)$/i);
+    const qMatch = line.match(/^(?:Q\d+|\d+)\\.\\s+(.+)$/i);
     if (qMatch && !optionA) {
       questionText = qMatch[1];
       
       if (i + 1 < lines.length) {
         const nextLine = lines[i + 1];
         
-        const inlineOpts = nextLine.match(/(?:1\.\s+|A\.\s+|a\)\s+)(.+?)\s+(?:2\.\s+|B\.\s+|b\)\s+)(.+?)\s+(?:3\.\s+|C\.\s+|c\)\s+)(.+?)\s+(?:4\.\s+|D\.\s+|d\)\s+)(.+)$/);
+        const inlineOpts = nextLine.match(/(?:1\\.\\s+|A\\.\\s+|a\\)\\s+)(.+?)\\s+(?:2\\.\\s+|B\\.\\s+|b\\)\\s+)(.+?)\\s+(?:3\\.\\s+|C\\.\\s+|c\\)\\s+)(.+?)\\s+(?:4\\.\\s+|D\\.\\s+|d\\)\\s+)(.+)$/);
         
         if (inlineOpts) {
           optionA = inlineOpts[1].trim();
@@ -73,7 +78,7 @@ export const parseWithGemini = async (req: Request, res: Response) => {
     }
 
     const prompt = You are an AI assistant for an exam portal. Extract multiple exam questions from the following text and return a JSON array of objects.
-Do not wrap the output in markdown code blocks like \\\json. Just return the raw JSON array.
+Do not wrap the output in markdown code blocks like \\\\\\json. Just return the raw JSON array.
 Each object must strictly match this structure:
 {
   "subject": "",
@@ -81,7 +86,7 @@ Each object must strictly match this structure:
   "topic": "Extracted topic or empty string",
   "type": "MCQ_SINGLE" | "MCQ_MULTI" | "NUMERICAL",
   "difficulty": "Easy" | "Medium" | "Hard",
-  "questionText": "Question text in LaTeX format if math/science. Enclose math in \\( \\) or \\[ \\]",
+  "questionText": "Question text in LaTeX format if math/science. Enclose math in \\\\( \\\\) or \\\\[ \\\\]",
   "optionA": "Option A text",
   "optionB": "Option B text",
   "optionC": "Option C text",
@@ -108,7 +113,7 @@ Raw Text:
         }
       });
       if (response.text) {
-        parsed = JSON.parse(response.text.replace(/`json\n?|`/g, ''));
+        parsed = JSON.parse(response.text.replace(/`json\\n?|`/g, ''));
       }
     } else if (provider === 'chatgpt') {
       if (!apiKey) throw new Error("ChatGPT API key is required");
@@ -119,7 +124,7 @@ Raw Text:
         headers: { 'Authorization': Bearer , 'Content-Type': 'application/json' }
       });
       const content = response.data.choices[0].message.content;
-      parsed = JSON.parse(content.replace(/`json\n?|`/g, ''));
+      parsed = JSON.parse(content.replace(/`json\\n?|`/g, ''));
     } else if (provider === 'claude') {
       if (!apiKey) throw new Error("Claude API key is required");
       const response = await axios.post('https://api.anthropic.com/v1/messages', {
@@ -130,7 +135,7 @@ Raw Text:
         headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' }
       });
       const content = response.data.content[0].text;
-      parsed = JSON.parse(content.replace(/`json\n?|`/g, ''));
+      parsed = JSON.parse(content.replace(/`json\\n?|`/g, ''));
     } else if (provider === 'deepseek') {
       if (!apiKey) throw new Error("DeepSeek API key is required");
       const response = await axios.post('https://api.deepseek.com/chat/completions', {
@@ -140,7 +145,7 @@ Raw Text:
         headers: { 'Authorization': Bearer , 'Content-Type': 'application/json' }
       });
       const content = response.data.choices[0].message.content;
-      parsed = JSON.parse(content.replace(/`json\n?|`/g, ''));
+      parsed = JSON.parse(content.replace(/`json\\n?|`/g, ''));
     } else {
       throw new Error("Invalid provider");
     }
@@ -158,3 +163,7 @@ Raw Text:
     return res.status(500).json({ message: error.response?.data?.error?.message || error.message || 'Server error' });
   }
 };
+'''
+
+with open('backend/src/controllers/question-bank/import.controller.ts', 'w', encoding='utf-8') as f:
+    f.write(new_content)

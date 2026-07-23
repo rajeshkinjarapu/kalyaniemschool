@@ -1,4 +1,4 @@
-import api from '../api/axios';
+﻿import api from '../api/axios';
 
 export const qbApi = {
   // Questions API
@@ -50,8 +50,8 @@ export const qbApi = {
     return res.data;
   },
 
-  async parseQuestionsWithAI(text: string, subject?: string) {
-    const res = await api.post('/api/questions/import-ai', { text, subject });
+  async parseQuestionsWithAI(text: string, subject?: string, provider?: string, apiKey?: string) {
+    const res = await api.post('/api/questions/import-ai', { text, subject, provider, apiKey });
     return res.data;
   },
 
@@ -121,4 +121,5 @@ export const qbApi = {
     return res.data;
   },
 };
+
 

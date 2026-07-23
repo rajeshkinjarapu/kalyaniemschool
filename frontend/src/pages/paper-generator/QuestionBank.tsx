@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { qbApi as api } from '../../utils/questionBankApi';
 import { QuestionForm } from '../../components/QuestionBank/QuestionForm';
@@ -172,9 +172,7 @@ export const QuestionBank: React.FC = () => {
             <Link to="/question-bank" className="p-2 hover:bg-slate-100 border border-slate-200 hover:border-slate-350 rounded-xl transition-colors text-white">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <span className="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-teal-500">
-              JEE Master Question Bank
-            </span>
+            
           </div>
 
           <div className="flex items-center gap-2">
@@ -439,6 +437,7 @@ export const QuestionBank: React.FC = () => {
     </div>
   );
 };
+
 
 
 

@@ -1,4 +1,6 @@
-﻿import React, { useState } from 'react';
+import re
+
+new_content = '''import React, { useState } from 'react';
 import { qbApi as api } from '../../utils/questionBankApi';
 import { LaTeXPreview } from './LaTeXPreview';
 import { Sparkles, AlertCircle, Loader2, Save, FileText, CheckCircle2, Edit2, X, Settings2 } from 'lucide-react';
@@ -8,7 +10,7 @@ interface AIQuestionFormProps {
   onCancel: () => void;
 }
 
-const MATH_SYMBOLS = ['α', 'β', 'γ', 'θ', '°', '±', '√', '∫', '∑', '∞', 'π', 'Δ', 'Ω', 'µ', 'ρ', 'σ', 'λ', '↑', '↓', '→', '⇌', '≈', '≠', '≤', '≥'];
+const MATH_SYMBOLS = ['a', '�', '?', '?', '�', '�', 'v', '?', '?', '8', 'p', '?', 'O', '�', '?', 's', '?', '?', '?', '?', '?', '�', '?', '=', '='];
 
 export const AIQuestionForm: React.FC<AIQuestionFormProps> = ({ onSuccess, onCancel }) => {
   const [inputText, setInputText] = useState('');
@@ -57,7 +59,7 @@ export const AIQuestionForm: React.FC<AIQuestionFormProps> = ({ onSuccess, onCan
     }
     setError(null);
     try {
-      const lines = inputText.split('\n').map((l) => l.trim()).filter(Boolean);
+      const lines = inputText.split('\\n').map((l) => l.trim()).filter(Boolean);
       let parsed = [];
       let currentQ: any = null;
 
@@ -65,7 +67,8 @@ export const AIQuestionForm: React.FC<AIQuestionFormProps> = ({ onSuccess, onCan
         const line = lines[i];
         
         // Detect question start: "Q1.", "1.", "The lanthanide..."
-        const qMatch = line.match(/^(?:Q\d+|\d+)\.\s+(.+)$/i);
+        // If it starts with a number, or just start a new block if it's long and doesn't look like options
+        const qMatch = line.match(/^(?:Q\\d+|\\d+)\\.\\s+(.+)$/i);
         
         if (qMatch) {
             if (currentQ) parsed.push(currentQ);
@@ -83,7 +86,7 @@ export const AIQuestionForm: React.FC<AIQuestionFormProps> = ({ onSuccess, onCan
             };
         } else {
             // Might be options or continuation of question
-            const inlineOpts = line.match(/(?:1\.\s+|A\.\s+|a\)\s+|\(A\)\s+|A\)\s+)(.+?)\s+(?:2\.\s+|B\.\s+|b\)\s+|\(B\)\s+|B\)\s+)(.+?)\s+(?:3\.\s+|C\.\s+|c\)\s+|\(C\)\s+|C\)\s+)(.+?)\s+(?:4\.\s+|D\.\s+|d\)\s+|\(D\)\s+|D\)\s+)(.+)$/i);
+            const inlineOpts = line.match(/(?:1\\.\\s+|A\\.\\s+|a\\)\\s+|\\(A\\)\\s+|A\\)\\s+)(.+?)\\s+(?:2\\.\\s+|B\\.\\s+|b\\)\\s+|\\(B\\)\\s+|B\\)\\s+)(.+?)\\s+(?:3\\.\\s+|C\\.\\s+|c\\)\\s+|\\(C\\)\\s+|C\\)\\s+)(.+?)\\s+(?:4\\.\\s+|D\\.\\s+|d\\)\\s+|\\(D\\)\\s+|D\\)\\s+)(.+)$/i);
             
             if (inlineOpts) {
                 currentQ.optionA = inlineOpts[1].trim();
@@ -91,7 +94,9 @@ export const AIQuestionForm: React.FC<AIQuestionFormProps> = ({ onSuccess, onCan
                 currentQ.optionC = inlineOpts[3].trim();
                 currentQ.optionD = inlineOpts[4].trim();
             } else if (!currentQ.optionA) {
-                currentQ.questionText += '\n' + line;
+                // If options haven't been found, maybe the line has only A and B?
+                // Let's just append to question text for simplicity
+                currentQ.questionText += '\\n' + line;
             }
         }
       }
@@ -283,7 +288,7 @@ export const AIQuestionForm: React.FC<AIQuestionFormProps> = ({ onSuccess, onCan
               const isEditing = editingId === idx;
 
               return (
-              <div key={idx} className={`bg-white text-black p-6 rounded-xl border ${isSaved ? 'border-emerald-400 bg-emerald-50/30' : (isEditing ? 'border-blue-400 shadow-blue-100' : 'border-slate-300')} font-serif text-[15px] shadow-lg relative transition-all`}>
+              <div key={idx} className={g-white text-black p-6 rounded-xl border  font-serif text-[15px] shadow-lg relative transition-all}>
                 
                 {/* Actions */}
                 <div className="absolute top-4 right-4 flex gap-2">
@@ -317,7 +322,7 @@ export const AIQuestionForm: React.FC<AIQuestionFormProps> = ({ onSuccess, onCan
                   <div className="mt-8 font-sans">
                     <div className="mb-3 bg-indigo-50 border border-indigo-100 p-2 rounded-lg flex flex-wrap gap-1">
                       {MATH_SYMBOLS.map(sym => (
-                        <button key={sym} onClick={() => insertSymbol(sym)} className="w-8 h-8 flex items-center justify-center bg-white border border-indigo-200 rounded hover:bg-indigo-100 text-indigo-700 font-medium cursor-pointer">
+                        <button key={sym} onClick={() => insertSymbol(sym)} className="w-8 h-8 flex items-center justify-center bg-white border border-indigo-200 rounded hover:bg-indigo-100 text-indigo-700 font-medium">
                           {sym}
                         </button>
                       ))}
@@ -342,9 +347,9 @@ export const AIQuestionForm: React.FC<AIQuestionFormProps> = ({ onSuccess, onCan
                               <label className="text-xs font-bold text-slate-600 mb-1 block">Option {opt}</label>
                               <input
                                 type="text"
-                                value={editState[`option${opt}`]}
-                                onFocus={() => setFocusedField(`option${opt}`)}
-                                onChange={e => setEditState({...editState, [`option${opt}`]: e.target.value})}
+                                value={editState[option]}
+                                onFocus={() => setFocusedField(option)}
+                                onChange={e => setEditState({...editState, [option]: e.target.value})}
                                 className="w-full border border-slate-300 rounded p-2 text-sm focus:border-indigo-400 focus:outline-none"
                               />
                             </div>
@@ -388,8 +393,8 @@ export const AIQuestionForm: React.FC<AIQuestionFormProps> = ({ onSuccess, onCan
                   <>
                     <div className="flex justify-between items-start text-xs border-b border-slate-200 pb-2 mb-4 font-sans text-slate-500 pr-32">
                       <div>SUBJECT: <span className="font-semibold text-indigo-700 uppercase">{q.subject}</span></div>
-                      <div>CHAPTER: <span className="font-semibold text-slate-800 uppercase">{q.chapter || '—'}</span></div>
-                      <div>TOPIC: <span className="font-semibold text-slate-800 uppercase">{q.topic || '—'}</span></div>
+                      <div>CHAPTER: <span className="font-semibold text-slate-800 uppercase">{q.chapter || '�'}</span></div>
+                      <div>TOPIC: <span className="font-semibold text-slate-800 uppercase">{q.topic || '�'}</span></div>
                     </div>
 
                     <div className="mb-4 leading-relaxed">
@@ -440,3 +445,7 @@ export const AIQuestionForm: React.FC<AIQuestionFormProps> = ({ onSuccess, onCan
     </div>
   );
 };
+'''
+
+with open('frontend/src/components/QuestionBank/AIQuestionForm.tsx', 'w', encoding='utf-8') as f:
+    f.write(new_content)
