@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { ArrowLeft, Save, Camera } from 'lucide-react';
 import { Avatar } from '../../components/UI/Avatar';
 import { getPhotoUrl } from '../../utils/photo';
+import { compressImage } from '../../utils/imageCompressor';
 
 export const TeacherFormPage: React.FC = () => {
   const { id } = useParams();
@@ -19,11 +20,13 @@ export const TeacherFormPage: React.FC = () => {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
+
     setUploading(true);
     const loadingToast = toast.loading('Uploading photo...');
     try {
+      const compressedFile = await compressImage(file);
+      const formData = new FormData();
+      formData.append('file', compressedFile);
       const uploadRes: any = await api.post('/api/uploads/image', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });

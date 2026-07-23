@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../hooks/useAuth';
+import { getPhotoUrl } from '../../utils/photo';
+import { compressImage } from '../../utils/imageCompressor';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { Avatar } from '../../components/UI/Avatar';
 import { Badge } from '../../components/UI/Badge';
@@ -62,12 +64,12 @@ export const StudentProfilePage: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('file', file);
-
     setUploading(true);
     const loadingToast = toast.loading('Uploading photo...');
     try {
+      const compressedFile = await compressImage(file);
+      const formData = new FormData();
+      formData.append('file', compressedFile);
       const uploadRes: any = await api.post('/api/uploads/image', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -92,8 +94,9 @@ export const StudentProfilePage: React.FC = () => {
     setIsSubmitting(true);
     const uploadToast = toast.loading('Uploading payment receipt...');
     try {
+      const compressedFile = await compressImage(file);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressedFile);
       const res: any = await api.post('/api/uploads/document', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });

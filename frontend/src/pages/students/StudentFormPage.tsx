@@ -5,6 +5,7 @@ import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Save } from 'lucide-react';
 import { getPhotoUrl } from '../../utils/photo';
+import { compressImage } from '../../utils/imageCompressor';
 
 export const StudentFormPage: React.FC = () => {
   const { id } = useParams();
@@ -63,12 +64,13 @@ export const StudentFormPage: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('file', file);
-
     setIsUploading(true);
     const uploadToast = toast.loading('Uploading student photo...');
     try {
+      const compressedFile = await compressImage(file);
+      const formData = new FormData();
+      formData.append('file', compressedFile);
+
       const res: any = await api.post('/api/uploads/image', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });

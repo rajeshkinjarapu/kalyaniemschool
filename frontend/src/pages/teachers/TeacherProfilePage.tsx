@@ -7,6 +7,7 @@ import { Badge } from '../../components/UI/Badge';
 import { ArrowLeft, BookOpen, GraduationCap, School, Camera, Printer } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getPhotoUrl } from '../../utils/photo';
+import { compressImage } from '../../utils/imageCompressor';
 
 export const TeacherProfilePage: React.FC = () => {
   const { id } = useParams();
@@ -34,11 +35,13 @@ export const TeacherProfilePage: React.FC = () => {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
+
     setUploading(true);
     const loadingToast = toast.loading('Uploading photo...');
     try {
+      const compressedFile = await compressImage(file);
+      const formData = new FormData();
+      formData.append('file', compressedFile);
       const uploadRes: any = await api.post('/api/uploads/image', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
