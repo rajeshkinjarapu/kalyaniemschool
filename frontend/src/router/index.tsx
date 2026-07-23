@@ -32,6 +32,7 @@ const TeacherAdmitCardsPage = lazy(() => import('../pages/teachers/TeacherAdmitC
 const ClassManagementPage = lazy(() => import('../pages/classes/ClassManagementPage'));
 const ClassDetailPage = lazy(() => import('../pages/classes/ClassDetailPage'));
 const SubjectPage = lazy(() => import('../pages/subjects/SubjectPage'));
+const AttendanceDashboard = lazy(() => import('../pages/attendance/AttendanceDashboard'));
 const AttendanceMarkingPage = lazy(() => import('../pages/attendance/AttendanceMarkingPage'));
 const MyAttendancePage = lazy(() => import('../pages/attendance/MyAttendancePage').then((mod) => ({ default: mod.MyAttendancePage })));
 const AttendanceReportPage = lazy(() => import('../pages/attendance/AttendanceReportPage'));
@@ -67,7 +68,7 @@ const AttendanceWrapper = () => {
   if (user?.role === 'STUDENT') {
     return <MyAttendancePage />;
   }
-  return <AttendanceMarkingPage />;
+  return <AttendanceDashboard />;
 };
 
 export const router = createBrowserRouter([
@@ -204,9 +205,13 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'attendance',
-        element: withSuspense(<AttendanceWrapper />),
-      },
+          path: 'attendance',
+          element: withSuspense(<AttendanceWrapper />),
+        },
+        {
+          path: 'attendance/mark',
+          element: withSuspense(<AttendanceMarkingPage />),
+        },
       {
         path: 'attendance/report',
         element: withSuspense(<AttendanceReportPage />),
@@ -419,3 +424,4 @@ export const router = createBrowserRouter([
   },
 ]);
 export default router;
+

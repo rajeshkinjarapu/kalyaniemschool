@@ -79,7 +79,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       { to: '/classes',       label: 'Classes',       icon: School        },
       { to: '/subjects',      label: 'Subjects',      icon: BookOpen      },
       { to: '/attendance',    label: 'Attendance',    icon: CalendarCheck },
-      { to: '/attendance/daily-report', label: 'Daily Report', icon: FileText },
       
       { to: '/exams',         label: 'Examination',         icon: ClipboardList },
       ...(role === 'SUPER_ADMIN' ? [{ to: '/exams/omr-scanner', label: 'OMR Scanner', icon: Target }] : []),
@@ -254,3 +253,4 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   );
 };
 export default Sidebar;
+
