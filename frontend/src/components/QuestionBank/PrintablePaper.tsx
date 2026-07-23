@@ -132,7 +132,7 @@ export const PrintablePaper: React.FC<PrintablePaperProps> = ({
             <div>Class – {paper.className || "6th A"}</div>
             <div className="text-right">Marks : {paper.totalMarks}</div>
             <div>Date : {paper.examDate || "04/07/2026"}</div>
-            <div className="text-right">Duration : {paper.duration} Minutes &nbsp; {paper.paperCode && <span className="font-mono text-accentIndigo">({paper.paperCode})</span>}</div>
+            <div className="text-right">Duration : {paper.duration} Minutes &nbsp; {paper.paperCode && <span className="font-mono text-indigo-600">({paper.paperCode})</span>}</div>
           </div>
 
           {/* Candidate Registration Block */}
@@ -370,3 +370,4 @@ export const PrintablePaper: React.FC<PrintablePaperProps> = ({
     </div>
   );
 };
+

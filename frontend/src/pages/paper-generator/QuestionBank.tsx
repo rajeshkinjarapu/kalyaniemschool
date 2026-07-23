@@ -164,15 +164,15 @@ export const QuestionBank: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-slate-850 font-sans pb-12">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-slate-800 font-sans pb-12">
       {/* Header Banner */}
-      <nav className="border-b border-slate-200 bg-white/75 backdrop-blur-md sticky top-0 z-30">
+      <nav className="border-b border-slate-200 bg-gradient-to-r from-indigo-100/90 via-purple-100/90 to-pink-100/90 backdrop-blur-md sticky top-0 z-30">
         <div className="w-full mx-auto px-2 lg:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/question-bank" className="p-2 hover:bg-slate-100 border border-slate-200 hover:border-slate-350 rounded-xl transition-colors text-slate-800">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <span className="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-accentIndigo to-accentTeal">
+            <span className="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-teal-500">
               JEE Master Question Bank
             </span>
           </div>
@@ -192,13 +192,13 @@ export const QuestionBank: React.FC = () => {
                 importing ? 'opacity-50 pointer-events-none' : ''
               }`}
             >
-              <PlusCircle className="w-4 h-4 text-accentTeal" />
+              <PlusCircle className="w-4 h-4 text-teal-500" />
               <span>{importing ? 'Scanning...' : 'Smart Import (Photo/Doc)'}</span>
             </label>
 
             <button
               onClick={handleCreate}
-              className="px-4 py-2 bg-gradient-to-r from-accentIndigo to-accentTeal hover:brightness-110 text-white rounded-xl text-xs font-semibold shadow-md transition-all flex items-center gap-1.5"
+              className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-teal-500 hover:brightness-110 text-white rounded-xl text-xs font-semibold shadow-md transition-all flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>Add Question</span>
@@ -224,7 +224,7 @@ export const QuestionBank: React.FC = () => {
             <div className="bg-white/90 backdrop-blur-xl border-2 border-indigo-100 rounded-3xl p-6 shadow-xl shadow-indigo-200/50 h-fit space-y-5 shadow-sm text-slate-800">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="font-bold text-sm flex items-center gap-1.5 text-slate-800">
-                  <SlidersHorizontal className="w-4 h-4 text-accentTeal" />
+                  <SlidersHorizontal className="w-4 h-4 text-teal-500" />
                   Filter Bank
                 </h3>
                 <button
@@ -265,7 +265,7 @@ export const QuestionBank: React.FC = () => {
                 <select
                   value={chapter}
                   onChange={(e) => setChapter(e.target.value)}
-                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-accentIndigo text-slate-700 font-sans"
+                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-indigo-600 text-slate-700 font-sans"
                 >
                   <option value="">All Chapters</option>
                   {availableChapters.map((ch) => (
@@ -284,7 +284,7 @@ export const QuestionBank: React.FC = () => {
                 <select
                   value={difficulty}
                   onChange={(e) => setDifficulty(e.target.value)}
-                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-accentIndigo text-slate-700 font-sans"
+                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-indigo-600 text-slate-700 font-sans"
                 >
                   <option value="">All Levels</option>
                   <option value="Easy">Easy</option>
@@ -301,7 +301,7 @@ export const QuestionBank: React.FC = () => {
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value)}
-                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-accentIndigo text-slate-700 font-sans"
+                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs focus:outline-none focus:border-indigo-600 text-slate-700 font-sans"
                 >
                   <option value="">All Types</option>
                   <option value="MCQ_SINGLE">MCQ Single Correct</option>
@@ -320,7 +320,7 @@ export const QuestionBank: React.FC = () => {
                   placeholder="e.g. pyq-2025"
                   value={tag}
                   onChange={(e) => setTag(e.target.value)}
-                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs text-slate-800 focus:outline-none focus:border-accentIndigo font-sans"
+                  className="w-full bg-white border border-slate-250 rounded-xl p-2 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 font-sans"
                 />
               </div>
             </div>
@@ -338,7 +338,7 @@ export const QuestionBank: React.FC = () => {
                     placeholder="Search question text, concepts, equations..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-2xl py-3 pl-10 pr-4 text-slate-800 focus:outline-none focus:border-accentIndigo transition-colors text-sm font-sans shadow-sm"
+                    className="w-full bg-white border border-slate-200 rounded-2xl py-3 pl-10 pr-4 text-slate-800 focus:outline-none focus:border-indigo-600 transition-colors text-sm font-sans shadow-sm"
                   />
                 </div>
                 <button
@@ -352,7 +352,7 @@ export const QuestionBank: React.FC = () => {
               {/* Questions List */}
               {loading ? (
                 <div className="text-center py-20 text-slate-400 font-sans">
-                  <div className="w-10 h-10 border-4 border-t-accentIndigo border-slate-350 rounded-full animate-spin mx-auto mb-3" />
+                  <div className="w-10 h-10 border-4 border-t-indigo-600 border-slate-350 rounded-full animate-spin mx-auto mb-3" />
                   <span>Filtering bank records...</span>
                 </div>
               ) : questions.length === 0 ? (
@@ -368,7 +368,7 @@ export const QuestionBank: React.FC = () => {
                   {questions.map((q) => (
                     <div
                       key={q.id}
-                      className="bg-white border border-slate-200 hover:border-accentIndigo/30 rounded-2xl p-5 transition-all shadow-sm flex flex-col justify-between hover:shadow-md"
+                      className="bg-white border border-slate-200 hover:border-indigo-600/30 rounded-2xl p-5 transition-all shadow-sm flex flex-col justify-between hover:shadow-md"
                     >
                       <div>
                         {/* Meta Line */}
@@ -388,7 +388,7 @@ export const QuestionBank: React.FC = () => {
                               {q.type.replace('_', ' ')}
                             </span>
                             {q.tags && q.tags.split(',').map((t) => (
-                              <span key={t} className="text-accentTeal bg-accentTeal/5 border border-accentTeal/10 px-2 py-0.5 rounded text-[8px]">
+                              <span key={t} className="text-teal-500 bg-teal-500/5 border border-teal-500/10 px-2 py-0.5 rounded text-[8px]">
                                 #{t.trim()}
                               </span>
                             ))}
@@ -414,7 +414,7 @@ export const QuestionBank: React.FC = () => {
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleEdit(q.id)}
-                            className="p-2 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 hover:bg-slate-100 hover:text-accentIndigo border border-slate-200 hover:border-accentIndigo/30 rounded-lg text-slate-500 transition-colors"
+                            className="p-2 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 hover:bg-slate-100 hover:text-indigo-600 border border-slate-200 hover:border-indigo-600/30 rounded-lg text-slate-500 transition-colors"
                             title="Edit Question"
                           >
                             <Edit className="w-4 h-4" />
@@ -439,6 +439,8 @@ export const QuestionBank: React.FC = () => {
     </div>
   );
 };
+
+
 
 
 

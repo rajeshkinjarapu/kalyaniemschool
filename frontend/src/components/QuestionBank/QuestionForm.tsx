@@ -177,7 +177,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
     <div className="w-full text-white grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Edit Form */}
       <div className="bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 border border-slate-700/50 shadow-glass">
-        <h2 className="text-xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-accentIndigo via-accentPurple to-accentTeal">
+        <h2 className="text-xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-accentPurple to-teal-500">
           {questionId ? 'Edit Question' : 'Create New Question'}
         </h2>
 
@@ -196,7 +196,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                 name="subject"
                 value={formData.subject}
                 onChange={handleChange}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-accentIndigo"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-600"
               >
                 <option value="Physics">Physics</option>
                 <option value="Chemistry">Chemistry</option>
@@ -209,7 +209,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                 name="difficulty"
                 value={formData.difficulty}
                 onChange={handleChange}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-accentIndigo"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-600"
               >
                 <option value="Easy">Easy</option>
                 <option value="Medium">Medium</option>
@@ -229,7 +229,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                 list="chapters-list"
                 placeholder="e.g. Electrostatics"
                 required
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-accentIndigo"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-600"
               />
               <datalist id="chapters-list">
                 {suggestions.chapters.map((ch) => (
@@ -247,7 +247,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                 list="topics-list"
                 placeholder="e.g. Coulomb's Law"
                 required
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-accentIndigo"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-600"
               />
               <datalist id="topics-list">
                 {suggestions.topics.map((t) => (
@@ -263,7 +263,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
               name="type"
               value={formData.type}
               onChange={handleChange}
-              className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-accentIndigo"
+              className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-600"
             >
               <option value="MCQ_SINGLE">MCQ (Single Correct)</option>
               <option value="MCQ_MULTI">MCQ (Multi Correct)</option>
@@ -284,7 +284,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
               onChange={handleChange}
               required
               placeholder="Type question statement here. Use LaTeX for math. E.g. Find the value of $\int x^2 dx$."
-              className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white font-sans focus:outline-none focus:border-accentIndigo resize-y"
+              className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white font-sans focus:outline-none focus:border-indigo-600 resize-y"
             />
           </div>
 
@@ -302,7 +302,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                     onChange={handleChange}
                     required={formData.type.startsWith('MCQ')}
                     placeholder="LaTeX math allowed"
-                    className="w-full bg-slate-900/60 border border-slate-700 rounded-lg p-2 text-white focus:outline-none focus:border-accentIndigo text-sm"
+                    className="w-full bg-slate-900/60 border border-slate-700 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-600 text-sm"
                   />
                 </div>
                 <div>
@@ -314,7 +314,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                     onChange={handleChange}
                     required={formData.type.startsWith('MCQ')}
                     placeholder="LaTeX math allowed"
-                    className="w-full bg-slate-900/60 border border-slate-700 rounded-lg p-2 text-white focus:outline-none focus:border-accentIndigo text-sm"
+                    className="w-full bg-slate-900/60 border border-slate-700 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-600 text-sm"
                   />
                 </div>
                 <div>
@@ -326,7 +326,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                     onChange={handleChange}
                     required={formData.type.startsWith('MCQ')}
                     placeholder="LaTeX math allowed"
-                    className="w-full bg-slate-900/60 border border-slate-700 rounded-lg p-2 text-white focus:outline-none focus:border-accentIndigo text-sm"
+                    className="w-full bg-slate-900/60 border border-slate-700 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-600 text-sm"
                   />
                 </div>
                 <div>
@@ -338,7 +338,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                     onChange={handleChange}
                     required={formData.type.startsWith('MCQ')}
                     placeholder="LaTeX math allowed"
-                    className="w-full bg-slate-900/60 border border-slate-700 rounded-lg p-2 text-white focus:outline-none focus:border-accentIndigo text-sm"
+                    className="w-full bg-slate-900/60 border border-slate-700 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-600 text-sm"
                   />
                 </div>
               </div>
@@ -359,7 +359,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                       onClick={() => setFormData((prev) => ({ ...prev, correctAnswer: opt }))}
                       className={`flex-1 py-2 rounded-lg border text-center font-bold text-sm transition-all ${
                         formData.correctAnswer === opt
-                          ? 'bg-accentIndigo border-accentIndigo text-white'
+                          ? 'bg-indigo-600 border-indigo-600 text-white'
                           : 'bg-slate-900/50 border-slate-700 text-slate-400 hover:border-slate-500'
                       }`}
                     >
@@ -399,7 +399,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                   onChange={handleChange}
                   placeholder="e.g. 5 or 2.75"
                   required
-                  className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-accentIndigo font-mono"
+                  className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-600 font-mono"
                 />
               )}
             </div>
@@ -414,7 +414,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                   onChange={handleChange}
                   min={1}
                   required
-                  className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-accentIndigo text-center font-semibold"
+                  className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-600 text-center font-semibold"
                 />
               </div>
               <div>
@@ -426,7 +426,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                   onChange={handleChange}
                   max={0}
                   required
-                  className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-accentIndigo text-center font-semibold"
+                  className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-600 text-center font-semibold"
                 />
               </div>
             </div>
@@ -468,7 +468,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
                     className="flex flex-col items-center justify-center border-2 border-dashed border-slate-700 hover:border-slate-500 rounded-xl p-4 cursor-pointer hover:bg-slate-900/10 transition-all"
                   >
                     {imageFile ? (
-                      <div className="flex items-center gap-2 text-sm text-accentTeal">
+                      <div className="flex items-center gap-2 text-sm text-teal-500">
                         <Check className="w-5 h-5 animate-pulse" />
                         <span>Ready to upload: {imageFile.name}</span>
                       </div>
@@ -492,7 +492,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
               value={formData.tags}
               onChange={handleChange}
               placeholder="e.g. kinematics, graph, pyq-2025"
-              className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-accentIndigo text-sm"
+              className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-600 text-sm"
             />
           </div>
 
@@ -507,7 +507,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
               onChange={handleChange}
               required
               placeholder="Provide solution steps using LaTeX for math equations."
-              className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-accentIndigo resize-y text-sm"
+              className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-indigo-600 resize-y text-sm"
             />
           </div>
 
@@ -522,7 +522,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
             <button
               type="submit"
               disabled={loading || uploadingImage}
-              className="px-5 py-2 bg-gradient-to-r from-accentIndigo to-accentPurple hover:brightness-110 font-medium text-white rounded-lg text-sm shadow-neon transition-all disabled:opacity-50"
+              className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-accentPurple hover:brightness-110 font-medium text-white rounded-lg text-sm shadow-neon transition-all disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Save Question'}
             </button>
@@ -534,7 +534,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
       <div className="bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 border border-slate-700/50 shadow-glass flex flex-col h-[fit-content] sticky top-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-bold flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-accentTeal animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse" />
             Live Preview
           </h2>
           <span className="bg-slate-900 border border-slate-700 rounded-full px-3 py-1 text-xs text-slate-400">
@@ -609,5 +609,6 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ questionId, initialD
     </div>
   );
 };
+
 
 

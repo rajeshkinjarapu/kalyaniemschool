@@ -269,13 +269,13 @@ export const PaperBuilder: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-indigo-950 font-medium font-sans pb-16">
       {/* Top navbar */}
-      <nav className="border-b border-slate-200 bg-white/75 backdrop-blur-md sticky top-0 z-30 text-slate-850">
+      <nav className="border-b border-slate-200 bg-gradient-to-r from-indigo-100/90 via-purple-100/90 to-pink-100/90 backdrop-blur-md sticky top-0 z-30 text-slate-800">
         <div className="w-full mx-auto px-2 lg:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/question-bank" className="p-2 hover:bg-slate-100 border border-slate-200 hover:border-slate-350 rounded-xl transition-colors text-indigo-800 font-medium">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <span className="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-accentIndigo to-accentTeal">
+            <span className="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-teal-500">
               Assemble JEE Mains Paper
             </span>
           </div>
@@ -283,7 +283,7 @@ export const PaperBuilder: React.FC = () => {
           <button
             onClick={handleSavePaper}
             disabled={loading}
-            className="px-6 py-2 bg-gradient-to-r from-accentIndigo to-accentPurple hover:brightness-110 text-white rounded-xl text-xs font-bold shadow-md transition-all disabled:opacity-50"
+            className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-accentPurple hover:brightness-110 text-white rounded-xl text-xs font-bold shadow-md transition-all disabled:opacity-50"
           >
             {loading ? 'Compiling Exam Booklet...' : 'Save & Compile Paper'}
           </button>
@@ -302,7 +302,7 @@ export const PaperBuilder: React.FC = () => {
           {/* Metadata Settings Card (Left Column) */}
           <div className="bg-white/90 backdrop-blur-xl border-2 border-indigo-100 rounded-3xl p-6 shadow-xl shadow-indigo-200/50 h-fit space-y-4 shadow-sm">
             <h3 className="font-bold text-sm flex items-center gap-1.5 border-b border-slate-100 pb-3 text-slate-700">
-              <Settings className="w-4 h-4 text-accentIndigo" />
+              <Settings className="w-4 h-4 text-indigo-600" />
               Paper Information
             </h3>
 
@@ -313,7 +313,7 @@ export const PaperBuilder: React.FC = () => {
                 placeholder="e.g. JEE Mains Test Series - Test 1"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium font-sans"
+                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium font-sans"
               />
             </div>
 
@@ -324,7 +324,7 @@ export const PaperBuilder: React.FC = () => {
                   type="number"
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium text-center font-bold"
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium text-center font-bold"
                 />
               </div>
               <div>
@@ -333,7 +333,7 @@ export const PaperBuilder: React.FC = () => {
                   type="number"
                   value={totalMarks}
                   onChange={(e) => setTotalMarks(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium text-center font-bold"
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium text-center font-bold"
                 />
               </div>
             </div>
@@ -345,7 +345,7 @@ export const PaperBuilder: React.FC = () => {
                   type="date"
                   value={examDate}
                   onChange={(e) => setExamDate(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium font-sans"
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium font-sans"
                 />
               </div>
               <div>
@@ -355,7 +355,7 @@ export const PaperBuilder: React.FC = () => {
                   placeholder="SET A"
                   value={paperCode}
                   onChange={(e) => setPaperCode(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium text-center uppercase font-mono font-bold"
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium text-center uppercase font-mono font-bold"
                 />
               </div>
             </div>
@@ -367,7 +367,7 @@ export const PaperBuilder: React.FC = () => {
                 placeholder="e.g. CONFIDENTIAL / INSTITUTE NAME"
                 value={watermark}
                 onChange={(e) => setWatermark(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium uppercase font-sans font-semibold"
+                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium uppercase font-sans font-semibold"
               />
             </div>
 
@@ -378,7 +378,7 @@ export const PaperBuilder: React.FC = () => {
                 placeholder="e.g. 6th A"
                 value={className}
                 onChange={(e) => setClassName(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium font-sans"
+                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium font-sans"
               />
             </div>
 
@@ -389,7 +389,7 @@ export const PaperBuilder: React.FC = () => {
                 placeholder="e.g. SRI VENKATESWARA JY SCHOOL"
                 value={instituteName}
                 onChange={(e) => setInstituteName(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium font-sans uppercase font-bold"
+                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium font-sans uppercase font-bold"
               />
             </div>
 
@@ -400,7 +400,7 @@ export const PaperBuilder: React.FC = () => {
                 placeholder="e.g. (IIT-JEE/NEET Foundation - Olympiads)"
                 value={subHeader1}
                 onChange={(e) => setSubHeader1(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium font-sans"
+                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium font-sans"
               />
             </div>
 
@@ -411,7 +411,7 @@ export const PaperBuilder: React.FC = () => {
                 placeholder="e.g. SVL Paradise Campus, Narasannapeta"
                 value={subHeader2}
                 onChange={(e) => setSubHeader2(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium font-sans"
+                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium font-sans"
               />
             </div>
 
@@ -422,7 +422,7 @@ export const PaperBuilder: React.FC = () => {
                 placeholder="e.g. /uploads/logo.png"
                 value={logoUrl}
                 onChange={(e) => setLogoUrl(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium font-sans"
+                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium font-sans"
               />
             </div>
 
@@ -433,7 +433,7 @@ export const PaperBuilder: React.FC = () => {
                 value={instructions}
                 onChange={(e) => setInstructions(e.target.value)}
                 placeholder="Type paper instructions here..."
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accentIndigo text-indigo-950 font-medium font-sans"
+                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-indigo-600 text-indigo-950 font-medium font-sans"
               />
             </div>
 
@@ -446,7 +446,7 @@ export const PaperBuilder: React.FC = () => {
                   onClick={() => setMode('MANUAL')}
                   className={`py-2 rounded-lg text-xs font-bold transition-all ${
                     mode === 'MANUAL'
-                      ? 'bg-accentIndigo text-white shadow-sm'
+                      ? 'bg-indigo-600 text-white shadow-sm'
                       : 'text-indigo-700 font-medium hover:text-slate-700'
                   }`}
                 >
@@ -457,7 +457,7 @@ export const PaperBuilder: React.FC = () => {
                   onClick={() => setMode('AUTO')}
                   className={`py-2 rounded-lg text-xs font-bold transition-all ${
                     mode === 'AUTO'
-                      ? 'bg-accentTeal text-white shadow-sm'
+                      ? 'bg-teal-500 text-white shadow-sm'
                       : 'text-indigo-700 font-medium hover:text-slate-700'
                   }`}
                 >
@@ -473,7 +473,7 @@ export const PaperBuilder: React.FC = () => {
               /* AUTO BLUEPRINT COMPILATION PANEL */
               <div className="bg-white shadow-md border border-slate-200 rounded-3xl p-6 space-y-6">
                 <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                  <h3 className="font-bold text-base text-accentTeal flex items-center gap-1.5">
+                  <h3 className="font-bold text-base text-teal-500 flex items-center gap-1.5">
                     <Sparkles className="w-5 h-5 animate-pulse" />
                     Auto-Generate JEE Paper
                   </h3>
@@ -489,7 +489,7 @@ export const PaperBuilder: React.FC = () => {
                     <select
                       value={selectedTemplateId}
                       onChange={handleTemplateChange}
-                      className="w-full bg-white border border-indigo-200 shadow-sm rounded-xl p-3 text-xs focus:outline-none focus:border-accentTeal text-indigo-950 font-medium font-sans"
+                      className="w-full bg-white border border-indigo-200 shadow-sm rounded-xl p-3 text-xs focus:outline-none focus:border-teal-500 text-indigo-950 font-medium font-sans"
                     >
                       <option value="">-- Select A Saved Blueprint Blueprint --</option>
                       {templates.map((t) => (
@@ -511,7 +511,7 @@ export const PaperBuilder: React.FC = () => {
                         type="number"
                         value={physicsCount}
                         onChange={(e) => setPhysicsCount(parseInt(e.target.value) || 0)}
-                        className="w-full bg-transparent text-center font-bold text-lg text-indigo-950 font-medium mt-1 border-b border-slate-300 focus:outline-none focus:border-accentTeal"
+                        className="w-full bg-transparent text-center font-bold text-lg text-indigo-950 font-medium mt-1 border-b border-slate-300 focus:outline-none focus:border-teal-500"
                       />
                     </div>
 
@@ -521,7 +521,7 @@ export const PaperBuilder: React.FC = () => {
                         type="number"
                         value={chemistryCount}
                         onChange={(e) => setChemistryCount(parseInt(e.target.value) || 0)}
-                        className="w-full bg-transparent text-center font-bold text-lg text-indigo-950 font-medium mt-1 border-b border-slate-300 focus:outline-none focus:border-accentTeal"
+                        className="w-full bg-transparent text-center font-bold text-lg text-indigo-950 font-medium mt-1 border-b border-slate-300 focus:outline-none focus:border-teal-500"
                       />
                     </div>
 
@@ -531,7 +531,7 @@ export const PaperBuilder: React.FC = () => {
                         type="number"
                         value={mathCount}
                         onChange={(e) => setMathCount(parseInt(e.target.value) || 0)}
-                        className="w-full bg-transparent text-center font-bold text-lg text-indigo-950 font-medium mt-1 border-b border-slate-300 focus:outline-none focus:border-accentTeal"
+                        className="w-full bg-transparent text-center font-bold text-lg text-indigo-950 font-medium mt-1 border-b border-slate-300 focus:outline-none focus:border-teal-500"
                       />
                     </div>
                   </div>
@@ -547,7 +547,7 @@ export const PaperBuilder: React.FC = () => {
                 <div className="bg-white/90 backdrop-blur-xl border-2 border-indigo-100 rounded-3xl p-5 shadow-xl shadow-indigo-200/50 space-y-4">
                   <div className="flex justify-between items-center border-b border-slate-200 pb-2.5">
                     <h4 className="font-bold text-xs text-indigo-950 font-medium uppercase tracking-wider flex items-center gap-1">
-                      <FolderOpen className="w-4 h-4 text-accentIndigo" />
+                      <FolderOpen className="w-4 h-4 text-indigo-600" />
                       Browse Bank
                     </h4>
                     <select
@@ -567,7 +567,7 @@ export const PaperBuilder: React.FC = () => {
                       placeholder="Filter questions..."
                       value={bankSearch}
                       onChange={(e) => setBankSearch(e.target.value)}
-                      className="w-full bg-white border border-indigo-200 shadow-sm rounded-lg p-2 text-[11px] text-indigo-950 font-medium focus:outline-none focus:border-accentIndigo font-sans"
+                      className="w-full bg-white border border-indigo-200 shadow-sm rounded-lg p-2 text-[11px] text-indigo-950 font-medium focus:outline-none focus:border-indigo-600 font-sans"
                     />
                     <button type="submit" className="p-2 bg-indigo-600 text-white rounded-lg text-xs hover:bg-indigo-700 shadow-md transition-colors">
                       <Search className="w-3.5 h-3.5" />
@@ -597,7 +597,7 @@ export const PaperBuilder: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => handleAddQuestionToSection(q)}
-                              className="px-2 py-0.5 bg-accentIndigo hover:bg-indigo-600 rounded text-[10px] font-bold text-white transition-all flex items-center gap-0.5"
+                              className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-600 rounded text-[10px] font-bold text-white transition-all flex items-center gap-0.5"
                             >
                               <Plus className="w-3 h-3" /> Add
                             </button>
@@ -612,7 +612,7 @@ export const PaperBuilder: React.FC = () => {
                 <div className="bg-white/90 backdrop-blur-xl border-2 border-indigo-100 rounded-3xl p-5 shadow-xl shadow-indigo-200/50 space-y-4">
                   <div className="flex justify-between items-center border-b border-slate-200 pb-2.5">
                     <h4 className="font-bold text-xs text-indigo-950 font-medium uppercase tracking-wider flex items-center gap-1">
-                      <ListOrdered className="w-4 h-4 text-accentTeal" />
+                      <ListOrdered className="w-4 h-4 text-teal-500" />
                       Paper Layout
                     </h4>
                     <button
@@ -633,7 +633,7 @@ export const PaperBuilder: React.FC = () => {
                         onClick={() => setActiveSectionId(sec.id)}
                         className={`px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all flex items-center gap-1 border ${
                           activeSectionId === sec.id
-                            ? 'bg-accentIndigo border-accentIndigo text-white'
+                            ? 'bg-indigo-600 border-indigo-600 text-white'
                             : 'bg-white border-indigo-200 shadow-sm hover:border-indigo-400 text-indigo-700 font-semibold'
                         }`}
                       >
@@ -724,6 +724,8 @@ export const PaperBuilder: React.FC = () => {
     </div>
   );
 };
+
+
 
 
 
