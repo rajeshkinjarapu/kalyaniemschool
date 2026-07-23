@@ -232,18 +232,37 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
     const el = document.getElementById(`progress-card-${index}`);
     if (!el) return toast.error('Could not find card element');
     
+    // Check if we can share natively
+    let canShareNatively = false;
+    try {
+      if (navigator.share && navigator.canShare) {
+        canShareNatively = navigator.canShare({ files: [new File([''], 't.pdf', { type: 'application/pdf' })] });
+      }
+    } catch (e) {}
+
+    let newWindow: Window | null = null;
+    if (!canShareNatively) {
+      newWindow = window.open('', '_blank');
+      if (!newWindow) {
+         toast.error("Popup blocked! Please allow popups for this site.");
+         return;
+      }
+    }
+    
     const toastId = toast.loading(`Preparing PDF for WhatsApp...`);
     let pdf;
     try {
       pdf = await generatePDFForElement(el, studentName);
     } catch (e) {
       console.error('PDF generation failed:', e);
+      if (newWindow) newWindow.close();
       return toast.error('Failed to generate PDF.', { id: toastId });
     }
+    
     try {
       const blob = pdf.output('blob');
       const file = new File([blob], `${studentName}_ProgressCard.pdf`, { type: 'application/pdf' });
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      if (canShareNatively) {
         toast.dismiss(toastId);
         await navigator.share({
           files: [file],
@@ -253,13 +272,17 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
       } else {
         toast.success('Downloading PDF...', { id: toastId });
         pdf.save(`${studentName}_ProgressCard.pdf`);
-        window.open(getWaUrl(mobile), '_blank');
+        if (newWindow) newWindow.location.href = getWaUrl(mobile);
       }
     } catch (e: any) {
       console.error('WhatsApp share error:', e);
-      if (e.name === 'AbortError') { toast.dismiss(toastId); return; }
+      if (e.name === 'AbortError') { 
+         toast.dismiss(toastId); 
+         if (newWindow) newWindow.close();
+         return; 
+      }
       pdf.save(`${studentName}_ProgressCard.pdf`);
-      window.open(getWaUrl(mobile), '_blank');
+      if (newWindow) newWindow.location.href = getWaUrl(mobile);
     }
   };
 
