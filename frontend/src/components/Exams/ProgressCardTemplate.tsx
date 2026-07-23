@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, User, Calendar, Phone, BookOpen, Layers, MapPin } from 'lucide-react';
+import { Award, User, MapPin } from 'lucide-react';
 
 interface ProgressCardTemplateProps {
   data: any;
@@ -26,194 +26,226 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({ data
 
   // Determine Overall Performance
   let performanceRating = "Needs Improvement";
-  let performanceColor = "text-red-600 border-red-600 bg-red-50";
-  if (percentNumber >= 90) { performanceRating = "Outstanding"; performanceColor = "text-emerald-600 border-emerald-600 bg-emerald-50"; }
-  else if (percentNumber >= 75) { performanceRating = "Excellent"; performanceColor = "text-green-600 border-green-600 bg-green-50"; }
-  else if (percentNumber >= 60) { performanceRating = "Very Good"; performanceColor = "text-blue-600 border-blue-600 bg-blue-50"; }
-  else if (percentNumber >= 40) { performanceRating = "Good"; performanceColor = "text-amber-600 border-amber-600 bg-amber-50"; }
+  let performanceColor = "text-rose-600 border-rose-300 bg-rose-50";
+  let progressColor = "from-rose-400 to-rose-600";
+  
+  if (percentNumber >= 90) { 
+    performanceRating = "Outstanding"; 
+    performanceColor = "text-emerald-700 border-emerald-300 bg-emerald-50"; 
+    progressColor = "from-emerald-400 to-emerald-600";
+  } else if (percentNumber >= 75) { 
+    performanceRating = "Excellent"; 
+    performanceColor = "text-blue-700 border-blue-300 bg-blue-50"; 
+    progressColor = "from-blue-400 to-blue-600";
+  } else if (percentNumber >= 60) { 
+    performanceRating = "Very Good"; 
+    performanceColor = "text-indigo-700 border-indigo-300 bg-indigo-50"; 
+    progressColor = "from-indigo-400 to-indigo-600";
+  } else if (percentNumber >= 40) { 
+    performanceRating = "Good"; 
+    performanceColor = "text-amber-700 border-amber-300 bg-amber-50"; 
+    progressColor = "from-amber-400 to-amber-600";
+  }
 
   return (
-    <div className="progress-card-wrapper w-full max-w-[210mm] print:w-[210mm] print:h-[297mm] mx-auto bg-white border border-gray-300 shadow-xl relative box-border flex flex-col overflow-hidden" style={{ pageBreakInside: 'avoid', pageBreakAfter: 'always' }}>
-      <div className="w-full h-full relative flex flex-col bg-white" style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}>
+    <div className="progress-card-wrapper w-full max-w-[210mm] print:w-[210mm] print:h-[297mm] mx-auto bg-white relative box-border flex flex-col overflow-hidden shadow-2xl" style={{ pageBreakInside: 'avoid', pageBreakAfter: 'always', fontFamily: '"Inter", "Helvetica Neue", Helvetica, sans-serif' }}>
+      
+      {/* Decorative Background Pattern */}
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#4f46e5 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+      
+      <div className="w-full h-full relative flex flex-col bg-transparent z-10 border-[8px] border-indigo-50/50">
         
-        {/* Formal Colorful Header */}
-        <div className="border-b-[4px] border-amber-400 pb-4 pt-6 px-4 sm:px-10 relative flex-shrink-0 flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-4 sm:gap-6 bg-gradient-to-r from-indigo-900 via-indigo-800 to-indigo-900 text-white">
-          {/* Logo */}
-          <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 flex items-center justify-center">
-            {logoUrl ? (
-              <img src={logoUrl} crossOrigin="anonymous" alt="Logo" className="max-w-full max-h-full object-contain" style={{ filter: 'drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.9))' }} />
-            ) : (
-              <div className="text-white font-bold text-xl text-center leading-none flex items-center justify-center">
-                LOGO
+        {/* Beautiful Gradient Header */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-indigo-900 via-violet-800 to-indigo-900 text-white p-6 sm:p-8 flex items-center justify-between shadow-md">
+          {/* Decorative shapes */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-10 w-40 h-40 bg-black/20 rounded-full blur-2xl translate-y-1/2" />
+          
+          <div className="flex w-full items-center gap-6 relative z-10">
+            {/* Logo in a crisp circle */}
+            <div className="w-24 h-24 shrink-0 bg-white p-2 rounded-2xl shadow-lg border-2 border-white/20 flex items-center justify-center transform -rotate-2">
+              {logoUrl ? (
+                <img src={logoUrl} crossOrigin="anonymous" alt="Logo" className="w-full h-full object-contain" />
+              ) : (
+                <div className="text-indigo-900 font-black text-xl">LOGO</div>
+              )}
+            </div>
+            
+            {/* School Info */}
+            <div className="flex-1 text-center pr-10">
+              <h1 className="text-[24px] sm:text-[28px] font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-white to-indigo-100 drop-shadow-sm uppercase mb-1">
+                SRI VENKATESWARA JY SCHOOL
+              </h1>
+              <p className="text-[12px] sm:text-[14px] font-bold tracking-[0.15em] text-amber-300 mb-2 uppercase drop-shadow-sm">
+                (IIT-JEE / NEET Foundation • Olympiads)
+              </p>
+              <div className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold bg-black/20 px-4 py-1.5 rounded-full text-indigo-100 backdrop-blur-sm border border-white/10 mb-3">
+                <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta
               </div>
-            )}
-          </div>
-          
-          <div className="flex-grow text-center min-w-0">
-            <h1 className="text-[18px] sm:text-[24px] md:text-[26px] lg:text-[28px] font-black tracking-wide text-white mb-1 drop-shadow-md leading-tight whitespace-nowrap overflow-hidden text-ellipsis" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
-              SRI VENKATESWARA JY SCHOOL
-            </h1>
-            <p className="text-[11px] sm:text-[13px] font-bold tracking-[0.05em] sm:tracking-[0.1em] text-amber-300 mb-2 uppercase drop-shadow-sm">
-              (IIT-JEE / NEET Foundation • Olympiads)
-            </p>
-            <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-medium text-indigo-100 mb-3">
-              <MapPin className="w-3.5 h-3.5 text-amber-400" />
-              Opp. Hero Showroom, SVL Paradise Campus, Narasannapeta
-            </div>
-            <div className="inline-block border border-indigo-300 bg-indigo-50/20 text-white px-6 py-1.5 font-bold text-[14px] tracking-wider uppercase rounded-full shadow-sm">
-              {exam?.name || 'EXAMINATION RESULT CARD'}
             </div>
           </div>
-          
         </div>
 
-        {/* Content Area */}
-        <div className="flex-grow p-10 flex flex-col gap-6 bg-white z-10">
+        {/* Exam Ribbon */}
+        <div className="bg-amber-400 text-indigo-900 font-black text-center py-2 text-sm tracking-[0.2em] uppercase shadow-sm">
+          {exam?.name || 'EXAMINATION RESULT CARD'}
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex-grow p-8 sm:p-10 flex flex-col gap-8 bg-white/80 backdrop-blur-sm">
           
-          {/* Professional Student Details Table Row */}
-          <div className="flex flex-col sm:flex-row gap-6 items-start">
-            <div className="flex-grow w-full">
-              <table className="w-full text-[12px] sm:text-sm text-left border-collapse">
-                <tbody>
+          {/* Student Profile Card */}
+          <div className="flex flex-col sm:flex-row gap-8 items-stretch">
+            
+            {/* Photo Box */}
+            <div className="w-[120px] shrink-0 flex flex-col justify-start pt-2">
+              <div className="w-full aspect-[3/4] bg-white rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.08)] border-4 border-white overflow-hidden flex items-center justify-center relative">
+                {data.photo ? (
+                  <img src={resolveUrl(data.photo)} alt="Student" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                    <User className="w-12 h-12 text-slate-300" />
+                  </div>
+                )}
+                <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent"></div>
+              </div>
+            </div>
+
+            {/* Details Table */}
+            <div className="flex-grow bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-slate-100 overflow-hidden">
+              <table className="w-full text-sm text-left h-full">
+                <tbody className="divide-y divide-slate-100">
                   <tr>
-                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 w-1/3 uppercase text-indigo-900 tracking-wider">Student Name</td>
-                    <td className="border border-gray-300 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-900">{data.studentName}</td>
+                    <td className="bg-slate-50/50 font-bold py-3 px-5 w-1/3 text-slate-500 uppercase tracking-wider text-xs">Student Name</td>
+                    <td className="font-black py-3 px-5 text-indigo-950 text-base">{data.studentName}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-indigo-900 tracking-wider">Student ID</td>
-                    <td className="border border-gray-300 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-800">{data.rollNo}</td>
+                    <td className="bg-slate-50/50 font-bold py-3 px-5 uppercase tracking-wider text-xs text-slate-500">Student ID</td>
+                    <td className="font-bold py-3 px-5 text-slate-700">{data.rollNo}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-indigo-900 tracking-wider">Class & Section</td>
-                    <td className="border border-gray-300 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-800">{data.className} {data.section && `- ${data.section}`}</td>
+                    <td className="bg-slate-50/50 font-bold py-3 px-5 uppercase tracking-wider text-xs text-slate-500">Class & Section</td>
+                    <td className="font-bold py-3 px-5 text-slate-700">{data.className} {data.section && `- ${data.section}`}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-indigo-900 tracking-wider">Exam Name</td>
-                    <td className="border border-gray-300 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-800">{exam?.name}</td>
+                    <td className="bg-slate-50/50 font-bold py-3 px-5 uppercase tracking-wider text-xs text-slate-500">WhatsApp</td>
+                    <td className="font-bold py-3 px-5 text-slate-700">{data.mobile || '-'}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-indigo-900 tracking-wider">WhatsApp Number</td>
-                    <td className="border border-gray-300 font-bold py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-gray-800">{data.mobile || '-'}</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-300 bg-indigo-50 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-indigo-900 tracking-wider">Class Rank</td>
-                    <td className="border border-gray-300 font-black py-1.5 sm:py-2 px-2 sm:px-3 uppercase text-amber-600 bg-amber-50/50 text-[14px]">#{data.rank || '-'}</td>
+                    <td className="bg-indigo-50/50 font-bold py-3 px-5 uppercase tracking-wider text-xs text-indigo-600">Class Rank</td>
+                    <td className="font-black py-3 px-5 text-amber-600 bg-amber-50/30 text-lg flex items-center gap-2">
+                      <Award className="w-5 h-5 text-amber-500" /> #{data.rank || '-'}
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Academic Performance Table */}
+          <div className="mt-2">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-8 w-1.5 bg-indigo-600 rounded-full"></div>
+              <h3 className="font-black text-indigo-950 text-lg uppercase tracking-wider">Academic Performance</h3>
+            </div>
             
-            {/* Professional Passport Size Photo */}
-            <div className="w-[120px] h-[150px] flex-shrink-0 border-2 border-gray-400 p-1 bg-white shadow-sm mx-auto sm:mx-0">
-              <div className="w-full h-full bg-gray-100 overflow-hidden flex items-center justify-center">
-                {data.photo ? (
-                  <img src={resolveUrl(data.photo)} alt="Student" className="w-full h-full object-cover" />
-                ) : (
-                  <User className="w-12 h-12 text-gray-300" />
-                )}
-              </div>
+            <div className="rounded-2xl overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.06)] border border-slate-100">
+              <table className="w-full text-sm border-collapse bg-white">
+                <thead>
+                  <tr className="bg-indigo-900 text-white">
+                    <th className="py-3 px-4 font-bold uppercase tracking-wider text-xs text-center w-12 text-indigo-200">#</th>
+                    <th className="py-3 px-4 font-bold uppercase tracking-wider text-xs text-left">Subject</th>
+                    <th className="py-3 px-4 font-bold uppercase tracking-wider text-xs text-center">Max Marks</th>
+                    <th className="py-3 px-4 font-bold uppercase tracking-wider text-xs text-center">Obtained</th>
+                    <th className="py-3 px-4 font-bold uppercase tracking-wider text-xs text-center">Grade %</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {data.marks.map((m: any, idx: number) => (
+                    <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="py-3 px-4 text-center font-bold text-slate-400 text-xs">{idx + 1}</td>
+                      <td className="py-3 px-4 font-black text-slate-700">{m.subject}</td>
+                      <td className="py-3 px-4 text-center font-semibold text-slate-500">{m.maxMarks || 100}</td>
+                      <td className="py-3 px-4 text-center font-black text-indigo-600 text-base">{m.obtained}</td>
+                      <td className="py-3 px-4 text-center">
+                        <span className="inline-block px-2 py-1 bg-slate-100 rounded text-slate-700 font-bold text-xs">
+                          {((m.obtained / (m.maxMarks || 100)) * 100).toFixed(1)}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  
+                  {/* Grand Total Row */}
+                  <tr className="bg-gradient-to-r from-amber-50 to-orange-50 border-t-2 border-amber-200">
+                    <td colSpan={2} className="py-4 px-4 text-left font-black uppercase text-amber-900 tracking-widest text-sm">Grand Total</td>
+                    <td className="py-4 px-4 text-center font-black text-amber-900 text-sm">{totalMaxMarks}</td>
+                    <td className="py-4 px-4 text-center font-black text-indigo-700 text-xl">{totalObtained}</td>
+                    <td className="py-4 px-4 text-center font-black text-emerald-600 text-lg">{percentage}%</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
-          {/* Academic Performance Section */}
-          <div className="mt-2">
-            <h3 className="font-bold text-[#1e2a5c] text-[15px] tracking-widest uppercase border-b-2 border-[#1e2a5c] inline-block mb-3">Academic Performance Record</h3>
+          {/* Performance Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-2">
             
-            <table className="w-full text-[11px] sm:text-[13px] border-collapse">
-              <thead>
-                <tr className="bg-gradient-to-r from-indigo-900 to-[#1e2a5c]">
-                  <th className="border border-gray-400 py-1.5 sm:py-2 px-1 sm:px-2 uppercase text-center w-12 text-white print:text-black">S.No</th>
-                  <th className="border border-gray-400 py-1.5 sm:py-2 px-2 sm:px-4 uppercase text-left text-white print:text-black">Subject</th>
-                  <th className="border border-gray-400 py-1.5 sm:py-2 px-2 sm:px-4 uppercase text-center text-white print:text-black">Max Marks</th>
-                  <th className="border border-gray-400 py-1.5 sm:py-2 px-2 sm:px-4 uppercase text-center text-white print:text-black">Obtained</th>
-                  <th className="border border-gray-400 py-1.5 sm:py-2 px-2 sm:px-4 uppercase text-center text-white print:text-black">Percentage</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white">
-                {data.marks.map((m: any, idx: number) => {
-                  return (
-                    <tr key={idx}>
-                      <td className="border border-gray-300 py-1 sm:py-2 px-1 sm:px-2 text-center font-bold text-gray-500 bg-gray-50/50">{idx + 1}</td>
-                      <td className="border border-gray-300 py-1 sm:py-2 px-2 sm:px-4 font-black text-indigo-900 uppercase">{m.subject}</td>
-                      <td className="border border-gray-300 py-1 sm:py-2 px-2 sm:px-4 text-center font-bold text-gray-700">{m.maxMarks || 100}</td>
-                      <td className="border border-gray-300 py-1 sm:py-2 px-2 sm:px-4 text-center font-black text-blue-600 text-[13px] sm:text-[15px] bg-blue-50/30">{m.obtained}</td>
-                      <td className="border border-gray-300 py-1 sm:py-2 px-2 sm:px-4 text-center font-black text-emerald-600 text-[12px] sm:text-[13px] bg-emerald-50/30">{((m.obtained / (m.maxMarks || 100)) * 100).toFixed(1)}%</td>
-                    </tr>
-                  );
-                })}
-                
-                {/* Grand Total Row */}
-                <tr className="bg-gradient-to-r from-amber-50 to-amber-100 border-t-4 border-t-amber-400 shadow-[0_-2px_4px_rgba(0,0,0,0.05)]">
-                  <td colSpan={2} className="border border-amber-200 py-2 sm:py-3 px-2 sm:px-4 text-center font-black uppercase text-indigo-900 tracking-wider text-[13px] sm:text-[15px]">Grand Total</td>
-                  <td className="border border-amber-200 py-2 sm:py-3 px-2 sm:px-4 text-center font-black text-indigo-900 text-[13px] sm:text-[15px]">{totalMaxMarks}</td>
-                  <td className="border border-amber-200 py-2 sm:py-3 px-2 sm:px-4 text-center font-black text-blue-700 text-[15px] sm:text-[18px]">{totalObtained}</td>
-                  <td className="border border-amber-200 py-2 sm:py-3 px-2 sm:px-4 text-center font-black text-emerald-600 text-[15px] sm:text-[18px] drop-shadow-sm">{percentage}%</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          {/* Performance Summary Details */}
-          <div className="flex flex-col sm:flex-row gap-6 mt-4">
-            <div className="w-full sm:w-1/2 border border-gray-400 p-4">
-               <span className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2">Overall Performance Grade</span>
-               <div className={`inline-block border-2 px-6 py-2 ${performanceColor} font-black uppercase tracking-wider text-sm`}>
+            <div className="bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col justify-center items-center text-center">
+               <span className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Overall Grade</span>
+               <div className={`px-6 py-2 rounded-xl font-black uppercase tracking-widest text-sm border-2 shadow-sm ${performanceColor}`}>
                  {performanceRating}
                </div>
             </div>
             
-            <div className="w-full sm:w-1/2 border border-gray-400 p-4 flex flex-col justify-center">
-              <div className="flex justify-between text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1.5">
-                <span>0</span>
-                <span>Score Graph</span>
-                <span>{totalMaxMarks}</span>
+            <div className="bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col justify-center">
+              <div className="flex justify-between items-end mb-2">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Score Graph</span>
+                <span className="text-sm font-black text-indigo-900">{totalObtained} / {totalMaxMarks}</span>
               </div>
-              <div className="h-5 w-full bg-gray-200 rounded-full shadow-inner overflow-hidden border border-gray-300 relative">
+              <div className="h-6 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner p-1">
                 <div 
-                  className="h-full bg-gradient-to-r from-[#1e2a5c] to-indigo-500" 
-                  style={{ width: `${percentNumber}%` }}
-                ></div>
-                <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white drop-shadow-md">
-                  {percentage}%
+                  className={`h-full rounded-full bg-gradient-to-r ${progressColor} flex items-center justify-end px-2 shadow-sm`}
+                  style={{ width: `${Math.max(15, percentNumber)}%` }}
+                >
+                  <span className="text-[10px] font-black text-white drop-shadow-sm">{percentage}%</span>
                 </div>
               </div>
             </div>
+            
           </div>
           
         </div>
 
-        {/* Footer Area with Signatures */}
-        <div className="mt-auto pt-4 pb-6 px-4 sm:px-8 border-t-[3px] border-amber-400 bg-gray-50 flex flex-col sm:flex-row justify-between items-center sm:items-end gap-6 sm:gap-0">
+        {/* Elegant Footer with Signatures */}
+        <div className="mt-auto bg-slate-50/80 border-t border-slate-200 p-8 pt-10 flex justify-between items-end">
           
-          <div className="flex gap-4 sm:gap-16 w-full sm:w-auto justify-between sm:justify-start">
-            {/* Teacher Sign */}
-            <div className="text-center w-32 sm:w-48">
-              <div className="h-24 flex items-end justify-center mb-2 relative">
-                {teacherSignatureUrl ? (
-                  <img src={teacherSignatureUrl} crossOrigin="anonymous" alt="Teacher Signature" className="max-h-20 object-contain mix-blend-multiply" />
-                ) : (
-                  <div className="text-blue-800/60 font-signature text-[22px] transform -rotate-12" style={{ fontFamily: '"Brush Script MT", cursive' }}>Signature</div>
-                )}
-              </div>
-              <div className="border-t border-gray-800 pt-1">
-                <p className="text-[12px] font-bold text-gray-800 uppercase tracking-widest">Class Teacher</p>
-              </div>
+          <div className="text-center w-40">
+            <div className="h-20 flex items-end justify-center mb-3 relative">
+              {teacherSignatureUrl ? (
+                <img src={teacherSignatureUrl} crossOrigin="anonymous" alt="Teacher Signature" className="max-h-16 object-contain mix-blend-multiply drop-shadow-sm" />
+              ) : (
+                <div className="text-blue-800/40 font-signature text-[24px] transform -rotate-12 italic" style={{ fontFamily: '"Brush Script MT", cursive' }}>Signature</div>
+              )}
             </div>
-            
-            <div className="text-center w-48">
-              <div className="h-24 flex items-end justify-center mb-2 relative">
-                {principalSignatureUrl ? (
-                  <img src={principalSignatureUrl} crossOrigin="anonymous" alt="Principal Signature" className="max-h-20 object-contain mix-blend-multiply" />
-                ) : (
-                  <div className="text-green-800/60 font-signature text-[22px] transform -rotate-12" style={{ fontFamily: '"Brush Script MT", cursive' }}>Signature</div>
-                )}
-              </div>
-              <div className="border-t border-gray-800 pt-1">
-                <p className="text-[12px] font-bold text-gray-800 uppercase tracking-widest">Principal</p>
-              </div>
+            <div className="border-t-2 border-slate-300 pt-2">
+              <p className="text-xs font-bold text-slate-600 uppercase tracking-widest">Class Teacher</p>
             </div>
-            
           </div>
+          
+          <div className="text-center w-40">
+            <div className="h-20 flex items-end justify-center mb-3 relative">
+              {principalSignatureUrl ? (
+                <img src={principalSignatureUrl} crossOrigin="anonymous" alt="Principal Signature" className="max-h-16 object-contain mix-blend-multiply drop-shadow-sm" />
+              ) : (
+                <div className="text-indigo-800/40 font-signature text-[24px] transform -rotate-12 italic" style={{ fontFamily: '"Brush Script MT", cursive' }}>Signature</div>
+              )}
+            </div>
+            <div className="border-t-2 border-slate-300 pt-2">
+              <p className="text-xs font-bold text-slate-600 uppercase tracking-widest">Principal</p>
+            </div>
+          </div>
+          
         </div>
         
       </div>

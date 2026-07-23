@@ -523,9 +523,13 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                     <th className="py-3 px-4 w-16">Rank</th>
                     <th className="py-3 px-4">Student Name</th>
                     {!isTeacher && <th className="py-3 px-4 hidden md:table-cell">Student ID</th>}
-                    <th className="py-3 px-4 text-center hidden md:table-cell">Mat</th>
-                    <th className="py-3 px-4 text-center hidden md:table-cell">Phy</th>
-                    <th className="py-3 px-4 text-center hidden md:table-cell">Che</th>
+                    {!isTeacher && (
+                      <>
+                        <th className="py-3 px-4 text-center hidden md:table-cell">Mat</th>
+                        <th className="py-3 px-4 text-center hidden md:table-cell">Phy</th>
+                        <th className="py-3 px-4 text-center hidden md:table-cell">Che</th>
+                      </>
+                    )}
                     <th className="py-3 px-4 text-center">Score</th>
                     <th className="py-3 px-4 text-right">Action</th>
                   </tr>
@@ -540,9 +544,13 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                         <span className="whitespace-normal break-words">{data.studentName}</span>
                       </td>
                       {!isTeacher && <td className="py-3 px-4 text-gray-600 font-medium hidden md:table-cell">{data.rollNo || '-'}</td>}
-                      <td className="py-3 px-4 text-center font-semibold text-gray-700 hidden md:table-cell">{data.marks?.find((m: any) => m.subject?.toLowerCase().startsWith('mat'))?.obtained ?? '-'}</td>
-                      <td className="py-3 px-4 text-center font-semibold text-gray-700 hidden md:table-cell">{data.marks?.find((m: any) => m.subject?.toLowerCase().startsWith('phy'))?.obtained ?? '-'}</td>
-                      <td className="py-3 px-4 text-center font-semibold text-gray-700 hidden md:table-cell">{data.marks?.find((m: any) => m.subject?.toLowerCase().startsWith('che'))?.obtained ?? '-'}</td>
+                      {!isTeacher && (
+                        <>
+                          <td className="py-3 px-4 text-center font-semibold text-gray-700 hidden md:table-cell">{data.marks?.find((m: any) => m.subject?.toLowerCase().startsWith('mat'))?.obtained ?? '-'}</td>
+                          <td className="py-3 px-4 text-center font-semibold text-gray-700 hidden md:table-cell">{data.marks?.find((m: any) => m.subject?.toLowerCase().startsWith('phy'))?.obtained ?? '-'}</td>
+                          <td className="py-3 px-4 text-center font-semibold text-gray-700 hidden md:table-cell">{data.marks?.find((m: any) => m.subject?.toLowerCase().startsWith('che'))?.obtained ?? '-'}</td>
+                        </>
+                      )}
                       <td className="py-3 px-4 text-center font-bold text-emerald-600">{data.total}</td>
                       <td className="py-3 px-4 flex justify-end gap-1.5">
                         {isSuperAdmin ? (

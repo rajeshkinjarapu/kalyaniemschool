@@ -200,18 +200,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             className="flex flex-1 items-center gap-3 min-w-0 group cursor-pointer"
             title="Update Profile"
           >
-            {user.photoUrl ? (
+            {user.photoUrl && (
               <div className="w-9 h-9 rounded-xl shrink-0 overflow-hidden border border-white/20 group-hover:border-indigo-400 transition-colors">
                 <img src={getPhotoUrl(user.photoUrl)} alt={user.name} className="w-full h-full object-cover" />
               </div>
-            ) : (
-              <div className="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center text-white font-black text-sm group-hover:shadow-[0_0_12px_rgba(99,102,241,0.8)] transition-all"
-                style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 2px 8px rgba(99,102,241,.4)' }}>
-                {user.name?.charAt(0).toUpperCase()}
-              </div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-white truncate leading-tight group-hover:text-indigo-200 transition-colors">{user.name}</p>
+              <p className="text-sm font-bold text-white break-words leading-tight group-hover:text-indigo-200 transition-colors">{user.name}</p>
               <p className="text-[10px] font-semibold" style={{ color: '#818cf8' }}>{roleLabels[user.role]}</p>
             </div>
           </NavLink>
