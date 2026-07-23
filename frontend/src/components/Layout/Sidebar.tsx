@@ -95,11 +95,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       { to: '/teacher-attendance', label: 'Staff Attendance', icon: UserCheck },
       { to: '/homework',         label: 'Homework',          icon: BookOpen  },
       ...(role === 'SUPER_ADMIN' ? [{ to: '/office-tools', label: 'Office Tools', icon: Briefcase }] : []),
-      { to: '/question-bank', label: 'Question Bank', icon: Database },
+      ...(role === 'SUPER_ADMIN' ? [{ to: '/question-bank', label: 'Question Bank', icon: Database }] : []),
+      
       { to: '/transport',     label: 'Transport',     icon: Bus },
       { to: '/settings',      label: 'Settings',      icon: Settings      },
     ];
-    if (role === 'TEACHER') return [...base, { to: '/question-bank', label: 'Question Bank', icon: Database },
+    if (role === 'TEACHER') return [...base, 
       { to: '/teachers/students', label: 'Total Students', icon: Users         },
       { to: '/attendance',        label: 'Attendance',     icon: CalendarCheck },
       { to: '/teacher-attendance',label: 'My Attendance',  icon: UserCheck     },
