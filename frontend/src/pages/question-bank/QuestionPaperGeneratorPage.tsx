@@ -322,8 +322,7 @@ export const QuestionPaperGeneratorPage = () => {
           // Wrap trig functions with angles like tan 90^\circ
           line = line.replace(/\b(sin|cos|tan|sec|csc|cot)\s+([0-9]+[\^\_\\][a-zA-Z0-9{}]+)/gi, '$$$1 $2$$');
           
-          // Wrap standalone math symbols like \sqrt{3}/2, \frac{1}{2}, x^2, \theta
-          line = line.replace(/(?<!\$)([0-9a-zA-Z]*[\^\_\\][a-zA-Z0-9{}]+(?:\/[0-9a-zA-Z]+)?)(?!\$)/g, '$$$&$$');
+          // (Removed dangerous auto-wrap for generic symbols that corrupts valid LaTeX like \subset)
           
           // For options that look purely mathematical (e.g. "1/2", "0", "1"), optionally wrap them too
           line = line.replace(/^(\([A-D]\))\s+([\d\.\-\+\*\/]+)$/g, '$1 $$$2$$');

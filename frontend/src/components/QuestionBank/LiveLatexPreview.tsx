@@ -41,10 +41,42 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
   onImageUpdate,
   onImageDelete
 }) => {
+  // Helper to balance braces in math strings so KaTeX doesn't crash on bad AI output
+  const balanceMath = (math: string) => {
+    let m = math.trim();
+    if (m.endsWith('\\')) m = m.slice(0, -1);
+    
+    let unescapedOpen = 0, unescapedClose = 0;
+    let escapedOpen = 0, escapedClose = 0;
+    
+    for (let i = 0; i < m.length; i++) {
+       if (m[i] === '\\') {
+          if (m[i+1] === '{') escapedOpen++;
+          else if (m[i+1] === '}') escapedClose++;
+          i++;
+       } else if (m[i] === '{') unescapedOpen++;
+       else if (m[i] === '}') unescapedClose++;
+    }
+    
+    if (escapedOpen > escapedClose) m = m + '\\}'.repeat(escapedOpen - escapedClose);
+    else if (escapedClose > escapedOpen) m = '\\{'.repeat(escapedClose - escapedOpen) + m;
+    
+    if (unescapedOpen > unescapedClose) m = m + '}'.repeat(unescapedOpen - unescapedClose);
+    else if (unescapedClose > unescapedOpen) m = '{'.repeat(unescapedClose - unescapedOpen) + m;
+    
+    return m;
+  };
+
   const renderLatex = (text: string) => {
     try {
+      // Fix AI often outputting \\) instead of \)
+      let fixedText = text.replace(/\\\\\)/g, '\\)');
+      fixedText = fixedText.replace(/\\\\\(/g, '\\(');
+      fixedText = fixedText.replace(/\\\\\]/g, '\\]');
+      fixedText = fixedText.replace(/\\\\\[/g, '\\[');
+
       // We removed the [IMG:id] replacement because images are now floating
-      let withImages = text.replace(/\[IMG:([a-z0-9]+)\]/g, '');
+      let withImages = fixedText.replace(/\[IMG:([a-z0-9]+)\]/g, '');
 
       let normalized = withImages.replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$');
       normalized = normalized.replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$');
@@ -52,14 +84,14 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
       const parts = normalized.split(/(\$\$[\s\S]*?\$\$)/g);
       return parts.map(part => {
         if (part.startsWith('$$') && part.endsWith('$$')) {
-          const math = part.slice(2, -2);
+          const math = balanceMath(part.slice(2, -2));
           return katex.renderToString(math, { displayMode: true, throwOnError: false });
         }
         
         const inlineParts = part.split(/(\$[\s\S]*?\$)/g);
         return inlineParts.map(inlinePart => {
           if (inlinePart.startsWith('$') && inlinePart.endsWith('$')) {
-            const math = inlinePart.slice(1, -1);
+            const math = balanceMath(inlinePart.slice(1, -1));
             return katex.renderToString(math, { displayMode: false, throwOnError: false });
           }
           return inlinePart.replace(/\n/g, '<br/>');
