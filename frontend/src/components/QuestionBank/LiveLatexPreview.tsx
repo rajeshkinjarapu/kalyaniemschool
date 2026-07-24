@@ -76,10 +76,25 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
             </div>
           )}
           {!hasOptions ? (
-            <div 
-              className="mb-2 break-inside-avoid text-[11pt]"
-              dangerouslySetInnerHTML={{ __html: renderLatex(block.replace(/^(\d+)\.\s*/, '<strong>$1.</strong> &nbsp;&nbsp;')) }} 
-            />
+            (() => {
+              const qNumMatch2 = block.match(/^(\d+)\.\s*/);
+              if (qNumMatch2) {
+                const num = qNumMatch2[1];
+                const restText = block.substring(qNumMatch2[0].length);
+                return (
+                  <div className="mb-2 break-inside-avoid text-[11pt] flex" style={{ gap: '0.4em' }}>
+                    <strong className="flex-shrink-0">{num}.</strong>
+                    <div dangerouslySetInnerHTML={{ __html: renderLatex(restText) }} />
+                  </div>
+                );
+              }
+              return (
+                <div 
+                  className="mb-2 break-inside-avoid text-[11pt]"
+                  dangerouslySetInnerHTML={{ __html: renderLatex(block) }} 
+                />
+              );
+            })()
           ) : (
             (() => {
               const optARegex = /\(A\)\s*(.*?)(?=\(B\)|$)/s;
@@ -112,19 +127,25 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
               );
               
               let optionsLayout = '';
-              if (maxLen < 25) {
-                optionsLayout = 'grid grid-cols-4 w-full gap-2';
-              } else if (maxLen < 60) {
-                optionsLayout = 'grid grid-cols-2 w-full gap-2';
+              if (maxLen < 18) {
+                optionsLayout = 'grid grid-cols-4 w-full gap-x-2 gap-y-0.5';
+              } else if (maxLen < 36) {
+                optionsLayout = 'grid grid-cols-2 w-full gap-x-2 gap-y-0.5';
               } else {
-                optionsLayout = 'flex flex-col w-full gap-2';
+                optionsLayout = 'flex flex-col w-full gap-0.5';
               }
 
-              const formattedQText = questionText.replace(/^(\d+)\.\s*/, '<strong>$1.</strong> &nbsp;&nbsp;');
+              // Extract question number for hanging indent
+              const qMatch = questionText.match(/^(\d+)\.\s*/);
+              const qNum = qMatch ? qMatch[1] : '';
+              const qRest = qMatch ? questionText.substring(qMatch[0].length) : questionText;
 
               return (
-                <div className="mb-2 break-inside-avoid text-[11pt] leading-tight">
-                  <div className="mb-1" dangerouslySetInnerHTML={{ __html: renderLatex(formattedQText) }} />
+                <div className="mb-2 break-inside-avoid text-[11pt] leading-snug">
+                  <div className="mb-0.5 flex" style={{ gap: '0.4em' }}>
+                    <strong className="flex-shrink-0">{qNum}.</strong>
+                    <div dangerouslySetInnerHTML={{ __html: renderLatex(qRest) }} />
+                  </div>
                   <div className={`ml-6 pr-4 ${optionsLayout}`}>
                     <div className="flex"><span className="mr-1.5 font-medium">(A)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optA) }} /></div>
                     <div className="flex"><span className="mr-1.5 font-medium">(B)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optB) }} /></div>

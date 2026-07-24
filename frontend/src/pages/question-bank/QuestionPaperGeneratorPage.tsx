@@ -85,21 +85,38 @@ export const QuestionPaperGeneratorPage = () => {
 
   const handleAiFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-       const reader = new FileReader();
-       reader.onload = (event) => {
-          const result = event.target?.result as string;
-          const [prefix, base64] = result.split(',');
-          const mime = prefix.split(':')[1].split(';')[0];
-          setAiImageBase64(base64);
-          setAiImageMimeType(mime);
-          setAiSourceType('text'); 
-          toast.success("Image uploaded! You can now add text instructions and generate.");
-       };
-       reader.readAsDataURL(file);
-    } else if (file) {
-       toast.error("Currently only image files (JPG/PNG) are supported for AI generation.");
+    if (!file) return;
+    // 10MB limit
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File too large! Maximum size is 10MB.');
+      return;
     }
+    // For text-based files (TEX, TXT, CSV), read as text and put in editor
+    const textTypes = ['.tex', '.txt', '.csv', '.md'];
+    const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+    if (textTypes.includes(ext) || file.type.startsWith('text/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target?.result as string;
+        setAiInput(text);
+        setAiSourceType('text');
+        toast.success(`${file.name} loaded as text! You can now add instructions and generate.`);
+      };
+      reader.readAsText(file);
+      return;
+    }
+    // For images, PDFs, and other binary files, read as base64
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      const [prefix, base64] = result.split(',');
+      const mime = prefix.split(':')[1].split(';')[0];
+      setAiImageBase64(base64);
+      setAiImageMimeType(mime);
+      setAiSourceType('text');
+      toast.success(`${file.name} uploaded! You can now add text instructions and generate.`);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleAiGenerate = async () => {
@@ -458,12 +475,12 @@ export const QuestionPaperGeneratorPage = () => {
               )}
               {aiSourceType === 'file' && (
                 <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors relative cursor-pointer group">
-                  <input type="file" accept="image/*" onChange={handleAiFileUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" accept="image/*,application/pdf,.doc,.docx,.tex,.txt,.csv,.md" onChange={handleAiFileUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   <div className="p-3 bg-white rounded-full shadow-sm mb-3 group-hover:scale-110 transition-transform">
                     <Upload className="w-6 h-6 text-blue-500" />
                   </div>
-                  <p className="text-sm font-medium text-slate-700">Click to upload an image</p>
-                  <p className="text-xs text-slate-500 mt-1">Supports JPG, PNG (Max 5MB)</p>
+                  <p className="text-sm font-medium text-slate-700">Click to upload a file</p>
+                  <p className="text-xs text-slate-500 mt-1">Supports JPG, PNG, PDF, DOC, TEX and more (Max 10MB)</p>
                 </div>
               )}
               {aiSourceType === 'url' && (
