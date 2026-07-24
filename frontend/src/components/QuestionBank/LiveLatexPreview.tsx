@@ -98,15 +98,32 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
 
               const optA = matchA ? matchA[1].trim() : '';
               const optB = matchB ? matchB[1].trim() : '';
-              const optC = matchC ? matchC[1].trim() : '';
-              const optD = matchD ? matchD[1].trim() : '';
+              const estimateVisualLength = (text: string) => {
+                return text.replace(/\$|\\[a-zA-Z]+|{|}|_|\\/g, '').trim().length;
+              };
+
+              const maxLen = Math.max(
+                estimateVisualLength(optA), 
+                estimateVisualLength(optB), 
+                estimateVisualLength(optC), 
+                estimateVisualLength(optD)
+              );
+              
+              let optionsLayout = '';
+              if (maxLen < 25) {
+                optionsLayout = 'grid grid-cols-4 w-full gap-2';
+              } else if (maxLen < 60) {
+                optionsLayout = 'grid grid-cols-2 w-full gap-2';
+              } else {
+                optionsLayout = 'flex flex-col w-full gap-2';
+              }
 
               const formattedQText = questionText.replace(/^(\d+)\.\s*/, '<strong>$1.</strong> &nbsp;&nbsp;');
 
               return (
                 <div className="mb-2 break-inside-avoid text-[11pt] leading-tight">
                   <div className="mb-1" dangerouslySetInnerHTML={{ __html: renderLatex(formattedQText) }} />
-                  <div className="grid grid-cols-4 gap-2 w-full ml-6 pr-4">
+                  <div className={`ml-6 pr-4 ${optionsLayout}`}>
                     <div className="flex"><span className="mr-1.5 font-medium">(A)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optA) }} /></div>
                     <div className="flex"><span className="mr-1.5 font-medium">(B)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optB) }} /></div>
                     <div className="flex"><span className="mr-1.5 font-medium">(C)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optC) }} /></div>
