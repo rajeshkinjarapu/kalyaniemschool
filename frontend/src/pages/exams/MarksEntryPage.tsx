@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import api from '../../api/axios';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
-import { ArrowLeft, Save, Filter, BookOpen, User, CheckCircle2, Lock } from 'lucide-react';
+import { ArrowLeft, Save, Filter, BookOpen, User, CheckCircle2, Lock, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../hooks/useAuth';
 
 export const MarksEntryPage: React.FC = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const classId = searchParams.get('classId');
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN';
   
   const [exam, setExam] = useState<any>(null);
   const [currentClass, setCurrentClass] = useState<any>(null);
@@ -123,6 +126,19 @@ export const MarksEntryPage: React.FC = () => {
     }
   };
 
+  const handleClearMarks = async () => {
+    if (!window.confirm("Are you sure you want to clear all marks for this class in this exam? The teacher will have to re-enter them.")) return;
+    
+    try {
+      await api.delete(`/api/marks/exam/${id}/clear?classId=${classId}`);
+      toast.success("Marks cleared successfully!");
+      setMarksData({});
+      setRemarksData({});
+    } catch (e: any) {
+      toast.error(e.message || "Failed to clear marks");
+    }
+  };
+
   if (loading) return <LoadingSpinner size="lg" className="h-[50vh]" />;
 
   const filteredSubjects = selectedSubjectId === 'ALL' 
@@ -166,6 +182,12 @@ export const MarksEntryPage: React.FC = () => {
               <Lock className="w-4 h-4" />
               FREEZE MARKS
             </button>
+            {isAdmin && (
+              <button onClick={handleClearMarks} className="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold text-sm shadow-xl transition-all flex items-center gap-2 cursor-pointer transform hover:-translate-y-0.5">
+                <Trash2 className="w-4 h-4" />
+                CLEAR MARKS
+              </button>
+            )}
           </div>
         )}
       </div>
