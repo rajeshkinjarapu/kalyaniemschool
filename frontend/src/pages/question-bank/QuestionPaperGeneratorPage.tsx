@@ -3,6 +3,7 @@ import { ChevronLeft, Sparkles, Upload, Save, Printer, FileText, Settings, Maxim
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { LiveLatexPreview } from '../../components/QuestionBank/LiveLatexPreview';
+import { api } from '../../api/axios';
 
 export const QuestionPaperGeneratorPage = () => {
   const navigate = useNavigate();
