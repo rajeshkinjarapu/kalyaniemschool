@@ -24,6 +24,10 @@ export const QuestionPaperGeneratorPage = () => {
   const [aiImageBase64, setAiImageBase64] = useState<string>('');
   const [aiImageMimeType, setAiImageMimeType] = useState<string>('');
   
+  // Settings State
+  const [geminiApiKey, setGeminiApiKey] = useState<string>(() => {
+    return localStorage.getItem('jy_gemini_api_key') || '';
+  });
   // Editor State
   const [content, setContent] = useState(
     '1. What is the capital of France?\n(A) London\n(B) Paris\n(C) Berlin\n(D) Madrid\n\n2. Solve for x: $2x + 5 = 15$\n(A) 2\n(B) 4\n(C) 5\n(D) 10\n\n3. Which of the following is the quadratic formula?\n(A) $x = \\frac{b}{2a}$\n(B) $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$\n(C) $x = mc^2$\n(D) $x = y + c$'
@@ -110,7 +114,8 @@ export const QuestionPaperGeneratorPage = () => {
 
       const payload: any = {
         text: finalPrompt,
-        subject: 'General'
+        subject: 'General',
+        apiKey: geminiApiKey || undefined
       };
       
       if (aiImageBase64) {
@@ -482,7 +487,25 @@ export const QuestionPaperGeneratorPage = () => {
                   value={instructions}
                   onChange={(e) => setInstructions(e.target.value)}
                   className="w-full rounded-lg border-slate-200 bg-white border p-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none resize-none h-24 transition-all"
+                  placeholder="Enter each instruction on a new line..."
                 />
+              </div>
+              <div className="pt-2 border-t border-slate-100">
+                <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-purple-500" />
+                  Gemini API Key (For AI Generation)
+                </label>
+                <input
+                  type="password"
+                  value={geminiApiKey}
+                  onChange={(e) => {
+                    setGeminiApiKey(e.target.value);
+                    localStorage.setItem('jy_gemini_api_key', e.target.value);
+                  }}
+                  className="w-full rounded-lg border-slate-200 bg-white border p-2.5 text-sm focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                  placeholder="Paste your Gemini API Key here..."
+                />
+                <p className="text-xs text-slate-500 mt-1">Stored locally in your browser. Required if backend key is missing.</p>
               </div>
             </div>
             
