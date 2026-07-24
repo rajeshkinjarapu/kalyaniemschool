@@ -123,7 +123,7 @@ ${text || ''}`;
       if (!apiKey) throw new Error("ChatGPT API key is required");
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
         model: 'gpt-4o-mini',
-        messages: [{ role: 'user', content: prompt }]
+        messages: [{ role: 'user', content: promptText }]
       }, {
         headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' }
       });
@@ -134,7 +134,7 @@ ${text || ''}`;
       const response = await axios.post('https://api.anthropic.com/v1/messages', {
         model: 'claude-3-haiku-20240307',
         max_tokens: 4000,
-        messages: [{ role: 'user', content: prompt }]
+        messages: [{ role: 'user', content: promptText }]
       }, {
         headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' }
       });
@@ -144,7 +144,7 @@ ${text || ''}`;
       if (!apiKey) throw new Error("DeepSeek API key is required");
       const response = await axios.post('https://api.deepseek.com/chat/completions', {
         model: 'deepseek-chat',
-        messages: [{ role: 'user', content: prompt }]
+        messages: [{ role: 'user', content: promptText }]
       }, {
         headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' }
       });
