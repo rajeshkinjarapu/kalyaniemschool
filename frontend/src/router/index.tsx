@@ -64,6 +64,7 @@ const OfficeToolsDashboard = lazy(() => import('../pages/office-tools/OfficeTool
 const SlipTestManualPage = lazy(() => import('../pages/office-tools/SlipTestManualPage'));
 const QuestionBankDashboard = lazy(() => import('../pages/question-bank/QuestionBankDashboard'));
 const QuestionPaperGeneratorPage = lazy(() => import('../pages/question-bank/QuestionPaperGeneratorPage'));
+const SavedPapersPage = lazy(() => import('../pages/question-bank/SavedPapersPage'));
 const TransportDashboard = lazy(() => import('../pages/transport/TransportDashboard'));
 const AttendanceWrapper = () => {
   const { user } = useAuth();
@@ -347,6 +348,14 @@ export const router = createBrowserRouter([
         element: withSuspense(
           <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <QuestionPaperGeneratorPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'question-bank/saved-papers',
+        element: withSuspense(
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
+            <SavedPapersPage />
           </ProtectedRoute>
         ),
       },

@@ -16,6 +16,7 @@ export const QuestionBankDashboard = () => {
     { title: 'Difficulty Levels', description: 'Configure difficulty levels', icon: BarChart, color: 'from-amber-500 to-yellow-400' },
     { title: 'Question Types', description: 'Configure question types', icon: Type, color: 'from-violet-600 to-violet-400' },
     { title: 'AI Paper Generator', description: 'Dual-layout paper creator', icon: FileUp, color: 'from-blue-700 to-indigo-500' },
+    { title: 'Saved AI Papers', description: 'View and edit saved papers', icon: FileText, color: 'from-sky-600 to-cyan-500' },
     { title: 'Paper Generator', description: 'Generate question papers', icon: FileText, color: 'from-blue-600 to-indigo-600' },
     { title: 'Answer Keys', description: 'Manage answer keys', icon: Key, color: 'from-teal-600 to-teal-400' },
     { title: 'Review & Approval', description: 'Review questions', icon: CheckCircle, color: 'from-orange-600 to-orange-400' },
@@ -38,6 +39,7 @@ export const QuestionBankDashboard = () => {
                 if (tool.title === 'Questions') navigate('/question-bank/questions');
                 else if (tool.title === 'Paper Generator') navigate('/question-bank/papers/new');
                 else if (tool.title === 'AI Paper Generator') navigate('/question-bank/generator');
+                else if (tool.title === 'Saved AI Papers') navigate('/question-bank/saved-papers');
                 else if (tool.title === 'Dashboard') navigate('/question-bank');
               }}
               className="group relative bg-white/90 backdrop-blur-md border-2 border-indigo-100 shadow-xl shadow-indigo-200/50 hover:border-indigo-400 rounded-3xl p-6 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[160px]"

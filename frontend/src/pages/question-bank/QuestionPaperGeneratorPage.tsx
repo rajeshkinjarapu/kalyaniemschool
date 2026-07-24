@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
-import { ChevronLeft, Sparkles, Upload, Save, Printer, FileText, Settings, Maximize, X, Wand2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { ChevronLeft, Sparkles, Upload, Save, Printer, FileText, Settings, Maximize, X, Wand2, BookOpen } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { LiveLatexPreview } from '../../components/QuestionBank/LiveLatexPreview';
 import { api } from '../../api/axios';
 
 export const QuestionPaperGeneratorPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const paperId = searchParams.get('id');
+  const [isSaving, setIsSaving] = useState(false);
   
   // Paper Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -220,14 +223,46 @@ export const QuestionPaperGeneratorPage = () => {
     toast.success("Auto-formatted text!");
   };
 
+  // Load paper from DB if editing
+  useEffect(() => {
+    if (!paperId) return;
+    const loadPaper = async () => {
+      try {
+        toast.loading('Loading paper...', { id: 'load' });
+        const res = await api.get(`/generated-papers/${paperId}`);
+        const p = res.data;
+        setExamName(p.examName || '');
+        setExamSubject(p.examSubject || '');
+        setExamDate(p.examDate || '');
+        setTime(p.time || '');
+        setInstructions(p.instructions || '');
+        setContent(p.content || '');
+        toast.success('Paper loaded!', { id: 'load' });
+      } catch {
+        toast.error('Failed to load paper.', { id: 'load' });
+      }
+    };
+    loadPaper();
+  }, [paperId]);
+
   const handleSave = async () => {
-    toast.loading("Saving to Database...", { id: 'save' });
+    setIsSaving(true);
+    toast.loading(paperId ? 'Updating paper...' : 'Saving paper...', { id: 'save' });
     try {
-      setTimeout(() => {
-        toast.success("Saved successfully!", { id: 'save' });
-      }, 1000);
+      const payload = { examName, examSubject, examDate, time, instructions, content };
+      if (paperId) {
+        await api.put(`/generated-papers/${paperId}`, payload);
+        toast.success('Paper updated successfully!', { id: 'save' });
+      } else {
+        const res = await api.post('/generated-papers', payload);
+        toast.success('Paper saved! You can now find it in Saved Papers.', { id: 'save' });
+        // Redirect to the edit URL so Save button becomes Update
+        navigate(`/question-bank/generator?id=${res.data.id}`, { replace: true });
+      }
     } catch (err) {
-      toast.error("Failed to save.", { id: 'save' });
+      toast.error('Failed to save paper.', { id: 'save' });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -253,6 +288,14 @@ export const QuestionPaperGeneratorPage = () => {
         
         <div className="flex items-center gap-3">
           <button
+            onClick={() => navigate('/question-bank/saved-papers')}
+            className="p-2 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-all flex items-center gap-2 text-sm font-medium"
+            title="Saved Papers"
+          >
+            <BookOpen className="w-4 h-4" />
+            <span className="hidden sm:inline">Saved Papers</span>
+          </button>
+          <button
             onClick={toggleFullScreen}
             className="p-2 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-all flex items-center gap-2"
             title="Full Screen"
@@ -276,10 +319,11 @@ export const QuestionPaperGeneratorPage = () => {
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-medium transition-all flex items-center gap-2"
+            disabled={isSaving}
+            className="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-medium transition-all flex items-center gap-2 disabled:opacity-60"
           >
             <Save className="w-4 h-4" />
-            Save Paper
+            {isSaving ? 'Saving...' : paperId ? 'Update Paper' : 'Save Paper'}
           </button>
           <button
             onClick={handlePrint}
