@@ -168,7 +168,7 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
         pixelRatio: 2.5,
         style: { margin: '0' },
         useCORS: true
-      });
+      } as any);
       
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = 210; // Fixed A4 width in mm
@@ -307,7 +307,7 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
           pixelRatio: 2,
           style: { margin: '0' },
           useCORS: true
-        });
+        } as any);
         
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = 210;

@@ -58,16 +58,16 @@ export const SlipTestManualPage = () => {
         name: s.user?.name || 'Unknown',
         marks: isNaN(markNum) ? -1 : markNum
       };
-    }).filter(s => s.marks >= 0);
+    }).filter((s: any) => s.marks >= 0);
 
     // Sort descending by marks
-    validStudents.sort((a, b) => b.marks - a.marks);
+    validStudents.sort((a: any, b: any) => b.marks - a.marks);
 
     // Calculate Dense Rank and Percentage
     let currentRank = 1;
     let prevMarks = -1;
 
-    return validStudents.map((s, index) => {
+    return validStudents.map((s: any, index: number) => {
       if (index > 0 && s.marks < prevMarks) {
         currentRank++;
       }
