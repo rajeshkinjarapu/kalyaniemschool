@@ -115,11 +115,14 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
               
               let optionsLayout = '';
               if (sumLen < 50 && maxLen < 15) {
-                optionsLayout = 'flex flex-row justify-between w-full pr-8 gap-2';
+                // 4 columns
+                optionsLayout = 'grid grid-cols-4 gap-2 w-full';
               } else if (maxLen < 35) {
-                optionsLayout = 'grid grid-cols-2 gap-y-1 gap-x-2 w-full pr-4';
+                // 2 columns
+                optionsLayout = 'grid grid-cols-2 gap-y-1 gap-x-8 w-[85%]';
               } else {
-                optionsLayout = 'grid grid-cols-1 gap-y-1 w-full';
+                // 1 column
+                optionsLayout = 'flex flex-col gap-y-1 w-full';
               }
 
               const formattedQText = questionText.replace(/^(\d+)\.\s*/, '<strong>$1.</strong> &nbsp;&nbsp;');
