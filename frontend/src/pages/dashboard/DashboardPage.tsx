@@ -485,7 +485,7 @@ const TeacherView: React.FC<{ data: any }> = ({ data }) => {
           { label: 'Total Students', value: data.totalStudents || 0, icon: Users, gradient: 'linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Across all classes', link: '/teachers/students' },
           { label: "Today's Att.", value: `${rate}%`, icon: Clock, gradient: 'linear-gradient(135deg,#10b981 0%,#059669 100%)', glow: 'rgba(255,255,255,0.2)', sub: `${present}P · ${absent}A`, link: '/teacher-attendance' },
           { label: 'My Timetable', value: 'View', icon: School, gradient: 'linear-gradient(135deg,#f59e0b 0%,#d97706 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Weekly Schedule', link: '/timetable' },
-          { label: 'Marks Entry', value: 'Enter', icon: PenTool, gradient: 'linear-gradient(135deg,#ec4899 0%,#e11d48 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Update grades', link: '/exams' },
+          { label: 'Marks Entry', value: 'Enter', icon: PenTool, gradient: 'linear-gradient(135deg,#ec4899 0%,#e11d48 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Update grades', onClick: handleOpenMarksModal },
           { label: 'Results', value: 'View', icon: Award, gradient: 'linear-gradient(135deg,#10b981 0%,#059669 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'View all results', link: '/exams' },
           { label: 'Result Cards', value: 'View', icon: FileText, gradient: 'linear-gradient(135deg,#14b8a6 0%,#0f766e 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Progress Cards', link: '/exams?tab=jee-progress-card' },
           { label: 'Admit Cards', value: 'View', icon: BookMarked, gradient: 'linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%)', glow: 'rgba(255,255,255,0.2)', sub: 'Students Admit Cards', link: '/teacher/admit-cards' },
@@ -563,6 +563,62 @@ const TeacherView: React.FC<{ data: any }> = ({ data }) => {
             })}
           </div>
         </ChartCard>
+      )}
+
+      {showMarksModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-950/45 backdrop-blur-sm">
+          <div className="fixed inset-0" onClick={() => setShowMarksModal(false)} />
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative z-10 border border-gray-100">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <PenTool className="w-5 h-5 text-indigo-600" /> Select Exam & Class
+            </h3>
+            
+            {loadingExams ? (
+              <div className="py-8 flex justify-center"><LoadingSpinner size="md" /></div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Exam</label>
+                  <select 
+                    value={selectedExamId} 
+                    onChange={e => { setSelectedExamId(e.target.value); setSelectedClassId(''); }} 
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-gray-800 font-semibold"
+                  >
+                    <option value="">-- Choose Exam --</option>
+                    {exams.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+                  </select>
+                </div>
+
+                {selectedExam && (
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Class</label>
+                    <select 
+                      value={selectedClassId} 
+                      onChange={e => setSelectedClassId(e.target.value)} 
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-gray-800 font-semibold"
+                    >
+                      <option value="">-- Choose Class --</option>
+                      {(selectedExam.classes || []).map((c: any) => (
+                        <option key={c.id} value={c.id}>{c.name}-{c.section}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-3 pt-4 border-t border-gray-50 mt-6">
+                  <button onClick={() => setShowMarksModal(false)} className="px-4 py-2 text-sm font-bold text-gray-600 hover:bg-gray-50 rounded-xl">Cancel</button>
+                  <button 
+                    onClick={handleGoToMarks} 
+                    disabled={!selectedExamId || !selectedClassId} 
+                    className="px-6 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 disabled:opacity-50"
+                  >
+                    Proceed
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
