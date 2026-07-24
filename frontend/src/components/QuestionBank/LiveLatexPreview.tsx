@@ -72,9 +72,18 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
   };
 
   const parseBlocks = () => {
-    const blocks = content.split(/\n\n+/).filter(b => b.trim() !== '');
+    const rawBlocks = content.split(/(\n\n+)/);
+    const elements = [];
     
-    return blocks.map((block, idx) => {
+    for (let i = 0; i < rawBlocks.length; i += 2) {
+      const block = rawBlocks[i];
+      if (block.trim() === '') continue; // Skip pure whitespace blocks
+      
+      const separator = i + 1 < rawBlocks.length ? rawBlocks[i + 1] : '';
+      // A standard break is 2 newlines. Any extra newlines (3, 4, etc.) add space.
+      const extraNewlines = Math.max(0, (separator.match(/\n/g) || []).length - 2);
+      const marginBottom = extraNewlines > 0 ? `${extraNewlines * 1.5}rem` : undefined;
+
       const hasOptions = block.includes('(A)') && block.includes('(B)') && block.includes('(C)') && block.includes('(D)');
       
       let renderHeading = null;
@@ -177,8 +186,14 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
           )}
         </>
       );
-      return <React.Fragment key={idx}>{blockContent}</React.Fragment>;
-    });
+      
+      elements.push(
+        <div key={i} style={{ marginBottom }}>
+          {blockContent}
+        </div>
+      );
+    }
+    return elements;
   };
 
   return (
