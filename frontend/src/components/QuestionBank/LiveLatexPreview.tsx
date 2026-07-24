@@ -100,14 +100,14 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
       
       let optionsLayout = '';
       if (maxLen < 15) {
-        // Short: Single line, evenly spaced
-        optionsLayout = 'flex flex-row justify-between w-full pr-12';
+        // Short: 4 columns, strict alignment
+        optionsLayout = 'grid grid-cols-4 gap-2 w-full';
       } else if (maxLen < 45) {
-        // Medium: 2x2 Grid with generous spacing
-        optionsLayout = 'grid grid-cols-2 gap-y-2 gap-x-12 w-full pr-8';
+        // Medium: 2 columns, strict alignment
+        optionsLayout = 'grid grid-cols-2 gap-y-2 gap-x-4 w-full pr-8';
       } else {
-        // Long: 1 Column
-        optionsLayout = 'flex flex-col space-y-2 w-full';
+        // Long: 1 column, strict alignment
+        optionsLayout = 'grid grid-cols-1 gap-y-2 w-full';
       }
 
       return (
