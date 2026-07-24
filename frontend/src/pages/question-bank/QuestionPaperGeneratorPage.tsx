@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, Sparkles, Upload, Save, Printer, FileText, Settings, Maximize, X, Wand2, BookOpen, ImagePlus } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { LiveLatexPreview } from '../../components/QuestionBank/LiveLatexPreview';
+import { LiveLatexPreview, FloatingImage } from '../../components/QuestionBank/LiveLatexPreview';
 import { api } from '../../api/axios';
 
 export const QuestionPaperGeneratorPage = () => {
@@ -57,32 +57,19 @@ export const QuestionPaperGeneratorPage = () => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Inline Images State: { id: dataURL }
-  const [inlineImages, setInlineImages] = useState<Record<string, string>>({});
+  // Inline Images State: { id: FloatingImage }
+  const [inlineImages, setInlineImages] = useState<Record<string, FloatingImage>>({});
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const generateImageId = () => Math.random().toString(36).substring(2, 8);
 
   const insertImageAtCursor = (dataUrl: string) => {
     const id = generateImageId();
-    setInlineImages(prev => ({ ...prev, [id]: dataUrl }));
-    const marker = `[IMG:${id}]`;
-    const ta = textareaRef.current;
-    if (ta) {
-      const start = ta.selectionStart;
-      const end = ta.selectionEnd;
-      const before = content.substring(0, start);
-      const after = content.substring(end);
-      setContent(before + marker + after);
-      // Restore cursor after marker
-      setTimeout(() => {
-        ta.selectionStart = ta.selectionEnd = start + marker.length;
-        ta.focus();
-      }, 0);
-    } else {
-      setContent(prev => prev + '\n' + marker);
-    }
-    toast.success('Image inserted!');
+    setInlineImages(prev => ({
+      ...prev,
+      [id]: { dataUrl, x: 50, y: 50, width: 200, height: 200 }
+    }));
+    toast.success('Image added! You can drag and resize it in the preview.');
   };
 
   const handleEditorPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -128,24 +115,31 @@ export const QuestionPaperGeneratorPage = () => {
 
   // Serialize images into content for saving, deserialize on load
   const serializeContent = (): string => {
-    // Find which image IDs are actually used
-    const usedIds = (content.match(/\[IMG:([a-z0-9]+)\]/g) || []).map(m => m.slice(5, -1));
-    const usedImages: Record<string, string> = {};
-    usedIds.forEach(id => { if (inlineImages[id]) usedImages[id] = inlineImages[id]; });
-    if (Object.keys(usedImages).length === 0) return content;
-    return content + '\n<!--INLINE_IMAGES:' + JSON.stringify(usedImages) + '-->';
+    if (Object.keys(inlineImages).length === 0) return content;
+    // Strip out old text markers just in case
+    const cleanContent = content.replace(/\[IMG:([a-z0-9]+)\]/g, '');
+    return cleanContent + '\n<!--INLINE_IMAGES:' + JSON.stringify(inlineImages) + '-->';
   };
 
-  const deserializeContent = (raw: string): { text: string; images: Record<string, string> } => {
+  const deserializeContent = (raw: string): { text: string; images: Record<string, FloatingImage> } => {
     const imgMatch = raw.match(/\n<!--INLINE_IMAGES:(.*?)-->$/);
     if (imgMatch) {
       try {
-        const images = JSON.parse(imgMatch[1]);
+        const parsed = JSON.parse(imgMatch[1]);
+        const migrated: Record<string, FloatingImage> = {};
+        for (const [id, val] of Object.entries(parsed)) {
+          if (typeof val === 'string') {
+            migrated[id] = { dataUrl: val, x: 50, y: 50, width: 200, height: 200 };
+          } else {
+            migrated[id] = val as FloatingImage;
+          }
+        }
         const text = raw.substring(0, raw.indexOf('\n<!--INLINE_IMAGES:'));
-        return { text, images };
+        // Clean out any old markers from text just in case
+        return { text: text.replace(/\[IMG:([a-z0-9]+)\]/g, ''), images: migrated };
       } catch { return { text: raw, images: {} }; }
     }
-    return { text: raw, images: {} };
+    return { text: raw.replace(/\[IMG:([a-z0-9]+)\]/g, ''), images: {} };
   };
 
   const handlePrint = () => {
@@ -541,6 +535,14 @@ export const QuestionPaperGeneratorPage = () => {
               instructions={instructions.split('\n').filter(i => i.trim() !== '')}
               isDoubleColumn={isDoubleColumn}
               inlineImages={inlineImages}
+              onImageUpdate={(id, updates) => setInlineImages(prev => ({ ...prev, [id]: { ...prev[id], ...updates } }))}
+              onImageDelete={(id) => {
+                setInlineImages(prev => {
+                  const newImgs = { ...prev };
+                  delete newImgs[id];
+                  return newImgs;
+                });
+              }}
             />
           </div>
           </div>

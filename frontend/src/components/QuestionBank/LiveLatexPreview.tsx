@@ -2,6 +2,16 @@ import React from 'react';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
+import { Rnd } from 'react-rnd';
+
+export interface FloatingImage {
+  dataUrl: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 interface LiveLatexPreviewProps {
   content: string;
   examName: string;
@@ -12,7 +22,9 @@ interface LiveLatexPreviewProps {
   examSubject?: string;
   logoBase64?: string;
   isDoubleColumn?: boolean;
-  inlineImages?: Record<string, string>;
+  inlineImages?: Record<string, FloatingImage | string>;
+  onImageUpdate?: (id: string, updates: Partial<FloatingImage>) => void;
+  onImageDelete?: (id: string) => void;
 }
 
 export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
@@ -25,17 +37,14 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
   examSubject = '',
   logoBase64 = '',
   isDoubleColumn = false,
-  inlineImages = {}
+  inlineImages = {},
+  onImageUpdate,
+  onImageDelete
 }) => {
   const renderLatex = (text: string) => {
     try {
-      // First, replace any [IMG:id] tags
-      let withImages = text.replace(/\[IMG:([a-z0-9]+)\]/g, (match, id) => {
-        if (inlineImages[id]) {
-          return `<img src="${inlineImages[id]}" alt="Inline Image" class="inline-block max-w-full max-h-[250px] align-middle rounded mx-1 shadow-sm object-contain" />`;
-        }
-        return match;
-      });
+      // We removed the [IMG:id] replacement because images are now floating
+      let withImages = text.replace(/\[IMG:([a-z0-9]+)\]/g, '');
 
       let normalized = withImages.replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$');
       normalized = normalized.replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$');
@@ -151,8 +160,8 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
               const qRest = qMatch ? questionText.substring(qMatch[0].length) : questionText;
 
               return (
-                <div className="mb-4 break-inside-avoid text-[11pt] leading-snug">
-                  <div className="mb-2.5 flex" style={{ gap: '0.4em' }}>
+                <div className="mb-2 break-inside-avoid text-[11pt] leading-snug">
+                  <div className="mb-0.5 flex" style={{ gap: '0.4em' }}>
                     <strong className="flex-shrink-0">{qNum}.</strong>
                     <div dangerouslySetInnerHTML={{ __html: renderLatex(qRest) }} />
                   </div>
@@ -246,6 +255,50 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
         </div>
 
       </div>
+
+      {/* Floating Images Layer */}
+      {Object.entries(inlineImages).map(([id, imgData]) => {
+        // Handle migration from old string format
+        const isString = typeof imgData === 'string';
+        const dataUrl = isString ? imgData : (imgData as FloatingImage).dataUrl;
+        const x = isString ? 50 : (imgData as FloatingImage).x;
+        const y = isString ? 50 : (imgData as FloatingImage).y;
+        const width = isString ? 200 : (imgData as FloatingImage).width;
+        const height = isString ? 200 : (imgData as FloatingImage).height;
+
+        return (
+          <Rnd
+            key={id}
+            position={{ x, y }}
+            size={{ width, height }}
+            onDragStop={(e, d) => onImageUpdate?.(id, { x: d.x, y: d.y })}
+            onResizeStop={(e, direction, ref, delta, position) => {
+              onImageUpdate?.(id, {
+                width: parseInt(ref.style.width),
+                height: parseInt(ref.style.height),
+                ...position
+              });
+            }}
+            bounds="parent"
+            className="group absolute z-50 print:!transform-none"
+            style={/* For printing, Rnd relies on inline styles. To ensure it prints exactly where it is, we let Rnd apply its transform. However, sometimes browsers don't print absolute transforms well. But react-rnd usually uses transform: translate(x, y) which prints fine in Chrome. */ {}}
+          >
+            <div className="relative w-full h-full bg-white/50 backdrop-blur-[1px] hover:bg-transparent transition-all border border-transparent group-hover:border-blue-400 border-dashed print:border-none print:bg-transparent">
+              <img src={dataUrl} className="w-full h-full object-contain pointer-events-none" />
+              {onImageDelete && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onImageDelete(id); }}
+                  className="absolute -top-3 -right-3 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity print:hidden shadow-md"
+                  title="Remove Image"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </Rnd>
+        );
+      })}
+
     </div>
   );
 };
