@@ -351,7 +351,7 @@ export const QuestionPaperGeneratorPage = () => {
     const loadPaper = async () => {
       try {
         toast.loading('Loading paper...', { id: 'load' });
-        const res = await api.get(`/generated-papers/${paperId}`);
+        const res = await api.get(`/api/generated-papers/${paperId}`);
         const p = res.data;
         setExamName(p.examName || '');
         setExamSubject(p.examSubject || '');
@@ -376,10 +376,10 @@ export const QuestionPaperGeneratorPage = () => {
       const serializedContent = serializeContent();
       const payload = { examName, examSubject, examDate, time, instructions, content: serializedContent };
       if (paperId) {
-        await api.put(`/generated-papers/${paperId}`, payload);
+        await api.put(`/api/generated-papers/${paperId}`, payload);
         toast.success('Paper updated successfully!', { id: 'save' });
       } else {
-        const res = await api.post('/generated-papers', payload);
+        const res = await api.post('/api/generated-papers', payload);
         toast.success('Paper saved! You can now find it in Saved Papers.', { id: 'save' });
         // Redirect to the edit URL so Save button becomes Update
         navigate(`/question-bank/generator?id=${res.data.id}`, { replace: true });

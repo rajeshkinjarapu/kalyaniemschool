@@ -31,7 +31,7 @@ const SavedPapersPage = () => {
   const fetchPapers = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/generated-papers');
+      const response = await api.get('/api/generated-papers');
       setPapers(response.data);
     } catch (err) {
       toast.error('Failed to load saved papers.');
@@ -44,7 +44,7 @@ const SavedPapersPage = () => {
     if (!deleteId) return;
     setDeleting(true);
     try {
-      await api.delete(`/generated-papers/${deleteId}`);
+      await api.delete(`/api/generated-papers/${deleteId}`);
       toast.success('Paper deleted successfully!');
       setPapers(prev => prev.filter(p => p.id !== deleteId));
       setDeleteId(null);
