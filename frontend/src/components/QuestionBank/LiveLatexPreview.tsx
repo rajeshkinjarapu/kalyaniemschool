@@ -24,7 +24,11 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
   // Utility to render LaTeX string into HTML string safely
   const renderLatex = (text: string) => {
     try {
-      const parts = text.split(/(\$\$[\s\S]*?\$\$)/g);
+      // Normalize standard LaTeX delimiters to $ and $$ for easier parsing
+      let normalized = text.replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$');
+      normalized = normalized.replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$');
+      
+      const parts = normalized.split(/(\$\$[\s\S]*?\$\$)/g);
       return parts.map(part => {
         if (part.startsWith('$$') && part.endsWith('$$')) {
           const math = part.slice(2, -2);
