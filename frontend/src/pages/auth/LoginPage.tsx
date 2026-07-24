@@ -59,7 +59,7 @@ export const LoginPage: React.FC = () => {
       {/* School Header */}
       <div className="relative z-10 flex flex-col items-center mb-6 sm:mb-8 mt-2">
         <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center mb-3 shadow-[0_0_30px_rgba(255,255,255,0.5)] border-4 border-white/80 overflow-hidden bg-white hover:scale-105 transition-transform duration-300">
-          <img src="/logo.svg" alt="JY School Logo" className="w-full h-full object-cover" />
+          <img src="/logo.png" alt="JY School Logo" className="w-full h-full object-contain p-2" />
         </div>
         <h1 className="text-4xl sm:text-5xl font-black text-white drop-shadow-lg tracking-tight text-center px-4">
           JY SCHOOL
