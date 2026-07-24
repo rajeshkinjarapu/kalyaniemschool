@@ -474,11 +474,6 @@ export const QuestionPaperGeneratorPage = () => {
           <div className="h-full flex flex-col pb-20">
             <h3 className="font-semibold text-slate-700 border-b pb-2 mb-4 flex justify-between items-center">
               <span>Question Content (LaTeX Support)</span>
-              <button 
-                onClick={autoFormatText}
-                className="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1.5 border border-blue-200 shadow-sm"
-              >
-                <Wand2 className="w-3.5 h-3.5" /> Auto-Align Format
               <div className="flex gap-2">
                 <input 
                   type="file" 
