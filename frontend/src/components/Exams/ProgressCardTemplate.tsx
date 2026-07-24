@@ -70,10 +70,10 @@ export const ProgressCardTemplate: React.FC<ProgressCardTemplateProps> = ({
         .jee-card .deco-line .line { flex: 1; max-width: 140px; height: 2px; background: linear-gradient(90deg, transparent, #f39c12, transparent); }
         .jee-card .student-info { margin: 6px 28px 14px 28px; border: 2px solid #f39c12; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, #ffffff 0%, #fef8f0 100%); box-shadow: 0 6px 20px rgba(243, 156, 18, 0.12); display: grid; grid-template-columns: 1fr auto; flex-shrink: 0; }
         .jee-card .student-info .info-details { display: flex; flex-direction: column; }
-        .jee-card .student-info .info-row { display: grid; grid-template-columns: 150px 1fr; border-bottom: 1px solid #f5ede4; }
+        .jee-card .student-info .info-row { display: grid; grid-template-columns: 190px 1fr; border-bottom: 1px solid #f5ede4; }
         .jee-card .student-info .info-row:last-child { border-bottom: none; }
-        .jee-card .student-info .info-row .label { background: #fdf9f4; padding: 7px 18px; font-weight: 600; font-size: 13px; color: #6a3a1a; border-right: 1px solid #f5ede4; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-        .jee-card .student-info .info-row .value { padding: 7px 18px; font-weight: 600; font-size: 14px; color: #0b1a33; background: transparent; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .jee-card .student-info .info-row .label { background: #fdf9f4; padding: 7px 18px; font-weight: 700; font-size: 13px; color: #6a3a1a; border-right: 1px solid #f5ede4; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+        .jee-card .student-info .info-row .value { padding: 7px 18px; font-weight: 800; font-size: 15px; color: #0b1a33; background: transparent; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .jee-card .student-info .info-row:nth-child(even) { background: #fefcf9; }
         .jee-card .student-info .photo-col { padding: 14px 20px 14px 12px; display: flex; align-items: flex-start; justify-content: center; border-left: 2px solid #f5ede4; background: linear-gradient(180deg, #fefcf9 0%, #fcf7ef 100%); min-width: 130px; }
         .jee-card .student-info .photo-col img { width: 95px; height: 114px; object-fit: cover; border: 3px solid #f39c12; box-shadow: 0 6px 12px rgba(243, 156, 18, 0.2); border-radius: 8px; background: #fff; flex-shrink: 0; }

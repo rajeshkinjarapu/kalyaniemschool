@@ -29,6 +29,16 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
   const [teacherSignatureUrl, setTeacherSignatureUrl] = useState('');
   const [examNameOverride, setExamNameOverride] = useState('');
   const [published, setPublished] = useState(false);
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
+
+  const formatName = (name: string) => {
+    if (!name) return "";
+    const parts = name.trim().split(" ");
+    if (parts.length > 1) {
+      return `${parts[0].charAt(0)}. ${parts.slice(1).join(" ")}`;
+    }
+    return name;
+  };
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const resolveUrl = (url: string) => {
@@ -763,49 +773,45 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
               <table className="w-full text-sm text-left whitespace-nowrap min-w-full">
                 <thead className="bg-gray-50 text-gray-600 font-bold uppercase text-xs">
                   <tr>
-                    <th className="py-3 px-4 w-12 text-center">Rank</th>
-                    <th className="py-3 px-4">Student Name</th>
+                    <th className="py-2 px-2 w-8 text-center">Rank</th>
+                    <th className="py-2 px-2">Student Name</th>
                     {/* Hide detailed stats on small screens if you want, but user requested mobile friendly. Let's keep it clean */}
-                    {!isTeacher && <th className="py-3 px-4 hidden md:table-cell">Student ID</th>}
-                    <th className="py-3 px-4 text-center hidden md:table-cell">Mat</th>
-                    <th className="py-3 px-4 text-center hidden md:table-cell">Phy</th>
-                    <th className="py-3 px-4 text-center hidden md:table-cell">Che</th>
-                    <th className="py-3 px-4 text-center">Total Marks</th>
-                    <th className="py-3 px-4 text-right">Action</th>
+                    {!isTeacher && <th className="py-2 px-2 hidden md:table-cell">Student ID</th>}
+                    <th className="py-2 px-2 text-center hidden md:table-cell">Mat</th>
+                    <th className="py-2 px-2 text-center hidden md:table-cell">Phy</th>
+                    <th className="py-2 px-2 text-center hidden md:table-cell">Che</th>
+                    <th className="py-2 px-2 text-center">Total</th>
+                    <th className="py-2 px-2 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {studentsData.map((data, idx) => (
                     <React.Fragment key={data.studentId}>
-                    <tr onClick={() => {
-                        const rowId = `expand-${data.studentId}`;
-                        const el = document.getElementById(rowId);
-                        if (el) el.classList.toggle('hidden');
-                      }} 
+                    <tr onClick={() => setExpandedRow(expandedRow === data.studentId ? null : data.studentId)} 
                       className="hover:bg-gray-50 transition-colors bg-white cursor-pointer md:cursor-auto"
                     >
-                      <td className="py-3 px-4 text-center">
-                        <span className="font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">#{data.rank}</span>
+                      <td className="py-2 px-2 text-center">
+                        <span className="font-bold text-indigo-600 bg-indigo-50 px-1.5 py-1 rounded-md text-xs">#{data.rank}</span>
                       </td>
-                      <td className="py-3 px-4 font-bold text-gray-900 whitespace-normal break-words max-w-[150px] md:max-w-none">
-                        {data.studentName}
-                        <div className="text-xs font-normal text-gray-500 mt-0.5">{data.className} {data.section}</div>
+                      <td className="py-2 px-2 font-bold text-gray-900 whitespace-normal break-words max-w-[120px] md:max-w-none text-xs sm:text-sm">
+                        {formatName(data.studentName)}
+                        <div className="text-[10px] sm:text-xs font-normal text-gray-500 mt-0.5">{data.className} {data.section}</div>
                       </td>
-                      {!isTeacher && <td className="py-3 px-4 text-gray-600 font-medium hidden md:table-cell">{data.rollNo || '-'}</td>}
-                      <td className="py-3 px-4 text-center hidden md:table-cell font-medium text-gray-700">
+                      {!isTeacher && <td className="py-2 px-2 text-gray-600 font-medium hidden md:table-cell text-sm">{data.rollNo || '-'}</td>}
+                      <td className="py-2 px-2 text-center hidden md:table-cell font-medium text-gray-700 text-sm">
                         {data.marks?.find((m: any) => m.subject === 'Mathematics' || m.subject === 'Maths' || m.subject === 'MAT')?.obtained ?? '-'}
                       </td>
-                      <td className="py-3 px-4 text-center hidden md:table-cell font-medium text-gray-700">
+                      <td className="py-2 px-2 text-center hidden md:table-cell font-medium text-gray-700 text-sm">
                         {data.marks?.find((m: any) => m.subject === 'Physics' || m.subject === 'PHY')?.obtained ?? '-'}
                       </td>
-                      <td className="py-3 px-4 text-center hidden md:table-cell font-medium text-gray-700">
+                      <td className="py-2 px-2 text-center hidden md:table-cell font-medium text-gray-700 text-sm">
                         {data.marks?.find((m: any) => m.subject === 'Chemistry' || m.subject === 'CHE')?.obtained ?? '-'}
                       </td>
-                      <td className="py-3 px-4 text-center">
-                        <span className="font-bold text-emerald-600 text-base">{data.total}</span>
+                      <td className="py-2 px-2 text-center">
+                        <span className="font-bold text-emerald-600 text-sm">{data.total}</span>
                       </td>
                       
-                      <td className="py-3 px-4 flex justify-end gap-2 items-center">
+                      <td className="py-2 px-2 flex justify-end gap-1 sm:gap-2 items-center">
                         {!isTeacher && (
                           <button onClick={(e) => { e.stopPropagation(); handlePrintSingle(idx); }} className="bg-blue-50 hover:bg-blue-100 text-blue-600 p-2 rounded-lg text-xs font-semibold flex items-center justify-center transition-colors" title="Print Card">
                               <Printer className="w-4 h-4" />
@@ -822,7 +828,8 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                         </button>
                       </td>
                     </tr>
-                    <tr id={`expand-${data.studentId}`} className="hidden md:hidden bg-indigo-50/20 border-b border-gray-100">
+                    {expandedRow === data.studentId && (
+                    <tr className="md:hidden bg-indigo-50/20 border-b border-gray-100">
                        <td colSpan={5} className="px-4 py-3">
                           <div className="grid grid-cols-3 gap-2 w-full text-center">
                              <div className="bg-white border border-indigo-100 rounded-lg p-2 shadow-sm">
@@ -840,6 +847,7 @@ export const JEEProgressCardTab: React.FC<{ exams: any[] }> = ({ exams }) => {
                           </div>
                        </td>
                     </tr>
+                    )}
                     </React.Fragment>
                   ))}
                 </tbody>
