@@ -327,6 +327,7 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
               });
             }}
             bounds="parent"
+            cancel=".delete-btn"
             className="group absolute z-50 print:!transform-none"
             style={/* For printing, Rnd relies on inline styles. To ensure it prints exactly where it is, we let Rnd apply its transform. However, sometimes browsers don't print absolute transforms well. But react-rnd usually uses transform: translate(x, y) which prints fine in Chrome. */ {}}
           >
@@ -334,8 +335,10 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
               <img src={dataUrl} className="w-full h-full object-contain pointer-events-none" />
               {onImageDelete && (
                 <button
-                  onClick={(e) => { e.stopPropagation(); onImageDelete(id); }}
-                  className="absolute -top-3 -right-3 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity print:hidden shadow-md"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); onImageDelete(id); }}
+                  className="delete-btn absolute -top-3 -right-3 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity print:hidden shadow-md cursor-pointer z-[100]"
                   title="Remove Image"
                 >
                   ×
