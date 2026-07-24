@@ -66,15 +66,15 @@ export const LoginPage: React.FC = () => {
         </h1>
       </div>
 
-      <div className="w-full max-w-[96%] sm:max-w-md bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-6 sm:p-8 border border-white/50 overflow-hidden relative z-10 mx-1 flex flex-col max-h-[60vh] sm:max-h-[65vh]">
+      <div className="w-full max-w-[96%] sm:max-w-md bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-6 sm:p-8 border border-white/50 relative z-10 mx-1 flex flex-col">
         
         <div className="text-center mb-6 shrink-0">
           <h2 className="text-2xl font-bold text-gray-900 mb-1">Student / Staff Login</h2>
           <p className="text-gray-500 text-sm font-medium">Please sign in to your account</p>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5 pb-2">
+        <div className="flex-1">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
             <div className="space-y-1.5">
               <label className="text-sm font-bold text-gray-700 ml-1">Username or Email</label>
               <div className="relative group">
