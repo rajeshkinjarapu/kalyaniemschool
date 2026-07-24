@@ -160,7 +160,7 @@ export const QuestionPaperGeneratorPage = () => {
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="flex-1 w-full rounded-xl border-slate-200 bg-slate-50 border p-4 font-mono text-[13px] leading-relaxed focus:ring-2 focus:ring-blue-500/20 outline-none resize-none min-h-[400px]"
+              className="flex-1 w-full rounded-xl border-slate-200 bg-slate-50 border p-5 font-mono text-base leading-relaxed focus:ring-2 focus:ring-blue-500/20 outline-none resize-none min-h-[400px]"
               placeholder="1. Question text&#10;(A) Option A&#10;(B) Option B&#10;(C) Option C&#10;(D) Option D"
             />
           </div>
@@ -168,7 +168,7 @@ export const QuestionPaperGeneratorPage = () => {
 
         {/* Right Side: Live Preview (Full Width on Print) */}
         <div className="w-1/2 p-8 overflow-y-auto bg-slate-100 print:w-full print:p-0 print:bg-white custom-scrollbar flex justify-center">
-          <div className="origin-top transition-transform">
+          <div className="paper-zoom origin-top transition-transform">
             <LiveLatexPreview 
               content={content}
               schoolName={schoolName}
@@ -257,12 +257,19 @@ export const QuestionPaperGeneratorPage = () => {
       )}
 
       <style>{`
+        .paper-zoom { zoom: 0.8; }
+        /* Firefox fallback */
+        @-moz-document url-prefix() {
+          .paper-zoom { transform: scale(0.8); transform-origin: top center; margin-bottom: -20%; }
+        }
+
         .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         @media print {
+          .paper-zoom { zoom: 1 !important; transform: none !important; margin: 0 !important; }
           @page { margin: 10mm; size: A4; }
           body { -webkit-print-color-adjust: exact; background: white; }
           #root { display: block !important; }
