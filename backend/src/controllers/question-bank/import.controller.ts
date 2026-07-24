@@ -1,4 +1,4 @@
-﻿import { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import fs from 'fs';
 import { GoogleGenAI } from '@google/genai';
 import axios from 'axios';
@@ -65,14 +65,14 @@ const parseQuestionFromText = (text: string) => {
   };
 };
 
-export const parseWithGemini = async (req: Request, res: Response) => {
+  export const parseWithGemini = async (req: Request, res: Response) => {
   try {
-    const { text, subject, provider = 'gemini', apiKey } = req.body;
-    if (!text) {
-      return res.status(400).json({ message: 'Text input is required.' });
+    const { text, subject, provider = 'gemini', apiKey, imageBase64, imageMimeType } = req.body;
+    if (!text && !imageBase64) {
+      return res.status(400).json({ message: 'Text input or image is required.' });
     }
 
-    const prompt = `You are an AI assistant for an exam portal. Extract multiple exam questions from the following text and return a JSON array of objects.
+    const promptText = `You are an AI assistant for an exam portal. Extract multiple exam questions from the following text and return a JSON array of objects.
 Do not wrap the output in markdown code blocks like \`\`\`json. Just return the raw JSON array.
 Each object must strictly match this structure:
 {
@@ -91,8 +91,8 @@ Each object must strictly match this structure:
   "marks": 4,
   "negativeMarks": -1
 }
-Raw Text:
-${text}`;
+Raw Text/Image Content:
+${text || ''}`;
 
     let parsed = null;
 
@@ -100,9 +100,18 @@ ${text}`;
       const activeKey = apiKey || process.env.GEMINI_API_KEY;
       if (!activeKey) throw new Error("Gemini API key is missing");
       const ai = new GoogleGenAI({ apiKey: activeKey });
+      
+      let contents: any = promptText;
+      if (imageBase64) {
+        contents = [
+          { text: promptText },
+          { inlineData: { data: imageBase64, mimeType: imageMimeType || 'image/jpeg' } }
+        ];
+      }
+
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
-        contents: prompt,
+        contents: contents,
         config: {
           responseMimeType: 'application/json',
         }

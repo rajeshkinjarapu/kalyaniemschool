@@ -20,6 +20,8 @@ export const QuestionPaperGeneratorPage = () => {
   const [aiSourceType, setAiSourceType] = useState('text');
   const [aiInput, setAiInput] = useState('');
   const [aiInstructions, setAiInstructions] = useState('');
+  const [aiImageBase64, setAiImageBase64] = useState<string>('');
+  const [aiImageMimeType, setAiImageMimeType] = useState<string>('');
   
   // Editor State
   const [content, setContent] = useState(
@@ -46,29 +48,76 @@ export const QuestionPaperGeneratorPage = () => {
     }
   };
 
+  const handleAiPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const blob = items[i].getAsFile();
+        if (blob) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+             const result = event.target?.result as string;
+             const [prefix, base64] = result.split(',');
+             const mime = prefix.split(':')[1].split(';')[0];
+             setAiImageBase64(base64);
+             setAiImageMimeType(mime);
+             toast.success("Image pasted successfully! You can now generate.");
+          };
+          reader.readAsDataURL(blob);
+        }
+      }
+    }
+  };
+
+  const handleAiFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+       const reader = new FileReader();
+       reader.onload = (event) => {
+          const result = event.target?.result as string;
+          const [prefix, base64] = result.split(',');
+          const mime = prefix.split(':')[1].split(';')[0];
+          setAiImageBase64(base64);
+          setAiImageMimeType(mime);
+          setAiSourceType('text'); 
+          toast.success("Image uploaded! You can now add text instructions and generate.");
+       };
+       reader.readAsDataURL(file);
+    } else if (file) {
+       toast.error("Currently only image files (JPG/PNG) are supported for AI generation.");
+    }
+  };
+
   const handleAiGenerate = async () => {
     if (aiSourceType === 'file') {
-      toast.error("File upload is currently in beta. Please copy and paste your text into the Text Prompt tab.");
+      toast.error("Please select an image file first.");
       return;
     }
 
-    if (!aiInput.trim()) {
-      toast.error("Please enter some text or URL first.");
+    if (!aiInput.trim() && !aiImageBase64) {
+      toast.error("Please enter some text, paste an image, or provide a URL.");
       return;
     }
 
     setIsGenerating(true);
-    toast.loading("AI is generating questions...", { id: 'ai-gen' });
+    toast.loading("AI is analyzing and generating...", { id: 'ai-gen' });
     
     try {
       const finalPrompt = aiInstructions 
         ? `Instructions: ${aiInstructions}\n\nContent:\n${aiInput}` 
         : aiInput;
 
-      const response = await api.post('/api/questions/import-ai', {
+      const payload: any = {
         text: finalPrompt,
         subject: 'General'
-      });
+      };
+      
+      if (aiImageBase64) {
+        payload.imageBase64 = aiImageBase64;
+        payload.imageMimeType = aiImageMimeType;
+      }
+
+      const response = await api.post('/api/questions/import-ai', payload);
 
       const questions = response.data.questions || [];
       
@@ -100,6 +149,8 @@ export const QuestionPaperGeneratorPage = () => {
 
       setContent(content.trim() + generatedText);
       setIsGenerating(false);
+      setAiImageBase64('');
+      setAiImageMimeType('');
       toast.success(`${questions.length} questions generated successfully!`, { id: 'ai-gen' });
     } catch (error: any) {
       console.error(error);
@@ -295,22 +346,32 @@ export const QuestionPaperGeneratorPage = () => {
               {/* Dynamic Input Area */}
               {aiSourceType === 'text' && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Paste your syllabus, topic, or questions</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Paste text, or <span className="text-blue-600 font-bold">Paste an Image (Ctrl+V)</span></label>
                   <textarea
                     value={aiInput}
                     onChange={(e) => setAiInput(e.target.value)}
+                    onPaste={handleAiPaste}
                     className="w-full rounded-lg border-slate-200 bg-white border p-3 text-sm focus:ring-2 focus:ring-purple-500/20 outline-none resize-none h-32 transition-all custom-scrollbar"
-                    placeholder="E.g., Generate 10 MCQ questions on Quantum Physics for 12th grade..."
+                    placeholder="E.g., Generate 10 MCQ questions on Quantum Physics... You can also paste screenshots!"
                   />
+                  {aiImageBase64 && (
+                    <div className="mt-3 relative inline-block">
+                       <img src={`data:${aiImageMimeType};base64,${aiImageBase64}`} alt="Pasted" className="h-24 rounded-lg shadow-sm border border-slate-200 object-contain" />
+                       <button onClick={() => { setAiImageBase64(''); setAiImageMimeType(''); }} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md">
+                          <X className="w-3 h-3" />
+                       </button>
+                    </div>
+                  )}
                 </div>
               )}
               {aiSourceType === 'file' && (
-                <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group">
+                <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors relative cursor-pointer group">
+                  <input type="file" accept="image/*" onChange={handleAiFileUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   <div className="p-3 bg-white rounded-full shadow-sm mb-3 group-hover:scale-110 transition-transform">
                     <Upload className="w-6 h-6 text-blue-500" />
                   </div>
-                  <p className="text-sm font-medium text-slate-700">Click to upload or drag and drop</p>
-                  <p className="text-xs text-slate-500 mt-1">Supports PDF, DOCX, JPG, PNG (Max 10MB)</p>
+                  <p className="text-sm font-medium text-slate-700">Click to upload an image</p>
+                  <p className="text-xs text-slate-500 mt-1">Supports JPG, PNG (Max 5MB)</p>
                 </div>
               )}
               {aiSourceType === 'url' && (
