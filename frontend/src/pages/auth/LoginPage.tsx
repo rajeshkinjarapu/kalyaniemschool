@@ -58,15 +58,15 @@ export const LoginPage: React.FC = () => {
 
       {/* School Header */}
       <div className="relative z-10 flex flex-col items-center mb-6 sm:mb-8 mt-2">
-        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center mb-3 shadow-[0_0_30px_rgba(255,255,255,0.5)] border-4 border-white/80 overflow-hidden bg-white hover:scale-105 transition-transform duration-300">
-          <img src="/logo.png" alt="JY School Logo" className="w-full h-full object-contain p-2" />
+        <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full flex items-center justify-center mb-3 drop-shadow-[0_0_20px_rgba(255,255,255,0.6)] hover:scale-105 transition-transform duration-300">
+          <img src="/logo.png" alt="JY School Logo" className="w-full h-full object-contain" />
         </div>
         <h1 className="text-4xl sm:text-5xl font-black text-white drop-shadow-lg tracking-tight text-center px-4">
-          JY SCHOOL
+           JY SCHOOL
         </h1>
       </div>
 
-      <div className="w-full max-w-sm sm:max-w-md bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-6 sm:p-8 border border-white/50 overflow-hidden relative z-10 mx-4 flex flex-col max-h-[60vh] sm:max-h-[65vh]">
+      <div className="w-full max-w-[96%] sm:max-w-md bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-6 sm:p-8 border border-white/50 overflow-hidden relative z-10 mx-1 flex flex-col max-h-[60vh] sm:max-h-[65vh]">
         
         <div className="text-center mb-6 shrink-0">
           <h2 className="text-2xl font-bold text-gray-900 mb-1">Student / Staff Login</h2>
