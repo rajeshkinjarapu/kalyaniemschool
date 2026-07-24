@@ -32,7 +32,7 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
       // First, replace any [IMG:id] tags
       let withImages = text.replace(/\[IMG:([a-z0-9]+)\]/g, (match, id) => {
         if (inlineImages[id]) {
-          return `<div class="flex justify-center my-2"><img src="${inlineImages[id]}" alt="Inline Image" class="max-w-full max-h-[300px] object-contain rounded-md" /></div>`;
+          return `<img src="${inlineImages[id]}" alt="Inline Image" class="inline-block max-w-full max-h-[250px] align-middle rounded mx-1 shadow-sm object-contain" />`;
         }
         return match;
       });
@@ -151,8 +151,8 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
               const qRest = qMatch ? questionText.substring(qMatch[0].length) : questionText;
 
               return (
-                <div className="mb-2 break-inside-avoid text-[11pt] leading-snug">
-                  <div className="mb-0.5 flex" style={{ gap: '0.4em' }}>
+                <div className="mb-4 break-inside-avoid text-[11pt] leading-snug">
+                  <div className="mb-2.5 flex" style={{ gap: '0.4em' }}>
                     <strong className="flex-shrink-0">{qNum}.</strong>
                     <div dangerouslySetInnerHTML={{ __html: renderLatex(qRest) }} />
                   </div>
