@@ -112,9 +112,9 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
       if (block.trim() === '') continue; // Skip pure whitespace blocks
       
       const separator = i + 1 < rawBlocks.length ? rawBlocks[i + 1] : '';
-      // A standard break is 2 newlines. Any extra newlines (3, 4, etc.) add space.
+      // A standard break is 2 newlines. Any extra newlines (3, 4, etc.) add significant space for writing answers.
       const extraNewlines = Math.max(0, (separator.match(/\n/g) || []).length - 2);
-      const marginBottom = extraNewlines > 0 ? `${extraNewlines * 1.5}rem` : undefined;
+      const marginBottom = extraNewlines > 0 ? `calc(0.75rem + ${extraNewlines * 3}rem)` : '0.75rem';
 
       const hasOptions = block.includes('(A)') && block.includes('(B)') && block.includes('(C)') && block.includes('(D)');
       

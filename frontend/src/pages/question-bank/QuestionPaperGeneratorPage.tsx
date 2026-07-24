@@ -478,6 +478,10 @@ export const QuestionPaperGeneratorPage = () => {
                   onChange={handleImageUploadForEditor} 
                   className="hidden" 
                 />
+                <span className="text-xs text-slate-500 bg-white/80 px-2 py-1 rounded-md border border-slate-100 flex items-center gap-1.5 shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><path d="M12 9v2m0 4v.01M5.05 19h13.9c1.66 0 3-1.34 3-3V8c0-1.66-1.34-3-3-3H5.05c-1.66 0-3 1.34-3 3v8c0 1.66 1.34 3 3 3z"/></svg>
+                  Tip: Press Enter 3-4 times to leave empty space for answers
+                </span>
                 <button 
                   onClick={() => imageInputRef.current?.click()}
                   className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-bold rounded-lg hover:bg-purple-100 transition-colors flex items-center gap-1.5 border border-purple-200 shadow-sm"
