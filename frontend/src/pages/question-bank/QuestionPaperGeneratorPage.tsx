@@ -32,8 +32,20 @@ export const QuestionPaperGeneratorPage = () => {
   const [aiImageMimeType, setAiImageMimeType] = useState<string>('');
   
   // Settings State
+  const [activeAiModel, setActiveAiModel] = useState<string>(() => {
+    return localStorage.getItem('jy_active_ai_model') || 'gemini';
+  });
   const [geminiApiKey, setGeminiApiKey] = useState<string>(() => {
     return localStorage.getItem('jy_gemini_api_key') || '';
+  });
+  const [claudeApiKey, setClaudeApiKey] = useState<string>(() => {
+    return localStorage.getItem('jy_claude_api_key') || '';
+  });
+  const [chatgptApiKey, setChatgptApiKey] = useState<string>(() => {
+    return localStorage.getItem('jy_chatgpt_api_key') || '';
+  });
+  const [deepseekApiKey, setDeepseekApiKey] = useState<string>(() => {
+    return localStorage.getItem('jy_deepseek_api_key') || '';
   });
   const [isDoubleColumn, setIsDoubleColumn] = useState(false);
   
@@ -230,10 +242,17 @@ export const QuestionPaperGeneratorPage = () => {
         ? `Instructions: ${aiInstructions}\n\nContent:\n${aiInput}` 
         : aiInput;
 
+      let selectedKey = undefined;
+      if (activeAiModel === 'gemini') selectedKey = geminiApiKey;
+      else if (activeAiModel === 'claude') selectedKey = claudeApiKey;
+      else if (activeAiModel === 'chatgpt') selectedKey = chatgptApiKey;
+      else if (activeAiModel === 'deepseek') selectedKey = deepseekApiKey;
+
       const payload: any = {
         text: finalPrompt,
         subject: 'General',
-        apiKey: geminiApiKey || undefined
+        apiKey: selectedKey || undefined,
+        aiModel: activeAiModel
       };
       
       if (aiImageBase64) {
@@ -741,22 +760,137 @@ export const QuestionPaperGeneratorPage = () => {
                   placeholder="Enter each instruction on a new line..."
                 />
               </div>
-              <div className="pt-2 border-t border-slate-100">
-                <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center gap-2">
+              <div className="pt-4 border-t border-slate-100">
+                <h4 className="font-medium text-slate-700 flex items-center gap-2 mb-3">
                   <Sparkles className="w-4 h-4 text-purple-500" />
-                  Gemini API Key (For AI Generation)
-                </label>
-                <input
-                  type="password"
-                  value={geminiApiKey}
-                  onChange={(e) => {
-                    setGeminiApiKey(e.target.value);
-                    localStorage.setItem('jy_gemini_api_key', e.target.value);
-                  }}
-                  className="w-full rounded-lg border-slate-200 bg-white border p-2.5 text-sm focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
-                  placeholder="Paste your Gemini API Key here..."
-                />
-                <p className="text-xs text-slate-500 mt-1">Stored locally in your browser. Required if backend key is missing.</p>
+                  AI Model Configuration
+                </h4>
+                
+                <div className="space-y-4">
+                  {/* Gemini */}
+                  <div className={`p-3 rounded-xl border-2 transition-all ${activeAiModel === 'gemini' ? 'border-purple-500 bg-purple-50' : 'border-slate-200 bg-white'}`}>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name="ai_model" 
+                        checked={activeAiModel === 'gemini'}
+                        onChange={() => {
+                          setActiveAiModel('gemini');
+                          localStorage.setItem('jy_active_ai_model', 'gemini');
+                        }}
+                        className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                      />
+                      <span className="font-medium text-slate-700">Google Gemini</span>
+                    </label>
+                    {activeAiModel === 'gemini' && (
+                      <div className="mt-3 pl-7">
+                        <input
+                          type="password"
+                          value={geminiApiKey}
+                          onChange={(e) => {
+                            setGeminiApiKey(e.target.value);
+                            localStorage.setItem('jy_gemini_api_key', e.target.value);
+                          }}
+                          className="w-full rounded-lg border-slate-200 bg-white border p-2 text-sm focus:ring-2 focus:ring-purple-500/20 outline-none"
+                          placeholder="Gemini API Key"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Claude */}
+                  <div className={`p-3 rounded-xl border-2 transition-all ${activeAiModel === 'claude' ? 'border-orange-500 bg-orange-50' : 'border-slate-200 bg-white'}`}>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name="ai_model" 
+                        checked={activeAiModel === 'claude'}
+                        onChange={() => {
+                          setActiveAiModel('claude');
+                          localStorage.setItem('jy_active_ai_model', 'claude');
+                        }}
+                        className="w-4 h-4 text-orange-600 focus:ring-orange-500"
+                      />
+                      <span className="font-medium text-slate-700">Anthropic Claude</span>
+                    </label>
+                    {activeAiModel === 'claude' && (
+                      <div className="mt-3 pl-7">
+                        <input
+                          type="password"
+                          value={claudeApiKey}
+                          onChange={(e) => {
+                            setClaudeApiKey(e.target.value);
+                            localStorage.setItem('jy_claude_api_key', e.target.value);
+                          }}
+                          className="w-full rounded-lg border-slate-200 bg-white border p-2 text-sm focus:ring-2 focus:ring-orange-500/20 outline-none"
+                          placeholder="Claude API Key"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ChatGPT */}
+                  <div className={`p-3 rounded-xl border-2 transition-all ${activeAiModel === 'chatgpt' ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200 bg-white'}`}>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name="ai_model" 
+                        checked={activeAiModel === 'chatgpt'}
+                        onChange={() => {
+                          setActiveAiModel('chatgpt');
+                          localStorage.setItem('jy_active_ai_model', 'chatgpt');
+                        }}
+                        className="w-4 h-4 text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span className="font-medium text-slate-700">OpenAI ChatGPT</span>
+                    </label>
+                    {activeAiModel === 'chatgpt' && (
+                      <div className="mt-3 pl-7">
+                        <input
+                          type="password"
+                          value={chatgptApiKey}
+                          onChange={(e) => {
+                            setChatgptApiKey(e.target.value);
+                            localStorage.setItem('jy_chatgpt_api_key', e.target.value);
+                          }}
+                          className="w-full rounded-lg border-slate-200 bg-white border p-2 text-sm focus:ring-2 focus:ring-emerald-500/20 outline-none"
+                          placeholder="OpenAI API Key"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* DeepSeek */}
+                  <div className={`p-3 rounded-xl border-2 transition-all ${activeAiModel === 'deepseek' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white'}`}>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name="ai_model" 
+                        checked={activeAiModel === 'deepseek'}
+                        onChange={() => {
+                          setActiveAiModel('deepseek');
+                          localStorage.setItem('jy_active_ai_model', 'deepseek');
+                        }}
+                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="font-medium text-slate-700">DeepSeek API</span>
+                    </label>
+                    {activeAiModel === 'deepseek' && (
+                      <div className="mt-3 pl-7">
+                        <input
+                          type="password"
+                          value={deepseekApiKey}
+                          onChange={(e) => {
+                            setDeepseekApiKey(e.target.value);
+                            localStorage.setItem('jy_deepseek_api_key', e.target.value);
+                          }}
+                          className="w-full rounded-lg border-slate-200 bg-white border p-2 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
+                          placeholder="DeepSeek API Key"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
             
