@@ -35,10 +35,10 @@ export const QuestionBankDashboard = () => {
             <div 
               key={index}
               onClick={() => {
-                if (tool.title === 'Questions') navigate('/dashboard/question-bank/questions');
-                else if (tool.title === 'Paper Generator') navigate('/dashboard/question-bank/papers/new');
-                else if (tool.title === 'AI Paper Generator') navigate('/dashboard/question-bank/generator');
-                else if (tool.title === 'Dashboard') navigate('/dashboard/question-bank');
+                if (tool.title === 'Questions') navigate('/question-bank/questions');
+                else if (tool.title === 'Paper Generator') navigate('/question-bank/papers/new');
+                else if (tool.title === 'AI Paper Generator') navigate('/question-bank/generator');
+                else if (tool.title === 'Dashboard') navigate('/question-bank');
               }}
               className="group relative bg-white/90 backdrop-blur-md border-2 border-indigo-100 shadow-xl shadow-indigo-200/50 hover:border-indigo-400 rounded-3xl p-6 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[160px]"
             >
