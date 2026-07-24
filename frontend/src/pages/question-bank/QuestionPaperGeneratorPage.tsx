@@ -20,6 +20,7 @@ export const QuestionPaperGeneratorPage = () => {
     '1. What is the capital of France?\n(A) London\n(B) Paris\n(C) Berlin\n(D) Madrid\n\n2. Solve for x: $2x + 5 = 15$\n(A) 2\n(B) 4\n(C) 5\n(D) 10\n\n3. Which of the following is the quadratic formula?\n(A) $x = \\frac{b}{2a}$\n(B) $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$\n(C) $x = mc^2$\n(D) $x = y + c$'
   );
   const [isGenerating, setIsGenerating] = useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
     window.print();
@@ -27,9 +28,11 @@ export const QuestionPaperGeneratorPage = () => {
 
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch((err) => {
-        toast.error(`Error attempting to enable fullscreen: ${err.message}`);
-      });
+      if (containerRef.current) {
+        containerRef.current.requestFullscreen().catch((err) => {
+          toast.error(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+      }
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen();
@@ -77,7 +80,7 @@ export const QuestionPaperGeneratorPage = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col print:block bg-slate-50">
+    <div ref={containerRef} className="fixed inset-0 z-[100] flex flex-col print:block bg-slate-50">
       
       {/* Top Header (Hidden on Print) */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between print:hidden shadow-sm z-10">
