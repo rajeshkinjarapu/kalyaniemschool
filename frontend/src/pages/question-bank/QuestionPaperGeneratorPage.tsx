@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Sparkles, Upload, Save, Printer, FileText, Settings, Maximize, X, Wand2, BookOpen } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, Sparkles, Upload, Save, Printer, FileText, Settings, Maximize, X, Wand2, BookOpen, ImagePlus } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { LiveLatexPreview } from '../../components/QuestionBank/LiveLatexPreview';
@@ -43,6 +43,98 @@ export const QuestionPaperGeneratorPage = () => {
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Inline Images State: { id: dataURL }
+  const [inlineImages, setInlineImages] = useState<Record<string, string>>({});
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const generateImageId = () => Math.random().toString(36).substring(2, 8);
+
+  const insertImageAtCursor = (dataUrl: string) => {
+    const id = generateImageId();
+    setInlineImages(prev => ({ ...prev, [id]: dataUrl }));
+    const marker = `[IMG:${id}]`;
+    const ta = textareaRef.current;
+    if (ta) {
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+      const before = content.substring(0, start);
+      const after = content.substring(end);
+      setContent(before + marker + after);
+      // Restore cursor after marker
+      setTimeout(() => {
+        ta.selectionStart = ta.selectionEnd = start + marker.length;
+        ta.focus();
+      }, 0);
+    } else {
+      setContent(prev => prev + '\n' + marker);
+    }
+    toast.success('Image inserted!');
+  };
+
+  const handleEditorPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        e.preventDefault();
+        const blob = items[i].getAsFile();
+        if (blob) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const dataUrl = ev.target?.result as string;
+            insertImageAtCursor(dataUrl);
+          };
+          reader.readAsDataURL(blob);
+        }
+        return;
+      }
+    }
+    // If no image, let normal text paste happen
+  };
+
+  const handleImageUploadForEditor = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file (JPG/PNG).');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image too large! Max 10MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      insertImageAtCursor(dataUrl);
+    };
+    reader.readAsDataURL(file);
+    // Reset input so same file can be selected again
+    e.target.value = '';
+  };
+
+  // Serialize images into content for saving, deserialize on load
+  const serializeContent = (): string => {
+    // Find which image IDs are actually used
+    const usedIds = (content.match(/\[IMG:([a-z0-9]+)\]/g) || []).map(m => m.slice(5, -1));
+    const usedImages: Record<string, string> = {};
+    usedIds.forEach(id => { if (inlineImages[id]) usedImages[id] = inlineImages[id]; });
+    if (Object.keys(usedImages).length === 0) return content;
+    return content + '\n<!--INLINE_IMAGES:' + JSON.stringify(usedImages) + '-->';
+  };
+
+  const deserializeContent = (raw: string): { text: string; images: Record<string, string> } => {
+    const imgMatch = raw.match(/\n<!--INLINE_IMAGES:(.*?)-->$/);
+    if (imgMatch) {
+      try {
+        const images = JSON.parse(imgMatch[1]);
+        const text = raw.substring(0, raw.indexOf('\n<!--INLINE_IMAGES:'));
+        return { text, images };
+      } catch { return { text: raw, images: {} }; }
+    }
+    return { text: raw, images: {} };
+  };
 
   const handlePrint = () => {
     window.print();
@@ -253,7 +345,9 @@ export const QuestionPaperGeneratorPage = () => {
         setExamDate(p.examDate || '');
         setTime(p.time || '');
         setInstructions(p.instructions || '');
-        setContent(p.content || '');
+        const { text, images } = deserializeContent(p.content || '');
+        setContent(text);
+        setInlineImages(images);
         toast.success('Paper loaded!', { id: 'load' });
       } catch {
         toast.error('Failed to load paper.', { id: 'load' });
@@ -266,7 +360,8 @@ export const QuestionPaperGeneratorPage = () => {
     setIsSaving(true);
     toast.loading(paperId ? 'Updating paper...' : 'Saving paper...', { id: 'save' });
     try {
-      const payload = { examName, examSubject, examDate, time, instructions, content };
+      const serializedContent = serializeContent();
+      const payload = { examName, examSubject, examDate, time, instructions, content: serializedContent };
       if (paperId) {
         await api.put(`/generated-papers/${paperId}`, payload);
         toast.success('Paper updated successfully!', { id: 'save' });
@@ -365,13 +460,35 @@ export const QuestionPaperGeneratorPage = () => {
                 className="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1.5 border border-blue-200 shadow-sm"
               >
                 <Wand2 className="w-3.5 h-3.5" /> Auto-Align Format
-              </button>
+              <div className="flex gap-2">
+                <input 
+                  type="file" 
+                  ref={imageInputRef} 
+                  accept="image/*" 
+                  onChange={handleImageUploadForEditor} 
+                  className="hidden" 
+                />
+                <button 
+                  onClick={() => imageInputRef.current?.click()}
+                  className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-bold rounded-lg hover:bg-purple-100 transition-colors flex items-center gap-1.5 border border-purple-200 shadow-sm"
+                >
+                  <ImagePlus className="w-3.5 h-3.5" /> Insert Image
+                </button>
+                <button 
+                  onClick={autoFormatText}
+                  className="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1.5 border border-blue-200 shadow-sm"
+                >
+                  <Wand2 className="w-3.5 h-3.5" /> Auto-Align Format
+                </button>
+              </div>
             </h3>
             <textarea
+              ref={textareaRef}
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              onPaste={handleEditorPaste}
               className="flex-1 w-full rounded-xl border-slate-200 bg-slate-50 border p-5 font-mono text-base leading-relaxed focus:ring-2 focus:ring-blue-500/20 outline-none resize-none min-h-[400px]"
-              placeholder="1. Question text&#10;(A) Option A&#10;(B) Option B&#10;(C) Option C&#10;(D) Option D"
+              placeholder="1. Question text&#10;(A) Option A&#10;(B) Option B&#10;(C) Option C&#10;(D) Option D&#10;&#10;Tip: You can paste images directly (Ctrl+V) or click 'Insert Image'!"
             />
           </div>
         </div>
@@ -409,6 +526,7 @@ export const QuestionPaperGeneratorPage = () => {
               time={time}
               instructions={instructions.split('\n').filter(i => i.trim() !== '')}
               isDoubleColumn={isDoubleColumn}
+              inlineImages={inlineImages}
             />
           </div>
           </div>

@@ -12,6 +12,7 @@ interface LiveLatexPreviewProps {
   examSubject?: string;
   logoBase64?: string;
   isDoubleColumn?: boolean;
+  inlineImages?: Record<string, string>;
 }
 
 export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
@@ -23,11 +24,20 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
   examDate = '',
   examSubject = '',
   logoBase64 = '',
-  isDoubleColumn = false
+  isDoubleColumn = false,
+  inlineImages = {}
 }) => {
   const renderLatex = (text: string) => {
     try {
-      let normalized = text.replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$');
+      // First, replace any [IMG:id] tags
+      let withImages = text.replace(/\[IMG:([a-z0-9]+)\]/g, (match, id) => {
+        if (inlineImages[id]) {
+          return `<div class="flex justify-center my-2"><img src="${inlineImages[id]}" alt="Inline Image" class="max-w-full max-h-[300px] object-contain rounded-md" /></div>`;
+        }
+        return match;
+      });
+
+      let normalized = withImages.replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$');
       normalized = normalized.replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$');
       
       const parts = normalized.split(/(\$\$[\s\S]*?\$\$)/g);
