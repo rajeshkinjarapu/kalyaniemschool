@@ -17,7 +17,7 @@ export const QuestionPaperGeneratorPage = () => {
   const [examSubject, setExamSubject] = useState('GRAND TEST');
   const [examDate, setExamDate] = useState('');
   const [maxMarks, setMaxMarks] = useState('100');
-  const [time, setTime] = useState('3 Hours');
+  const [time, setTime] = useState('75');
   const [instructions, setInstructions] = useState('Answer all questions.\nEach question carries equal marks.\nRead questions carefully before answering.');
   const [logoBase64, setLogoBase64] = useState<string>(() => {
     return localStorage.getItem('jy_school_logo') || '';
@@ -588,7 +588,7 @@ export const QuestionPaperGeneratorPage = () => {
               </div>
               <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Time</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Marks</label>
                   <input
                     type="text"
                     value={time}
