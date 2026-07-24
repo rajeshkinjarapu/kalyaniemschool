@@ -14,12 +14,14 @@ export const QuestionPaperGeneratorPage = () => {
   
   // Paper Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [examName, setExamName] = useState('FINAL EXAMINATION');
-  const [examSubject, setExamSubject] = useState('GRAND TEST');
-  const [examDate, setExamDate] = useState('');
+  const [examName, setExamName] = useState<string>(() => localStorage.getItem('jy_exam_name') || 'FINAL EXAMINATION');
+  const [examSubject, setExamSubject] = useState<string>(() => localStorage.getItem('jy_exam_subject') || 'GRAND TEST');
+  const [examDate, setExamDate] = useState<string>(() => localStorage.getItem('jy_exam_date') || '');
   const [maxMarks, setMaxMarks] = useState('100');
-  const [time, setTime] = useState('75');
-  const [instructions, setInstructions] = useState('Answer all questions.\nEach question carries equal marks.\nRead questions carefully before answering.');
+  const [time, setTime] = useState<string>(() => localStorage.getItem('jy_exam_marks') || '75');
+  const [instructions, setInstructions] = useState<string>(() => 
+    localStorage.getItem('jy_exam_instructions') || 'Answer all questions.\nEach question carries equal marks.\nRead questions carefully before answering.'
+  );
   const [logoBase64, setLogoBase64] = useState<string>(() => {
     return localStorage.getItem('jy_school_logo') || '';
   });
@@ -893,7 +895,16 @@ export const QuestionPaperGeneratorPage = () => {
             
             <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end">
               <button 
-                onClick={() => setIsSettingsOpen(false)}
+                onClick={() => {
+                  // Save all settings to localStorage
+                  localStorage.setItem('jy_exam_name', examName);
+                  localStorage.setItem('jy_exam_subject', examSubject);
+                  localStorage.setItem('jy_exam_date', examDate);
+                  localStorage.setItem('jy_exam_marks', time);
+                  localStorage.setItem('jy_exam_instructions', instructions);
+                  setIsSettingsOpen(false);
+                  toast.success('Settings saved!');
+                }}
                 className="px-6 py-2 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
               >
                 Save Settings
