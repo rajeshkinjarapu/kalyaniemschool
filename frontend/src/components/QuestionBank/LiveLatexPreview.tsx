@@ -101,33 +101,12 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
               const optC = matchC ? matchC[1].trim() : '';
               const optD = matchD ? matchD[1].trim() : '';
 
-              const estimateVisualLength = (text: string) => {
-                return text.replace(/\$|\\[a-zA-Z]+|{|}|_|\\/g, '').trim().length;
-              };
-
-              const sumLen = estimateVisualLength(optA) + estimateVisualLength(optB) + estimateVisualLength(optC) + estimateVisualLength(optD);
-              const maxLen = Math.max(
-                estimateVisualLength(optA), 
-                estimateVisualLength(optB), 
-                estimateVisualLength(optC), 
-                estimateVisualLength(optD)
-              );
-              
-              let optionsLayout = '';
-              if (maxLen < 40) {
-                // 2 columns
-                optionsLayout = 'grid grid-cols-2 gap-y-1 gap-x-8 w-[90%]';
-              } else {
-                // 1 column
-                optionsLayout = 'flex flex-col gap-y-1 w-full';
-              }
-
               const formattedQText = questionText.replace(/^(\d+)\.\s*/, '<strong>$1.</strong> &nbsp;&nbsp;');
 
               return (
                 <div className="mb-2 break-inside-avoid text-[11pt] leading-tight">
                   <div className="mb-1" dangerouslySetInnerHTML={{ __html: renderLatex(formattedQText) }} />
-                  <div className={`ml-6 ${optionsLayout}`}>
+                  <div className="grid grid-cols-4 gap-2 w-full ml-6 pr-4">
                     <div className="flex"><span className="mr-1.5 font-medium">(A)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optA) }} /></div>
                     <div className="flex"><span className="mr-1.5 font-medium">(B)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optB) }} /></div>
                     <div className="flex"><span className="mr-1.5 font-medium">(C)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optC) }} /></div>
