@@ -188,7 +188,7 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
           
           <div className="flex flex-col text-[11pt] font-medium mt-2 px-1 gap-1">
             <div className="flex justify-between items-center">
-              <div><span className="font-bold">Subject:</span> {examSubject || '_______________'}</div>
+              <div><span className="font-bold">Class:</span> {examSubject || '_______________'}</div>
               <div><span className="font-bold">Time:</span> {time || '3 Hours'}</div>
             </div>
             <div className="flex justify-between items-center">
