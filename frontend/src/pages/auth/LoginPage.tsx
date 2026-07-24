@@ -16,11 +16,17 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const LoginPage: React.FC = () => {
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const from = location.state?.from?.pathname || '/dashboard';
 
@@ -39,7 +45,8 @@ export const LoginPage: React.FC = () => {
       const { accessToken, refreshToken, user } = response.data;
       login(accessToken, refreshToken, user);
       toast.success(`Welcome back, ${user.name}!`);
-      navigate(from, { replace: true });
+      // Force navigation to dashboard for all roles on login
+      navigate('/dashboard', { replace: true });
     } catch (error: any) {
       const message = error?.response?.data?.message || error?.message || 'Login failed. Please check your credentials.';
       toast.error(message);
