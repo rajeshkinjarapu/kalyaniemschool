@@ -71,14 +71,14 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
       const blockContent = (
         <>
           {renderHeading && (
-            <div className="w-full text-center my-4 break-before-auto">
-              <h3 className="font-bold text-lg underline underline-offset-4">{renderHeading}</h3>
+            <div className="w-full text-center my-3 break-before-auto">
+              <h3 className="font-bold text-[13pt] underline underline-offset-4">{renderHeading}</h3>
             </div>
           )}
           {!hasOptions ? (
             <div 
-              className="mb-3 break-inside-avoid text-[11pt]"
-              dangerouslySetInnerHTML={{ __html: renderLatex(block) }} 
+              className="mb-2 break-inside-avoid text-[11pt]"
+              dangerouslySetInnerHTML={{ __html: renderLatex(block.replace(/^(\d+)\.\s*/, '<strong>$1.</strong> &nbsp;&nbsp;')) }} 
             />
           ) : (
             (() => {
@@ -105,6 +105,7 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
                 return text.replace(/\$|\\[a-zA-Z]+|{|}|_|\\/g, '').trim().length;
               };
 
+              const sumLen = estimateVisualLength(optA) + estimateVisualLength(optB) + estimateVisualLength(optC) + estimateVisualLength(optD);
               const maxLen = Math.max(
                 estimateVisualLength(optA), 
                 estimateVisualLength(optB), 
@@ -113,20 +114,24 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
               );
               
               let optionsLayout = '';
-              if (maxLen < 35) {
+              if (sumLen < 50 && maxLen < 15) {
+                optionsLayout = 'flex flex-row justify-between w-full pr-8 gap-2';
+              } else if (maxLen < 35) {
                 optionsLayout = 'grid grid-cols-2 gap-y-1 gap-x-2 w-full pr-4';
               } else {
                 optionsLayout = 'grid grid-cols-1 gap-y-1 w-full';
               }
 
+              const formattedQText = questionText.replace(/^(\d+)\.\s*/, '<strong>$1.</strong> &nbsp;&nbsp;');
+
               return (
-                <div className="mb-3 break-inside-avoid text-[11pt] leading-tight">
-                  <div className="mb-1" dangerouslySetInnerHTML={{ __html: renderLatex(questionText) }} />
-                  <div className={`ml-5 ${optionsLayout}`}>
-                    <div className="flex"><span className="mr-2 font-medium">(A)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optA) }} /></div>
-                    <div className="flex"><span className="mr-2 font-medium">(B)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optB) }} /></div>
-                    <div className="flex"><span className="mr-2 font-medium">(C)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optC) }} /></div>
-                    <div className="flex"><span className="mr-2 font-medium">(D)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optD) }} /></div>
+                <div className="mb-2 break-inside-avoid text-[11pt] leading-tight">
+                  <div className="mb-1" dangerouslySetInnerHTML={{ __html: renderLatex(formattedQText) }} />
+                  <div className={`ml-6 ${optionsLayout}`}>
+                    <div className="flex"><span className="mr-1.5 font-medium">(A)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optA) }} /></div>
+                    <div className="flex"><span className="mr-1.5 font-medium">(B)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optB) }} /></div>
+                    <div className="flex"><span className="mr-1.5 font-medium">(C)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optC) }} /></div>
+                    <div className="flex"><span className="mr-1.5 font-medium">(D)</span> <span dangerouslySetInnerHTML={{ __html: renderLatex(optD) }} /></div>
                   </div>
                 </div>
               );

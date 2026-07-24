@@ -192,6 +192,18 @@ export const QuestionPaperGeneratorPage = () => {
       // Format standard options "A) " -> "(A) "
       line = line.replace(/^\b([a-dA-D])[\)\.]\s+/i, (match, letter) => `(${letter.toUpperCase()}) `);
       
+      // Auto-wrap math expressions with $ if not already wrapped
+      if (!line.includes('$')) {
+          // Wrap trig functions with angles like tan 90^\circ
+          line = line.replace(/\b(sin|cos|tan|sec|csc|cot)\s+([0-9]+[\^\_\\][a-zA-Z0-9{}]+)/gi, '$$$1 $2$$');
+          
+          // Wrap standalone math symbols like \sqrt{3}/2, \frac{1}{2}, x^2, \theta
+          line = line.replace(/(?<!\$)([0-9a-zA-Z]*[\^\_\\][a-zA-Z0-9{}]+(?:\/[0-9a-zA-Z]+)?)(?!\$)/g, '$$$&$$');
+          
+          // For options that look purely mathematical (e.g. "1/2", "0", "1"), optionally wrap them too
+          line = line.replace(/^(\([A-D]\))\s+([\d\.\-\+\*\/]+)$/g, '$1 $$$2$$');
+      }
+
       // Add newline before question numbers if missing
       if (/^\d+[\.\)]\s/.test(line)) {
         if (formatted.length > 0 && formatted[formatted.length - 1] !== '') {
