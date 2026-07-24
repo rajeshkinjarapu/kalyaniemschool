@@ -5,10 +5,12 @@ import toast from 'react-hot-toast';
 import { LoadingSpinner } from '../../components/UI/LoadingSpinner';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useSearchParams } from 'react-router-dom';
 
 export const ResultsTab: React.FC<{ exams: any[] }> = ({ exams }) => {
-  const [selectedExamId, setSelectedExamId] = useState('');
-  const [selectedClassId, setSelectedClassId] = useState('');
+  const [searchParams] = useSearchParams();
+  const [selectedExamId, setSelectedExamId] = useState(searchParams.get('examId') || '');
+  const [selectedClassId, setSelectedClassId] = useState(searchParams.get('classId') || '');
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
