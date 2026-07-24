@@ -183,14 +183,13 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
              <h3 className="text-lg font-bold uppercase">{examName || 'EXAMINATION'}</h3>
           </div>
           
-          <div className="flex justify-between items-center text-[11pt] font-medium mt-1 px-1">
-            <div className="flex gap-4">
+          <div className="flex flex-col text-[11pt] font-medium mt-2 px-1 gap-1">
+            <div className="flex justify-between items-center">
               <div><span className="font-bold">Subject:</span> {examSubject || '_______________'}</div>
-              <div><span className="font-bold">Date:</span> {examDate || '___/___/20__'}</div>
-            </div>
-            <div className="flex gap-4">
               <div><span className="font-bold">Time:</span> {time || '3 Hours'}</div>
-              <div><span className="font-bold">Max. Marks:</span> {maxMarks || '100'}</div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div><span className="font-bold">Date:</span> {examDate || '___/___/20__'}</div>
             </div>
           </div>
         </div>

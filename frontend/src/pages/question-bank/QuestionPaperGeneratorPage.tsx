@@ -530,16 +530,7 @@ export const QuestionPaperGeneratorPage = () => {
                   className="w-full rounded-lg border-slate-200 bg-white border p-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Max Marks</label>
-                  <input
-                    type="text"
-                    value={maxMarks}
-                    onChange={(e) => setMaxMarks(e.target.value)}
-                    className="w-full rounded-lg border-slate-200 bg-white border p-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
-                  />
-                </div>
+              <div className="grid grid-cols-1 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Time</label>
                   <input
