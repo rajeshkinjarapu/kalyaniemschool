@@ -127,13 +127,36 @@ export const MarksEntryPage: React.FC = () => {
   };
 
   const handleClearMarks = async () => {
-    if (!window.confirm("Are you sure you want to clear all marks for this class in this exam? The teacher will have to re-enter them.")) return;
+    const isSingleSubject = selectedSubjectId !== 'ALL';
+    const subjectName = isSingleSubject ? subjects.find(s => s.id === selectedSubjectId)?.name || 'selected subject' : 'ALL subjects';
+    
+    if (!window.confirm(`Are you sure you want to clear marks for ${subjectName} in this exam? The teacher will have to re-enter them.`)) return;
     
     try {
-      await api.delete(`/api/marks/exam/${id}/clear?classId=${classId}`);
-      toast.success("Marks cleared successfully!");
-      setMarksData({});
-      setRemarksData({});
+      let url = `/api/marks/exam/${id}/clear?classId=${classId}`;
+      if (isSingleSubject) {
+        url += `&subjectId=${selectedSubjectId}`;
+      }
+      await api.delete(url);
+      toast.success(`Marks cleared for ${subjectName}!`);
+      
+      // Fast state refresh for cleared subject without full reload
+      if (isSingleSubject) {
+        const newMarks = { ...marksData };
+        const newRemarks = { ...remarksData };
+        Object.keys(newMarks).forEach(key => {
+          if (key.endsWith(`_${selectedSubjectId}`)) {
+            delete newMarks[key];
+            delete newRemarks[key];
+          }
+        });
+        setMarksData(newMarks);
+        setRemarksData(newRemarks);
+      } else {
+        setMarksData({});
+        setRemarksData({});
+      }
+      
     } catch (e: any) {
       toast.error(e.message || "Failed to clear marks");
     }
