@@ -98,6 +98,8 @@ export const LiveLatexPreview: React.FC<LiveLatexPreviewProps> = ({
 
               const optA = matchA ? matchA[1].trim() : '';
               const optB = matchB ? matchB[1].trim() : '';
+              const optC = matchC ? matchC[1].trim() : '';
+              const optD = matchD ? matchD[1].trim() : '';
               const estimateVisualLength = (text: string) => {
                 return text.replace(/\$|\\[a-zA-Z]+|{|}|_|\\/g, '').trim().length;
               };
