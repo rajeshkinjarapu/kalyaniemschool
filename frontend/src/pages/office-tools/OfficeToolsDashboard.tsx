@@ -71,6 +71,11 @@ export const OfficeToolsDashboard = () => {
           return (
             <div 
               key={index} 
+              onClick={() => {
+                if (tool.title === 'ORIGINAL ACADEMIC PROGRESS CARD') {
+                  window.open('/Slip Test Manual.html', '_blank');
+                }
+              }}
               className="group relative bg-white border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden flex flex-col items-start gap-4"
             >
               {/* Subtle hover background highlight */}

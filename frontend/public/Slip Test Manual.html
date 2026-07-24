@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Slip Test Rank Card</title>
+    <title>SSC Slip Test · Rank Card</title>
 
     <!-- CDN Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
@@ -1172,6 +1172,20 @@
         .file-row .preview-img {
             display: none !important;
         }
+
+        /* localStorage restore flash */
+        .restore-flash {
+            animation: flashGreen 0.6s ease;
+        }
+        @keyframes flashGreen {
+            0%,
+            100% {
+                background: transparent;
+            }
+            50% {
+                background: rgba(26, 138, 74, 0.12);
+            }
+        }
     </style>
 </head>
 <body>
@@ -1193,7 +1207,7 @@
         </div>
 
         <div class="sub-head">
-            <span>📋 Upload Excel · Dense Ranking · Max 20 · Percentage last column</span>
+            <span>📋 Upload Excel · Dense Ranking · Percentage last column</span>
             <span class="hint">🔹 Rank 1🥇 2🥈 3🥉 · 500 DPI JPG</span>
         </div>
 
@@ -1230,6 +1244,12 @@
                 <div style="margin-top:12px;">
                     <h3 style="margin-bottom:8px;">📝 Test Details</h3>
                     <div class="file-row">
+                        <label style="min-width:70px;">Test Name</label>
+                        <div class="file-input-wrapper">
+                            <input type="text" id="testNameInput" value="SLIP TEST" style="flex:1; padding:8px 14px; border:2px solid #dce6f0; border-radius:10px; font-size:14px; font-weight:500; color:#0a1e3a; background:#fff; min-width:120px; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#1a4a7a'" onblur="this.style.borderColor='#dce6f0'" />
+                        </div>
+                    </div>
+                    <div class="file-row">
                         <label style="min-width:70px;">Subject</label>
                         <div class="file-input-wrapper">
                             <input type="text" id="subjectInput" value="SOCIAL" style="flex:1; padding:8px 14px; border:2px solid #dce6f0; border-radius:10px; font-size:14px; font-weight:500; color:#0a1e3a; background:#fff; min-width:120px; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#1a4a7a'" onblur="this.style.borderColor='#dce6f0'" />
@@ -1247,8 +1267,14 @@
                             <input type="text" id="classInput" value="SSC" style="flex:1; padding:8px 14px; border:2px solid #dce6f0; border-radius:10px; font-size:14px; font-weight:500; color:#0a1e3a; background:#fff; min-width:120px; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#1a4a7a'" onblur="this.style.borderColor='#dce6f0'" />
                         </div>
                     </div>
+                    <div class="file-row">
+                        <label style="min-width:70px;">Max Marks</label>
+                        <div class="file-input-wrapper">
+                            <input type="number" id="maxMarksInput" value="20" min="1" max="999" style="flex:1; padding:8px 14px; border:2px solid #dce6f0; border-radius:10px; font-size:14px; font-weight:500; color:#0a1e3a; background:#fff; min-width:120px; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#1a4a7a'" onblur="this.style.borderColor='#dce6f0'" />
+                        </div>
+                    </div>
                     <div style="font-size:12px; color:#4a7a9a; margin-top:6px; background:rgba(26,58,122,0.04); padding:4px 12px; border-radius:8px;">
-                        📌 Max Marks fixed at <strong>20</strong> · Percentage = (Obtained/20)×100
+                        📌 Max Marks dynamic · Percentage = (Obtained / Max) × 100
                     </div>
                 </div>
             </div>
@@ -1267,7 +1293,7 @@
                     <div id="excelStatus" class="text-muted mt-8" style="font-size:13px;">No file uploaded</div>
                     <div style="margin-top:8px; font-size:12px; color:#4a7a9a; display:flex; flex-wrap:wrap; gap:6px 14px;">
                         <span><span class="jee-badge">📌</span> Student ID · Name · Obtained</span>
-                        <span><span class="jee-badge">📊</span> Max fixed: 20</span>
+                        <span><span class="jee-badge">📊</span> Max: user-defined</span>
                         <span><span class="jee-badge">🏆</span> Dense Ranking</span>
                         <span><span class="jee-badge">📈</span> Percentage last col</span>
                     </div>
@@ -1304,7 +1330,7 @@
         </div>
 
         <div style="margin-top:16px; text-align:center; font-size:13px; color:#7a9aaa; border-top:1px solid rgba(26,58,122,0.08); padding-top:18px; letter-spacing:0.3px;">
-            SSC Slip Test · Dense Ranking · Max 20 · Percentage last column · 500 DPI
+            SSC Slip Test · Dense Ranking · Max: user-defined · Percentage last column · 500 DPI
         </div>
     </div>
 
@@ -1329,13 +1355,16 @@
             logoDataURL: null,
             teacherSigDataURL: null,
             principalSigDataURL: null,
+            testName: 'SLIP TEST',
             subject: 'SOCIAL',
             examDate: '',
             className: 'SSC',
+            maxMarks: 20,
         };
 
-        const MAX_MARKS = 20;
-
+        // ============================================================
+        //  DOM refs
+        // ============================================================
         const $ = id => document.getElementById(id);
         const cardEl = $('resultCard');
         const logoUpload = $('logoUpload');
@@ -1349,57 +1378,84 @@
         const resetBtn = $('resetBtn');
         const studentCountBadge = $('studentCountBadge');
         const sampleExcelBtn = $('sampleExcelBtn');
+        const testNameInput = $('testNameInput');
         const subjectInput = $('subjectInput');
         const examDateInput = $('examDateInput');
         const classInput = $('classInput');
+        const maxMarksInput = $('maxMarksInput');
         const progressOverlay = $('progressOverlay');
         const progressFill = $('progressFill');
         const progressText = $('progressText');
         const progressStatus = $('progressStatus');
         const downloadSection = $('downloadSection');
 
-        // Set default date
-        const today = new Date();
-        const dateStr = today.toISOString().split('T')[0];
-        examDateInput.value = dateStr;
-        state.examDate = dateStr;
+        // ============================================================
+        //  LOCALSTORAGE — save & load everything
+        // ============================================================
+        const STORAGE_KEY = 'slipTestState_v2';
 
-        // ============================================================
-        //  SAMPLE EXCEL
-        // ============================================================
-        function generateSampleExcel() {
-            const data = [
-                ['Student ID', 'Name of the Student', 'Obtained Marks'],
-                ['SSC001', 'T. SHAMYUU', 18],
-                ['SSC002', 'A. RAHUL', 19],
-                ['SSC003', 'S. PRIYA', 16],
-                ['SSC004', 'M. KIRAN', 9],
-                ['SSC005', 'R. ANJALI', 14],
-                ['SSC006', 'V. SAI', 17],
-                ['SSC007', 'K. DEEPAK', 15],
-                ['SSC008', 'N. LAKSHMI', 12],
-                ['SSC009', 'P. SURESH', 20],
-                ['SSC010', 'M. ANITHA', 16],
-                ['SSC011', 'R. VENKAT', 7],
-                ['SSC012', 'K. SWETHA', 14],
-                ['SSC013', 'G. NAVEEN', 19],
-                ['SSC014', 'B. SAI', 16],
-                ['SSC015', 'L. SITA', 16],
-                ['SSC016', 'D. RAM', 10],
-                ['SSC017', 'S. LAKSHMI', 13],
-                ['SSC018', 'P. SUNIL', 18],
-            ];
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'SlipTest');
-            XLSX.writeFile(wb, 'SSC_Slip_Test_Sample.xlsx');
+        function saveState() {
+            try {
+                const data = {
+                    logoDataURL: state.logoDataURL || '',
+                    teacherSigDataURL: state.teacherSigDataURL || '',
+                    principalSigDataURL: state.principalSigDataURL || '',
+                    testName: state.testName || 'SLIP TEST',
+                    subject: state.subject || 'SOCIAL',
+                    examDate: state.examDate || '',
+                    className: state.className || 'SSC',
+                    maxMarks: state.maxMarks || 20,
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                // localStorage full or unavailable — silently skip
+                console.warn('localStorage save failed:', e);
+            }
         }
-        sampleExcelBtn.addEventListener('click', generateSampleExcel);
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return false;
+                const data = JSON.parse(raw);
+
+                // Restore text inputs
+                if (data.testName) { testNameInput.value = data.testName;
+                    state.testName = data.testName; }
+                if (data.subject) { subjectInput.value = data.subject;
+                    state.subject = data.subject; }
+                if (data.examDate) { examDateInput.value = data.examDate;
+                    state.examDate = data.examDate; }
+                if (data.className) { classInput.value = data.className;
+                    state.className = data.className; }
+                if (data.maxMarks && data.maxMarks > 0) {
+                    maxMarksInput.value = data.maxMarks;
+                    state.maxMarks = data.maxMarks;
+                }
+
+                // Restore images (data URLs)
+                if (data.logoDataURL) {
+                    state.logoDataURL = data.logoDataURL;
+                    // mark visually that logo is loaded (optional)
+                }
+                if (data.teacherSigDataURL) {
+                    state.teacherSigDataURL = data.teacherSigDataURL;
+                }
+                if (data.principalSigDataURL) {
+                    state.principalSigDataURL = data.principalSigDataURL;
+                }
+
+                return true;
+            } catch (e) {
+                console.warn('localStorage load failed:', e);
+                return false;
+            }
+        }
 
         // ============================================================
-        //  IMAGE UPLOADS — store dataURL without showing preview
+        //  IMAGE UPLOADS — store dataURL + auto-save
         // ============================================================
-        function handleImageUpload(input, setDataURL) {
+        function handleImageUpload(input, setDataURL, stateKey) {
             input.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -1407,15 +1463,86 @@
                 reader.onload = function(ev) {
                     const dataUrl = ev.target.result;
                     setDataURL(dataUrl);
-                    // No preview shown — user requested to hide upload previews
+                    saveState();
+                    if (state.students.length > 0) renderCard();
                 };
                 reader.readAsDataURL(file);
             });
         }
 
-        handleImageUpload(logoUpload, (url) => { state.logoDataURL = url; });
-        handleImageUpload(teacherSigUpload, (url) => { state.teacherSigDataURL = url; });
-        handleImageUpload(principalSigUpload, (url) => { state.principalSigDataURL = url; });
+        handleImageUpload(logoUpload, (url) => { state.logoDataURL = url;
+            saveState(); }, 'logoDataURL');
+        handleImageUpload(teacherSigUpload, (url) => { state.teacherSigDataURL = url;
+            saveState(); }, 'teacherSigDataURL');
+        handleImageUpload(principalSigUpload, (url) => { state.principalSigDataURL = url;
+            saveState(); }, 'principalSigDataURL');
+
+        // ============================================================
+        //  TEXT INPUTS — auto-save + re-render
+        // ============================================================
+        function setupTextInput(input, stateKey, callback) {
+            input.addEventListener('input', function() {
+                const val = this.value.trim();
+                state[stateKey] = val || (stateKey === 'maxMarks' ? 20 : '');
+                if (stateKey === 'maxMarks') {
+                    const num = parseInt(val) || 20;
+                    state.maxMarks = num > 0 ? num : 20;
+                    if (state.students.length > 0) renderCard();
+                }
+                saveState();
+                if (callback) callback();
+            });
+            // Also on change for date
+            input.addEventListener('change', function() {
+                const val = this.value.trim();
+                state[stateKey] = val || (stateKey === 'maxMarks' ? 20 : '');
+                if (stateKey === 'maxMarks') {
+                    const num = parseInt(val) || 20;
+                    state.maxMarks = num > 0 ? num : 20;
+                }
+                saveState();
+                if (state.students.length > 0) renderCard();
+            });
+        }
+
+        setupTextInput(testNameInput, 'testName');
+        setupTextInput(subjectInput, 'subject');
+        setupTextInput(examDateInput, 'examDate');
+        setupTextInput(classInput, 'className');
+        setupTextInput(maxMarksInput, 'maxMarks');
+
+        // ============================================================
+        //  SAMPLE EXCEL
+        // ============================================================
+        function generateSampleExcel() {
+            const maxM = state.maxMarks || 20;
+            const data = [
+                ['Student ID', 'Name of the Student', 'Obtained Marks'],
+                ['SSC001', 'T. SHAMYUU', Math.min(18, maxM)],
+                ['SSC002', 'A. RAHUL', Math.min(19, maxM)],
+                ['SSC003', 'S. PRIYA', Math.min(16, maxM)],
+                ['SSC004', 'M. KIRAN', Math.min(9, maxM)],
+                ['SSC005', 'R. ANJALI', Math.min(14, maxM)],
+                ['SSC006', 'V. SAI', Math.min(17, maxM)],
+                ['SSC007', 'K. DEEPAK', Math.min(15, maxM)],
+                ['SSC008', 'N. LAKSHMI', Math.min(12, maxM)],
+                ['SSC009', 'P. SURESH', Math.min(20, maxM)],
+                ['SSC010', 'M. ANITHA', Math.min(16, maxM)],
+                ['SSC011', 'R. VENKAT', Math.min(7, maxM)],
+                ['SSC012', 'K. SWETHA', Math.min(14, maxM)],
+                ['SSC013', 'G. NAVEEN', Math.min(19, maxM)],
+                ['SSC014', 'B. SAI', Math.min(16, maxM)],
+                ['SSC015', 'L. SITA', Math.min(16, maxM)],
+                ['SSC016', 'D. RAM', Math.min(10, maxM)],
+                ['SSC017', 'S. LAKSHMI', Math.min(13, maxM)],
+                ['SSC018', 'P. SUNIL', Math.min(18, maxM)],
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'SlipTest');
+            XLSX.writeFile(wb, 'SSC_Slip_Test_Sample.xlsx');
+        }
+        sampleExcelBtn.addEventListener('click', generateSampleExcel);
 
         // ============================================================
         //  EXCEL UPLOAD
@@ -1476,13 +1603,15 @@
                 return;
             }
 
+            const maxM = state.maxMarks || 20;
+
             json.forEach(row => {
                 const name = String(row[colMap.name] || '').trim();
                 if (!name) return;
                 const studentId = String(row[colMap.studentId] || '').trim() || '—';
                 const obtained = parseFloat(row[colMap.obtained] !== undefined ? row[colMap.obtained] : 0);
-                const marks = Math.min(Math.max(isNaN(obtained) ? 0 : obtained, 0), MAX_MARKS);
-                students.push({ studentId, name, obtained: marks, maximum: MAX_MARKS, rank: 0 });
+                const marks = Math.min(Math.max(isNaN(obtained) ? 0 : obtained, 0), maxM);
+                students.push({ studentId, name, obtained: marks, maximum: maxM, rank: 0 });
             });
 
             if (students.length === 0) {
@@ -1507,7 +1636,7 @@
             state.students = students;
             updateUI();
             renderCard();
-            excelStatus.textContent = `✅ ${students.length} student(s). Dense ranking applied. Max: ${MAX_MARKS}`;
+            excelStatus.textContent = `✅ ${students.length} student(s). Dense ranking applied. Max: ${maxM}`;
             showDownloadSection(true);
         }
 
@@ -1544,7 +1673,7 @@
         }
 
         // ============================================================
-        //  RENDER CARD — PROFESSIONAL, CLEAN, NO EXTRA GRAPHICS
+        //  RENDER CARD
         // ============================================================
         function renderCard() {
             const students = state.students;
@@ -1560,21 +1689,21 @@
                 return;
             }
 
+            const testName = testNameInput.value.trim() || 'SLIP TEST';
             const subject = subjectInput.value.trim() || 'SOCIAL';
             const examDate = examDateInput.value || '';
             const className = classInput.value.trim() || 'SSC';
+            const maxM = state.maxMarks || 20;
             const displayDate = formatDate(examDate);
 
             const logoHtml = state.logoDataURL ?
                 `<img src="${state.logoDataURL}" alt="Logo" style="max-width:80px; max-height:80px; object-fit:contain;" />` :
                 '';
 
-            // Teacher signature — LEFT corner
             const teacherSigHtml = state.teacherSigDataURL ?
                 `<img src="${state.teacherSigDataURL}" alt="Teacher Signature" style="max-width:130px; max-height:55px; object-fit:contain;" />` :
                 '<div class="sig-placeholder"></div>';
 
-            // Principal signature — RIGHT corner
             const principalSigHtml = state.principalSigDataURL ?
                 `<img src="${state.principalSigDataURL}" alt="Principal Signature" style="max-width:130px; max-height:55px; object-fit:contain;" />` :
                 '<div class="sig-placeholder"></div>';
@@ -1586,7 +1715,7 @@
                 const rankClass = s.rank === 1 ? 'rank-1' : (s.rank === 2 ? 'rank-2' : (s.rank === 3 ? 'rank-3' :
                 ''));
                 const medal = s.rank === 1 ? '🥇' : (s.rank === 2 ? '🥈' : (s.rank === 3 ? '🥉' : ''));
-                const pct = ((s.obtained / MAX_MARKS) * 100);
+                const pct = maxM > 0 ? ((s.obtained / maxM) * 100) : 0;
                 let pctClass = 'pct-cell';
                 if (pct >= 80) pctClass += ' high';
                 else if (pct >= 50) pctClass += ' medium';
@@ -1598,13 +1727,12 @@
                             <td style="font-weight:600; color:#0a1e3a;">${s.studentId}</td>
                             <td class="name-cell">${s.name}</td>
                             <td class="marks-cell">${s.obtained}</td>
-                            <td class="max-cell">${MAX_MARKS}</td>
+                            <td class="max-cell">${maxM}</td>
                             <td class="${pctClass}">${pctStr}%</td>
                         </tr>
                     `;
             });
 
-            // Build the card — clean, no decorative stars or gradients
             cardEl.innerHTML = `
                     <div class="slip-card" id="slipCard">
                         <div class="top-bar"></div>
@@ -1622,10 +1750,10 @@
 
                         <!-- MAIN TITLE -->
                         <div class="main-title">
-                            <h2>📊 SLIP TEST RESULTS</h2>
+                            <h2>📊 ${testName}</h2>
                         </div>
 
-                        <!-- INFO TABLE — TABULAR HEADER -->
+                        <!-- INFO TABLE -->
                         <div class="info-table-wrap">
                             <table class="info-table">
                                 <tr>
@@ -1643,7 +1771,7 @@
                                     </td>
                                     <td>
                                         <span class="info-label">🎯 MAX MARKS</span>
-                                        <span class="info-value highlight">${MAX_MARKS}</span>
+                                        <span class="info-value highlight">${maxM}</span>
                                     </td>
                                 </tr>
                             </table>
@@ -1674,10 +1802,10 @@
                             </table>
                         </div>
 
-                        <!-- FOOTER — Teacher LEFT, Principal RIGHT -->
+                        <!-- FOOTER -->
                         <div class="card-footer">
                             <div class="left">
-                                <div class="footer-label">📋 Total: ${totalStudents} students · Dense Ranking · Max: ${MAX_MARKS}</div>
+                                <div class="footer-label">📋 Total: ${totalStudents} students · Dense Ranking · Max: ${maxM}</div>
                             </div>
                             <div class="signatures">
                                 <div class="sig-block">
@@ -1692,7 +1820,7 @@
                         </div>
 
                         <div class="card-footer-note">
-                            ★ System-generated slip test · ${className} · ${subject} · Dense Ranking · Max: ${MAX_MARKS} ★
+                            ★ System-generated slip test · ${className} · ${subject} · Dense Ranking · Max: ${maxM} ★
                         </div>
                     </div>
                 `;
@@ -1713,6 +1841,8 @@
                 return;
             }
             const students = state.students;
+            const maxM = state.maxMarks || 20;
+            // Re-sort and re-rank in case max marks changed
             students.sort((a, b) => b.obtained - a.obtained);
             let denseRank = 1;
             for (let i = 0; i < students.length; i++) {
@@ -1726,10 +1856,11 @@
             renderCard();
             updateUI();
             showDownloadSection(true);
+            saveState();
         });
 
         // ============================================================
-        //  CAPTURE FULL CARD — 500 DPI with perfect match
+        //  CAPTURE FULL CARD — 500 DPI
         // ============================================================
         async function captureFullCard() {
             await new Promise(resolve => setTimeout(resolve, 400));
@@ -1846,19 +1977,20 @@
             btn.disabled = true;
 
             try {
+                const maxM = state.maxMarks || 20;
                 const data = [
                     ['Rank', 'Student ID', 'Name of the Student', 'Obtained Marks', 'Maximum Marks', 'Percentage (%)']
                 ];
 
                 students.forEach(s => {
-                    const pct = ((s.obtained / MAX_MARKS) * 100).toFixed(1);
+                    const pct = maxM > 0 ? ((s.obtained / maxM) * 100) : 0;
                     data.push([
                         s.rank,
                         s.studentId,
                         s.name,
                         s.obtained,
-                        MAX_MARKS,
-                        parseFloat(pct)
+                        maxM,
+                        parseFloat(pct.toFixed(1))
                     ]);
                 });
 
@@ -1886,24 +2018,6 @@
         });
 
         // ============================================================
-        //  LIVE PREVIEW
-        // ============================================================
-        subjectInput.addEventListener('input', function() {
-            state.subject = this.value.trim() || 'SOCIAL';
-            if (state.students.length > 0) renderCard();
-        });
-
-        examDateInput.addEventListener('change', function() {
-            state.examDate = this.value || '';
-            if (state.students.length > 0) renderCard();
-        });
-
-        classInput.addEventListener('input', function() {
-            state.className = this.value.trim() || 'SSC';
-            if (state.students.length > 0) renderCard();
-        });
-
-        // ============================================================
         //  RESET
         // ============================================================
         resetBtn.addEventListener('click', function() {
@@ -1919,6 +2033,22 @@
             excelUpload.value = '';
             excelStatus.textContent = 'No file uploaded';
 
+            // Reset inputs to defaults but keep maxMarks as 20
+            testNameInput.value = 'SLIP TEST';
+            state.testName = 'SLIP TEST';
+            subjectInput.value = 'SOCIAL';
+            state.subject = 'SOCIAL';
+            const today = new Date();
+            examDateInput.value = today.toISOString().split('T')[0];
+            state.examDate = examDateInput.value;
+            classInput.value = 'SSC';
+            state.className = 'SSC';
+            maxMarksInput.value = '20';
+            state.maxMarks = 20;
+
+            // Clear localStorage
+            localStorage.removeItem(STORAGE_KEY);
+
             cardEl.innerHTML = `
                     <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#8a9aaa; font-size:18px; padding:40px; text-align:center; flex-direction:column; gap:8px; background:linear-gradient(180deg, #fafcff, #f0f4fa); border-radius:16px;">
                         <span style="font-size:52px;">📄</span>
@@ -1932,17 +2062,36 @@
         });
 
         // ============================================================
-        //  INIT
+        //  INIT — load from localStorage, set default date
         // ============================================================
+        const today = new Date();
+        const dateStr = today.toISOString().split('T')[0];
+        examDateInput.value = dateStr;
+        state.examDate = dateStr;
+
+        // Load saved state
+        const loaded = loadState();
+
+        // If no saved state, ensure maxMarks is set
+        if (!loaded) {
+            state.maxMarks = 20;
+            maxMarksInput.value = '20';
+        }
+
+        // If we have saved images, they are already in state
+        // If there are saved students, we need to re-parse? No, students are not saved in localStorage (too large)
+        // We only save settings, not student data.
+
         console.log('📝 SSC Slip Test · Dense Ranking · 500 DPI');
-        console.log(`📐 Max Marks: ${MAX_MARKS} · Percentage last column`);
+        console.log(`📐 Max Marks: ${state.maxMarks} (user-defined) · Percentage last column`);
         console.log('🥇🥈🥉 Rank 1,2,3 with medals');
         console.log('📊 Export to Excel · 500 DPI JPG download at bottom');
         console.log('📌 Dense ranking: 1,1,1,2,2,2,3,3,4,5,6,7...');
         console.log('✅ Teacher signature — LEFT corner | Principal signature — RIGHT corner');
         console.log('✅ School name in single line: SRI VENKATESWARA JY SCHOOL');
         console.log('✅ Upload previews hidden — only card shows images');
-        console.log('✅ Clean design: no decorative graphics, just professional layout');
+        console.log('✅ All settings + images saved to localStorage (browser history)');
+        console.log('✅ Test Name & Max Marks are now user-configurable');
     </script>
 
 </body>
