@@ -10,11 +10,15 @@ export const QuestionPaperGeneratorPage = () => {
   
   // Paper Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [schoolName, setSchoolName] = useState('SRI JYOTHI HIGH SCHOOL');
   const [examName, setExamName] = useState('FINAL EXAMINATION');
+  const [examSubject, setExamSubject] = useState('GRAND TEST');
+  const [examDate, setExamDate] = useState('');
   const [maxMarks, setMaxMarks] = useState('100');
   const [time, setTime] = useState('3 Hours');
   const [instructions, setInstructions] = useState('Answer all questions.\nEach question carries equal marks.\nRead questions carefully before answering.');
+  const [logoBase64, setLogoBase64] = useState<string>(() => {
+    return localStorage.getItem('jy_school_logo') || '';
+  });
   
   // AI Modal State
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
@@ -324,8 +328,10 @@ export const QuestionPaperGeneratorPage = () => {
             <div className="paper-zoom origin-top transition-transform">
             <LiveLatexPreview 
               content={content}
-              schoolName={schoolName}
               examName={examName}
+              examDate={examDate}
+              examSubject={examSubject}
+              logoBase64={logoBase64}
               maxMarks={maxMarks}
               time={time}
               instructions={instructions.split('\n').filter(i => i.trim() !== '')}
@@ -467,14 +473,53 @@ export const QuestionPaperGeneratorPage = () => {
             </div>
             
             <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">School Name</label>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Subject</label>
+                  <input
+                    type="text"
+                    value={examSubject}
+                    onChange={(e) => setExamSubject(e.target.value)}
+                    className="w-full rounded-lg border-slate-200 bg-white border p-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                  <input
+                    type="text"
+                    value={examDate}
+                    onChange={(e) => setExamDate(e.target.value)}
+                    placeholder="DD/MM/YYYY"
+                    className="w-full rounded-lg border-slate-200 bg-white border p-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                  />
+                </div>
+              </div>
+              <div className="pt-2 border-t border-slate-100">
+                <label className="block text-sm font-medium text-slate-700 mb-1">School Logo</label>
                 <input
-                  type="text"
-                  value={schoolName}
-                  onChange={(e) => setSchoolName(e.target.value)}
-                  className="w-full rounded-lg border-slate-200 bg-white border p-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        const result = event.target?.result as string;
+                        setLogoBase64(result);
+                        localStorage.setItem('jy_school_logo', result);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
+                {logoBase64 && (
+                  <div className="mt-2 relative inline-block">
+                    <img src={logoBase64} alt="Logo" className="h-12 object-contain border rounded" />
+                    <button onClick={() => { setLogoBase64(''); localStorage.removeItem('jy_school_logo'); }} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 w-5 h-5 flex items-center justify-center text-xs">X</button>
+                  </div>
+                )}
+                <p className="text-xs text-slate-500 mt-1">Stored locally in your browser.</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Exam Name</label>
